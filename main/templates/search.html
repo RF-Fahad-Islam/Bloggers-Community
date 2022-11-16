@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% from 'includes/macros.html' import render_posts %}
+{% block title %}
+{% if searchType == "tag" %}
+<title>({{posts.items|length}}) #{{q}}</title>
+{% else %}
+<title>Search Results for "{{q}}"</title>
+{% endif %}
+{% endblock title %}
+{% block body %}
+<div class="container">
+
+    <div class="card mt-3 bg-white">
+        <h4 class="text-center card-header">
+            {% if searchType == "tag" %}
+            <span class="float-start">#{{q}}</span>
+            {% else %}
+            <span class="float-start">Search Results for "{{q}}"</span>
+            {% endif %}
+            <!-- !Search Bar -->
+            <!-- <label for="exampleDataList" class="form-label">Datalist example</label> -->
+            <input class="form-control float-end mx-3" type="search" style="width: 40%;" list="datalistOptions"
+                id="query" placeholder="Filter Results">
+        </h4>
+    </div>
+    {% if searchType == "tag" %}
+    <div class="alert alert-light">
+        <a href="/tags" class="btn btn-warning fw-bold float-end">Go Now!</a>
+        <h5>Show Most Popular Tags</h5>
+    </div>
+    {% else %}
+    {% set searchType="post" %}
+    {% endif %}
+    {{ render_posts(posts.items, false, search=true) }}
+    {% if posts.total > 1 %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" href="?q={{q}}&type={{searchType}}&page={{posts.page}}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for post in posts.iter_pages() %}
+            {% if post %}
+            <li class="page-item"><a class="page-link" href="?q={{q}}&type={{searchType}}&page={{post}}">{{post}}</a></li>
+            {% endif %}
+            {% endfor %}
+            <a class="page-link" href="?q={{q}}&type={{searchType}}&page={{posts.page+1}}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock body %}
+{% block script %}
+<script src="{{url_for('static', filename='js/searcher.js')}}"></script>
+{% endblock script %}

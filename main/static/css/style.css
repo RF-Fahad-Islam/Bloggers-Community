@@ -1,0 +1,84 @@
+span.btn:hover {
+    background-color: rgb(173, 173, 173) !important;
+}
+
+#brandBox {
+    height: 162px;
+    position: absolute;
+    top: 53px;
+    width: 100%;
+    z-index: -2;
+}
+
+.searchBtn{
+    position: relative;
+    left: -15px;
+    background: none;
+    border: none;
+}
+
+a.link:hover{
+    color: rgb(49, 121, 204)!important;
+}
+
+th {
+    cursor: pointer;
+  }
+
+.box-shadow:hover{
+    border: 1px solid rgb(0, 138, 252);
+    box-shadow: 1px black;
+}
+
+
+#userImage {
+    width: 114px;
+    top: 0px;
+    position: relative;
+    border-radius: 95px;
+    background: white;
+}
+
+.profileImage {
+    display: flex;
+    justify-content: center;
+    top: 40px;
+    position: relative;
+    z-index: 3;
+}
+
+.searchBtn {
+    background: none;
+    outline: none;
+    border: 0px;
+    font-size: 17.8px;
+    position: relative;
+    top: 0px;
+    right: 240px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background: none;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: none
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(189, 189, 189);
+    border-radius: 10px;
+}
+
+#blogs>div.card:hover{
+    border: 2p solid blue!important;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #b8aeae;
+}

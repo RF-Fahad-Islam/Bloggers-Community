@@ -1,0 +1,128 @@
+{% extends 'layout.html' %}
+{% from 'includes/macros.html' import render_posts %}
+{% block title %}
+<title>
+    {{user.firstname}} {{user.lastname}} @{{user.username}}
+</title>
+{% endblock title %}
+{% block body %}
+<!-- !Brand Color -->
+<div style="background-color: {{user.brand_color}};" id="brandBox"></div>
+
+<div class="container">
+
+    <!-- TODO:User Profile Cards -->
+    <!-- !User Profile Image -->
+    <div class="profileImage">
+        {% if user.email == params["admin_email"] %}
+        <img id="userImage" src="{{url_for('static', filename='images/fahad.jpg')}}" alt="{{user.username}} - The creator">
+        {% else %}
+        <img id="userImage" src="{{url_for('static', filename='images/usericon.png')}}" alt="{{user.username}}">
+        {% endif %}
+    </div>
+    <!-- user Info Card -->
+    <div class="card">
+        <div class="card-body">
+            {% if current_user.sno ==  user.sno %}
+            <a href="/settings" class="btn btn-primary float-end fw-bold"><i class="fa fa-pencil"></i> Edit Profile</a>
+            {% endif %}
+            <p class="card-text float-start text-muted badge rounded-pill bg-light">Joined on
+                <strong>{{user.joined_date.strftime("%B %d, %Y")}}</strong> </p>
+            <div id="profileDetails" style="padding-top: 40px;
+                padding-bottom: 18px;" class="text-center">
+                <h3 class="card-title">{{user.firstname}} {{user.lastname}} (@{{user.username}}) </h3>
+                <p id="bio" class="text-muted">{{user.bio}}</p>
+                {% if user.email == params["admin_email"] %}
+                    <span class="badge bg-primary fw-bolder" style="font-size: 15px;">Admin</span>
+                    <span class="badge bg-warning fw-bolder ml-1" style="font-size: 15px;">Creator</span>
+                    <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px;">Owner</span>
+                    <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px;">Developer</span>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+    <!-- !User Blog Cards -->
+    <div class="row my-3 g-5">
+        <div class="col-md-4">
+            <div class="position-sticky" style="top: 2rem;">
+                {% if user.email == params["admin_email"] %}
+                <div class="card alert-info mb-3">
+                    <div class="card-body">
+                       <div class="fw-bold text-dark">
+                           The creator and the owner of the Bloggers Community
+                       </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="card bg-light">
+                    <h5 class="card-header bg-white">
+                        Intro
+                    </h5>
+                    <div class="card-body">
+                        <h5><i class="fa fa-map-marker"></i> Lives in {{user.country}}</h5>
+                        {% if user.hobbies != None %}
+                        <h5><i class="fa fa-hourglass"></i> Hobby : {{user.hobbies}}</h5>
+                        {% endif %}
+                        <h5><i class="fa fa-globe"></i> Country : {{user.country}}</h5>
+                        <h5><i class="fa fa-briefcase"></i> Profession : {{user.work}}</h5>
+                        {% if user.webLink != None %}
+                        <h5><i class="fa fa-link"></i> <a href="{{user.webLink}}" target="_blank">Web Link</a></h5>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card bg-light my-3">
+                    <div class="card-header bg-white">
+                        Blogs
+                    </div>
+                    <div class="card-body">
+                        <h5><i class="fa fa-building-o"></i> Blog Posts {{posts|length}}</h5>
+                        <h5><i class="fa fa-eye"></i> Total Viewers {{total_viewers}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- !Column of Blogs -->
+        <div class="col-md-8">
+            <div class="card text-center">
+                <h5 class="card-body">
+                    All Blogs ({{posts|length}})
+                </h5>
+            </div>
+    {% if current_user.is_authenticated %}
+        <div class="alert alert-light my-3 fw-bold">
+            <a href="/dashboard" class="btn btn-warning float-end fw-bold"><i class="fa fa-bar-chart"></i> Dashboard</a>
+            <h5>Manage Blogs on Dashboard</h5>
+        </div>
+    {% endif %}
+            <!-- !Users All Blogs Fetch From Database -->
+            <div id="blogs">
+                {% for post in posts %}
+
+                <div class="card my-3 box-shadow">
+                    <div class="card-body">
+                        <a href="/b/{{user.username}}/{{post.slug}}" class="link-dark" style="text-decoration: none;">
+                            <h3 class="card-title">{{post.title}}</h3>
+                        </a>
+                        <p class="card-subtitle fw-bold text-primary">{{post.tag}}</p>
+                        <a href="/b/{{user.username}}/{{post.slug}}" class="btn btn-light float-end">Read</a>
+                        <p class="card-text text-muted">{{post.pub_date.strftime("%c")}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if posts|length == 0 %}
+                    <div class="alert alert-warning my-3">
+                        <h5>Empty! No posts.</h5>
+                        <strong>No Posts Here. {{user.username}} has not created any post. (*_*)</strong>
+                        {% if current_user.is_authenticated %}
+                        <hr>
+                            <a class="btn btn-primary btn-lg" href="/blog-writer/edit/0"><i class="fa fa-plus-circle"></i> Create a Blog</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock body %}

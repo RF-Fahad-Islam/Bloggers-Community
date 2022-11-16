@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% from 'includes/macros.html' import render_posts, render_notices %}
+{% block title %} <title>{{params["page_title"]}}</title> {% endblock %}
+{% block body %}
+
+<!-- !Blog Cards -->
+<div class="container">
+    {# <h1 class="text-center my-3"><img src="{{url_for('static', filename='contactbook.ico')}}" alt="Icon"> Contacts
+        Book</h1> #}
+
+
+    <!-- !Login Alert -->
+    {% if not current_user.is_authenticated %}
+    <div class="alert alert-danger my-3" role="alert">
+        <h4 class="alert-heading">Welcome User! You are not logged in!</h4>
+        <p>
+            <b>
+                Login to create your blog profile and create blogs.
+            </b>
+        </p>
+        <hr>
+        <a href="/signup" class="btn btn-warning"><i class="fa fa-user-plus"></i> Sign Up</a>
+        <a href="/login" class="btn btn-outline-primary">
+            <i class="fa fa-sign-in"></i> Login</a>
+    </div>
+
+    {% endif %}
+
+    <ul class="nav nav-tabs my-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+                role="tab" aria-controls="home" aria-selected="true"><i class="fa fa-rss"></i> Feed</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+                role="tab" aria-controls="profile" aria-selected="false"><i class="fa fa-bullhorn"></i> Notices</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+                role="tab" aria-controls="contact" aria-selected="false"><i class="fa fa-comments"></i>
+                Discussion</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <!-- !All Posts Tab -->
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            {{ render_posts(posts) }}
+        </div>
+
+        <!-- !All Notices Tab -->
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+           {{render_notices(notices)}}
+        </div>
+
+        <!-- !Comments tab -->
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <div class="card my-3 text-center">
+                <h4 class="card-header text-center">Comments / Discussion</h4>
+                <div class="card-body">
+                    <div class="fb-comments" data-href="{{params['url']}}" data-width="" data-numposts="5"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock body %}
+{% block script %}
+    <script src="{{url_for('static', filename='js/searcher.js')}}"></script>
+{% endblock script %}

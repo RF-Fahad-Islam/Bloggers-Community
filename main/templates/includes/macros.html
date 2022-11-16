@@ -1,0 +1,96 @@
+<!-- !Render Posts Macro: Render all posts in the form of cards -->
+{% macro render_posts(posts, show_end=true, dashboard=false, search=false) %}
+{% if posts|length != 0%}
+{% for post in posts %}
+{% set user=post.writer %}
+<div class="card my-3 box-shadow">
+    <div class="card-body content">
+        <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
+            {{post.pub_date.strftime("%b %d, %Y")}}</p>
+        {% if user.email == "riyad9949@gmail.com" %}
+        {% set img = 'images/fahad.jpg' %}
+        {% else %}
+        {% set img = 'images/usericon.png' %}
+        {% endif %}
+        <img src="{{url_for('static', filename=img)}}" alt="Avatar" class="mr-3 rounded-circle" width="30" height="30">
+        <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
+            {{user.firstname}} {{user.lastname}}
+            (@{{user.username}})</a>
+        <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
+            class="link text-dark post-title link" style="text-decoration: none;">
+            <h3 class="card-title">{{post.title}}</h3>
+        </a>
+        {% for tag in post.tags_list %}
+        <a class="card-subtitle fw-bold text-primary btn-link btn p-0 text-decoration-none"
+            href="/search?q={{tag}}&type=tag"> <i class="fa fa-hashtag"></i>{{tag}}</a>
+        {% endfor %}
+        {% if dashboard %}
+        <a href="{{url_for('handleBlogWriter', sno='0')}}" class="btn btn-outline-success float-end"> <i
+                class="fa fa-edit"></i> Edit</a>
+        <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}" class="btn btn-outline-danger float-end mx-2 delete">
+            <i class="fa fa-trash"></i> Delete</a>
+        {% else %}
+        <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
+            class="btn btn-light float-end">Read</a>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+<!-- !End post notice -->
+{% if show_end %}
+<div class="card animate__rubberBand">
+    <div class="card-body text-center">
+        <h4 class="animate__rubberBand"><i class="fa fa-check-circle-o"></i> End of The page!</h4>
+        <h5 class="text-muted">Add your post to expand the community</h5>
+        <a href="/blog-writer/edit/0" class="btn btn-primary-lg">Add your blog</a>
+        <a href="#" class="btn btn-warning-lg">Go to Top</a>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+{% if search %}
+<div class="alert my-3 alert-warning d-flex justify-content-center text-center flex-column">
+    <img src="{{url_for('static', filename='images/search-not-found.png')}}" class="d-block mx-auto" width="120"
+        height="120" alt="Search Not Found">
+    <h3>Search Not Found!</h3>
+    <h5 class="fw-bold">No posts found related to this. Search with other keyword.</h5>
+</div>
+{% else %}
+<div class="alert alert-warning my-3">
+    <h5>No Posts</h5>
+    <hr>
+    <h5>Be the first to create a blog on this site</h5>
+</div>
+{% endif %}
+{% endif %}
+{% endmacro %}
+
+<!-- Render Notices in the form of cards -->
+{% macro render_notices(notices) %}
+{% for notice in notices %}
+
+<div class="card my-3 box-shadow">
+    <div class="card-body">
+        <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
+            {{notice.create_date.strftime('%B %d , %Y')}}</p>
+        <img src="{{url_for('static', filename='images/webIcon.png')}}" alt="Blogger" class="mr-3" width="30"
+            height="30">
+        <a class="fw-bold text-decoration-none text-dark link d-inline-block">
+            Bloggers Community</a>
+        <a style="text-decoration: none;">
+            <h3 class="card-title">{{notice.title}}</h3>
+        </a>
+        <h5 class="card-title">{{notice.desc}}</h5>
+    </div>
+</div>
+{% endfor %}
+
+{% if notices|length == 0 %}
+<div class="alert alert-warning my-3">
+    <h5>No Notices to show</h5>
+</div>
+{%endif%}
+
+{% endmacro %}
