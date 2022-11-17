@@ -1,5 +1,5 @@
 # !Database Models Here+-
-from . import db, admin, MyModelView
+from . import db, admin, MyModelView,app
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -86,7 +86,8 @@ class Notices(db.Model):
 #     name = db.Column(db.String(30), nullable=False, unique=True)
 #     desc = db.Column(db.String(), nullable=True)
 #     users = db.relationship('User', backref="role", lazy=True)
-
+with app.app_context():
+    db.create_all()
 admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))

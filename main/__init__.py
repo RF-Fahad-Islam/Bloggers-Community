@@ -11,7 +11,7 @@ import os
 
 # App and DB configuration
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:5qTOkXX8bxur3Z0MgFBs@containers-us-west-104.railway.app:6986/railway"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://bloggers_community_user:SBSIwvrOMsiHjhPw6cfpZyEjmpkUIgI6@dpg-cdqs2mmn6mpqj2cjcncg-a/bloggers_community"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.environ.get("SQLALCHEMY_TRACK_MODIFICATIONS")
 app.secret_key = "super-secret-key"
 app.config["SESSION_TYPE"] = 'sqlalchemy'
