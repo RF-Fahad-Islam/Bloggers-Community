@@ -25,11 +25,6 @@ def load_user(user_id):
 def context_processor():
     return dict(params=params)
 
-# Handle Other Urls
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    abort(404)
 
 @app.route("/")
 def home():
@@ -38,6 +33,12 @@ def home():
     notices.reverse()
     posts.reverse()
     return render_template('index.html',notices=notices,  posts=posts)
+
+# Handle Other Urls
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    abort(404)
 
 @app.route("/tags")
 def handleTags():

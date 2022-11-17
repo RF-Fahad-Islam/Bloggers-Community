@@ -14,8 +14,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:5qTOkXX8bxur3Z0MgFBs@containers-us-west-104.railway.app:6986/railway"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.environ.get("SQLALCHEMY_TRACK_MODIFICATIONS")
 app.secret_key = "super-secret-key"
-db = SQLAlchemy(app)
 app.config["SESSION_TYPE"] = 'sqlalchemy'
+db = SQLAlchemy(app)
 app.config["SESSION_SQLALCHEMY"] = db
 # app.config['FLASK_ADMIN_SWATCH'] = 'paper'
 Session(app)
@@ -63,6 +63,4 @@ admin = Admin(app, name="Bloggers Community")
 # app.view_functions['static'] = login_required(app.send_static_file)
 # Database Migrations Setup
 migrate = Migrate(app,db)
-
-#Run the routes
 from . import routes

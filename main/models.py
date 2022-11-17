@@ -86,7 +86,7 @@ class Notices(db.Model):
 #     name = db.Column(db.String(30), nullable=False, unique=True)
 #     desc = db.Column(db.String(), nullable=True)
 #     users = db.relationship('User', backref="role", lazy=True)
-db.create_all()
+
 admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))
