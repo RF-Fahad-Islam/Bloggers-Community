@@ -7,14 +7,19 @@ from flask_admin import Admin, AdminIndexView, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask_msearch import Search
+from .settings import *
 import os
-
+    
 # App and DB configuration
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://bloggers_community_user:SBSIwvrOMsiHjhPw6cfpZyEjmpkUIgI6@dpg-cdqs2mmn6mpqj2cjcncg-a/bloggers_community"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.environ.get("SQLALCHEMY_TRACK_MODIFICATIONS")
-app.secret_key = "super-secret-key"
-app.config["SESSION_TYPE"] = 'sqlalchemy'
+if PROD:
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_PROD
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_DEV
+    
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
+app.secret_key = SECRET_KEY
+app.config["SESSION_TYPE"] = SESSION_TYPE
 db = SQLAlchemy(app)
 app.config["SESSION_SQLALCHEMY"] = db
 # app.config['FLASK_ADMIN_SWATCH'] = 'paper'

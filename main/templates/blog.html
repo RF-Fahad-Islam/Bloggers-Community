@@ -6,7 +6,8 @@
 <div class="container-fluid my-3" style="width: 90%; margin:auto;">
 
   <div class="row g-3">
-    <div class="col-md-9">
+
+    <div class="col-lg-9">
       <div class="card">
         <div class="card-body">
           {% if current_user.is_admin %}
@@ -63,6 +64,8 @@
 
 
       </div>
+
+      <!-- !Comment Section -->
       <div class="card my-3 text-center">
         <h4 class="card-header text-center">Comments / Discussion</h4>
         <div class="card-body">
@@ -71,7 +74,9 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+
+
+    <div class="col-lg-3">
       <div class="position-sticky" style="top: 2rem; height:auto;">
         <div class="p-4 mb-3 alert bg-white rounded">
           <div class="text-center d-block">
@@ -101,12 +106,13 @@
             {{user.work}}</h5>
         </div>
 
-        <div class="alert bg-white">
+        <!-- !Recomendation Section -->
+        <div class="alert bg-white overflow-scroll">
           <h3>Recommended</h3>
           <div class="list-group">
             {% for recommended in recommendeds%}
             {% if recommended %}
-            <a href="/b/{{user.username}}/{{recommended.title}}" class="list-group-item list-group-item-action" aria-current="true">
+            <a href="/b/{{user.username}}/{{recommended.slug}}" class="list-group-item list-group-item-action" aria-current="true">
               <div class="d-flex w- justify-content-between">
                 <h5 class="mb-1">{{recommended.title}}</h5>
               </div>

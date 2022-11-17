@@ -8,7 +8,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 params = {
     "page_title":"Bloggers Community | Made By Fahad",
     "app_name":"Bloggers Community",
-    "url":"https://bloggers-community.herokuapp.com",
+    "url":"https://bloggers-community.onrender.com",
     "github":"https://github.com/RF-Fahad-Islam/",
     "admin_email":"riyad9949@gmail.com",
     "admin_password":"$$01308388895$$@Rf",
