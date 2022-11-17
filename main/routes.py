@@ -139,10 +139,9 @@ def handleUsersPosts(username, postSlug):
     user = Users.query.filter_by(username=username).first()
     post = user.posts.filter_by(slug=postSlug).first()
     try:
-        if current_user.sno != user.sno:
-            post.viewers_count += 1
+        if current_user.sno == user.sno: pass
     except:
-        abort(404)
+         post.viewers_count += 1
     posts = user.posts.all()
     
     pos = posts.index(post)
