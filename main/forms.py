@@ -41,7 +41,7 @@ class LoginForm(FlaskForm):
 class BlogWriter(FlaskForm):
     def validate_title(self, title):
         post = current_user.posts.filter_by(slug=string_to_slug(title.data)).first()
-        if int(self.sno.data) > 0 and post:
+        if int(self.sno.data) == 0 and post:
             raise ValidationError("Title can't be duplicated! Blog Title is similar to one of your blogs. Change the title.")
     
     def validate_tag(self,tag):

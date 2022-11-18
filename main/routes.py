@@ -47,7 +47,7 @@ def handleTags():
 
 @app.route("/p/<string:username>")
 def userProfile(username):
-    user = Users.query.filter_by(username=username).first()
+    user = db.one_or_404(db.select(Users).filter_by(username=username))
     posts = user.posts.all()
     total_viewers_count = total_viewers(posts) 
     return render_template("profile.html",  user=user,posts=posts, total_viewers=total_viewers_count)
@@ -136,14 +136,14 @@ def settingProfile():
 
 @app.route('/b/<string:username>/<string:postSlug>')
 def handleUsersPosts(username, postSlug):
-    user = Users.query.filter_by(username=username).first()
+    user = db.one_or_404(db.select(Users).filter_by(username=username))
     post = user.posts.filter_by(slug=postSlug).first()
+    if post is None: return abort(404)
     try:
         if current_user.sno == user.sno: pass
     except:
          post.viewers_count += 1
     posts = user.posts.all()
-    
     pos = posts.index(post)
     next_post = None
     prev_post = None
@@ -167,7 +167,7 @@ def handleUsersPosts(username, postSlug):
 def handleBlogWriter(sno):
     form = BlogWriter()
     post = Posts.query.filter_by(sno=sno).first()
-    if (post == None or post.writer_id != current_user.sno) and sno != "0":
+    if (post == None or post.writer_id != current_user.sno) and sno != "0" and not current_user.is_admin:
         return redirect("/blog-writer/edit/0")
     
     if form.validate_on_submit():

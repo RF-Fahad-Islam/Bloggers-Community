@@ -24,6 +24,9 @@ class Users(db.Model, UserMixin):
     # role = db.Column(db.Integer, db.ForeignKey('role.id'))
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     
+    def __repr__(self):
+        return f"<User {self.username}>"
+    
     def check_password(self, attempted_password):
         # Test Password Correction
         return check_password_hash(self.password_hash, attempted_password)
@@ -75,11 +78,16 @@ class Posts(db.Model):
     def tags_list(self):
         return self.tag.split(" ")
     
+    def __repr__(self):
+        return f"<Post {self.title}>"
+    
 class Notices(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30), nullable=False)
     desc = db.Column(db.String(500), nullable=False)
     create_date = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+
+
 
 # class Roles(db.Model):
 #     sno = db.Column(db.Integer(), primary_key=True)

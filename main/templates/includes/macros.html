@@ -25,7 +25,7 @@
             href="/search?q={{tag}}&type=tag"> <i class="fa fa-hashtag"></i>{{tag}}</a>
         {% endfor %}
         {% if dashboard %}
-        <a href="{{url_for('handleBlogWriter', sno='0')}}" class="btn btn-outline-success float-end"> <i
+        <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
                 class="fa fa-edit"></i> Edit</a>
         <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}" class="btn btn-outline-danger float-end mx-2 delete">
             <i class="fa fa-trash"></i> Delete</a>
