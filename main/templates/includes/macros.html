@@ -7,12 +7,23 @@
     <div class="card-body content">
         <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
             {{post.pub_date.strftime("%b %d, %Y")}}</p>
-        {% if user.email == "riyad9949@gmail.com" %}
-        {% set img = 'images/fahad.jpg' %}
-        {% else %}
-        {% set img = 'images/usericon.png' %}
-        {% endif %}
-        <img src="{{url_for('static', filename=img)}}" alt="Avatar" class="mr-3 rounded-circle" width="30" height="30">
+
+    {% if user.picture == 'avatar' %}
+    <img
+      id="userImage"
+      class="profile"
+      src="{{url_for('static', filename='images/usericon.png')}}"
+      alt="{{user.username}} - The creator"
+    />
+    {% else %}
+    <img
+      id="userImage"
+      class="profile"
+      src="{{user.picture}}"
+      alt="{{user.username}}"
+    />
+    {% endif %}
+
         <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
             {{user.firstname}} {{user.lastname}}
             (@{{user.username}})</a>
@@ -25,7 +36,7 @@
             href="/search?q={{tag}}&type=tag"> <i class="fa fa-hashtag"></i>{{tag}}</a>
         {% endfor %}
         {% if dashboard %}
-        <a href="{{url_for('handleBlogWriter', sno='0')}}" class="btn btn-outline-success float-end"> <i
+        <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
                 class="fa fa-edit"></i> Edit</a>
         <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}" class="btn btn-outline-danger float-end mx-2 delete">
             <i class="fa fa-trash"></i> Delete</a>

@@ -7,11 +7,16 @@ from flask_admin import Admin, AdminIndexView, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask_msearch import Search
+from authlib.integrations.flask_client import OAuth
 from .settings import *
 import os
+CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
     
 # App and DB configuration
 app = Flask(__name__)
+#Authlib
+oauth = OAuth()
+
 if PROD:
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_PROD
 else:
@@ -24,6 +29,16 @@ db = SQLAlchemy(app)
 app.config["SESSION_SQLALCHEMY"] = db
 # app.config['FLASK_ADMIN_SWATCH'] = 'paper'
 Session(app)
+oauth.init_app(app)
+google = oauth.register(
+    name='google',
+    server_metadata_url=CONF_URL,
+    client_id= GOOGLE_CLIENT_ID,
+    client_secret = GOOGLE_CLIENT_SECRET,
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
+)
 
 #Configure the M_Search
 search = Search(app)

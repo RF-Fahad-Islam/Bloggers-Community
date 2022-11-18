@@ -10,11 +10,12 @@ class Users(db.Model, UserMixin):
     firstname = db.Column(db.String(30), nullable=False)
     lastname = db.Column(db.String(30), nullable=False)
     username = db.Column(db.String(30), nullable=False, unique=True)
+    picture = db.Column(db.String(200), nullable=True,default='avatar')
     age = db.Column(db.Integer, nullable=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(500), nullable=False)
     bio = db.Column(db.String(101), nullable=True, default="")
-    country = db.Column(db.String(15), nullable=False)
+    country = db.Column(db.String(15), nullable=True)
     hobbies = db.Column(db.String(200), nullable=True, default="Blogging")
     work = db.Column(db.String(200), nullable=True)
     webLink = db.Column(db.String(500), nullable=True, default="")
@@ -23,6 +24,9 @@ class Users(db.Model, UserMixin):
     posts = db.relationship('Posts', backref="writer", lazy="dynamic") #Returns List of posts that the user created
     # role = db.Column(db.Integer, db.ForeignKey('role.id'))
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    
+    def __repr__(self):
+        return f"<User {self.username}>"
     
     def check_password(self, attempted_password):
         # Test Password Correction
@@ -75,11 +79,16 @@ class Posts(db.Model):
     def tags_list(self):
         return self.tag.split(" ")
     
+    def __repr__(self):
+        return f"<Post {self.title}>"
+    
 class Notices(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30), nullable=False)
     desc = db.Column(db.String(500), nullable=False)
     create_date = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+
+
 
 # class Roles(db.Model):
 #     sno = db.Column(db.Integer(), primary_key=True)
@@ -88,6 +97,8 @@ class Notices(db.Model):
 #     users = db.relationship('User', backref="role", lazy=True)
 with app.app_context():
     db.create_all()
+    
+#! Admin Views
 admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))

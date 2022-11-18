@@ -11,7 +11,7 @@
 
     <!-- !Login Alert -->
     {% if not current_user.is_authenticated %}
-    <div class="alert alert-danger my-3" role="alert">
+    <div class="alert alert-primary my-3" role="alert" style="border-radius: 30px;">
         <h4 class="alert-heading">Welcome User! You are not logged in!</h4>
         <p>
             <b>
@@ -19,9 +19,18 @@
             </b>
         </p>
         <hr>
-        <a href="/signup" class="btn btn-warning"><i class="fa fa-user-plus"></i> Sign Up</a>
-        <a href="/login" class="btn btn-outline-primary">
-            <i class="fa fa-sign-in"></i> Login</a>
+        <div class="flex flex-wrap justify-content-between align-content-center align-items-center"
+        >
+        <!-- <div>
+            <a href="/signup" class="btn btn-warning"><i class="fa fa-user-plus"></i> Sign Up</a>
+            <a href="/login" class="btn btn-outline-primary">
+                <i class="fa fa-sign-in"></i> Login</a>
+        </div> -->
+            <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3" style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn" >
+                Sign up with Google
+            </a>
+        </div>
+              
     </div>
 
     {% endif %}

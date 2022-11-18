@@ -1,12 +1,14 @@
 {% extends 'layout.html' %}
 {% block title %}
+<!-- !Prisma CSS & JS-->
+<link rel="stylesheet" href="{{url_for('static',filename='prism/prism.css')}}">
 <title>{{post.title}} @{{post.writer.username}}</title>
 {% endblock title %}
 {% block body %}
 <div class="container-fluid my-3" style="width: 90%; margin:auto;">
 
   <div class="row g-3">
-
+    <!-- !Blog Section -->
     <div class="col-lg-9">
       <div class="card">
         <div class="card-body">
@@ -14,7 +16,7 @@
           <a class="btn btn-outline-danger ml-2 rounded-circle float-end" href="/delete/b/{{post.sno}}"><i
               class="fa fa-trash"></i></a>
           {% endif %}
-          {% if current_user.is_authenticated %}
+          {% if current_user.sno == user.sno %}
           <a class="btn btn-outline-success mr-2 rounded-circle float-end" href="/blog-writer/edit/{{post.sno}}"><i
               class="fa fa-pencil"></i></a>
           {% endif %}
@@ -112,7 +114,7 @@
           <div class="list-group">
             {% for recommended in recommendeds%}
             {% if recommended %}
-            <a href="/b/{{user.username}}/{{recommended.slug}}" class="list-group-item list-group-item-action" aria-current="true">
+            <a href="/b/{{recommended.writer.username}}/{{recommended.slug}}" class="list-group-item list-group-item-action" aria-current="true">
               <div class="d-flex w- justify-content-between">
                 <h5 class="mb-1">{{recommended.title}}</h5>
               </div>
@@ -138,3 +140,6 @@
 
 </div>
 {% endblock body %}
+{% block script %}
+<script src="{{url_for('static',filename='prism/prism.js')}}"></script>
+{% endblock script  %}

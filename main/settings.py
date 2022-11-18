@@ -7,3 +7,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = "Supersecretkey"
 #Flask Session Configuration
 SESSION_TYPE = 'sqlalchemy'
+GOOGLE_CLIENT_ID = "535565541200-pjl74hijcitc536qb743qr6ml5ei5h69.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "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"
