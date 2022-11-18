@@ -125,12 +125,12 @@
                   <a href="/logout" class="list-group-item list-danger text-danger"><i class="fa fa-power-off"></i> Logout</a>
                 </div>
               '><strong>{{current_user.firstname}}</strong>
-          <img src="{{url_for('static', filename='/images/usericon.png')}}" alt="Avatar" width="30" height="30" />
+          <img src="{{current_user.picture}}" alt="Avatar" class="profile"/>
         </span>
       </div>
     </div>
     {% else %}
-    <a class="btn btn-outline-primary mx-3 float-end" href="/signup"><i class="fa fa-user-plus"></i> SignUp</a>
+    <!-- <a class="btn btn-outline-primary mx-3 float-end" href="/signup"><i class="fa fa-user-plus"></i> SignUp</a> -->
     <a class="btn btn-outline-success float-end" href="/login"><i class="fa fa-sign-in"></i> Login</a>
     {% endif %}
   </nav>

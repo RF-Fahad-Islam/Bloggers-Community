@@ -1,4 +1,4 @@
-from . import db,app, login_manager, search
+from . import db,app, login_manager, search,oauth
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort
 from .models import Users, Posts, Notices
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm
@@ -52,29 +52,29 @@ def userProfile(username):
     total_viewers_count = total_viewers(posts) 
     return render_template("profile.html",  user=user,posts=posts, total_viewers=total_viewers_count)
 
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        firstname = form.firstname.data
-        lastname = form.lastname.data
-        email = form.email.data
-        username = form.username.data
-        password = form.password.data
-        country = form.country.data
-        work = form.work.data
-        userid = generateId(30)
-        if email == params["admin_email"]:
-            is_admin = True
-        else:
-            is_admin = False
-        newUser = Users(firstname=firstname, lastname=lastname, userid=userid, country=country, email=email, username=string_to_slug(username), password=password, work=work, is_admin=is_admin)
-        db.session.add(newUser)
-        db.session.commit()
-        return redirect(url_for('login'))
-    flash_form_error_messages(form)
-    print(form.errors)
-    return render_template("signup.html",  form=form)
+# @app.route("/signup", methods=["GET", "POST"])
+# def signup():
+#     form = RegisterForm()
+#     if form.validate_on_submit():
+#         firstname = form.firstname.data
+#         lastname = form.lastname.data
+#         email = form.email.data
+#         username = form.username.data
+#         password = form.password.data
+#         country = form.country.data
+#         work = form.work.data
+#         userid = generateId(30)
+#         if email == params["admin_email"]:
+#             is_admin = True
+#         else:
+#             is_admin = False
+#         newUser = Users(firstname=firstname, lastname=lastname, userid=userid, country=country, email=email, username=string_to_slug(username), password=password, work=work, is_admin=is_admin)
+#         db.session.add(newUser)
+#         db.session.commit()
+#         return redirect(url_for('login'))
+#     flash_form_error_messages(form)
+#     print(form.errors)
+#     return render_template("signup.html",  form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -155,9 +155,9 @@ def handleUsersPosts(username, postSlug):
             next_post = posts[pos+1]
         else:
             prev_post = posts[pos-1]
-    recommendeds = Posts.query.msearch(post.tags_list[0], fields=["tag"]).order_by(Posts.viewers_count.desc()).all()
+    recommendeds = Posts.query.msearch(post.tags_list[0], fields=["tag"]).order_by(Posts.viewers_count.desc())[:5]
     if not recommendeds and len(post.tags_list)>1:
-        recommendeds = Posts.query.msearch(post.tags_list[1], fields=["tag"]).order_by(Posts.viewers_count.desc()).all()
+        recommendeds = Posts.query.msearch(post.tags_list[1], fields=["tag"]).order_by(Posts.viewers_count.desc())[:5]
         
     recommendeds.remove(post)
     return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds)
@@ -284,3 +284,42 @@ def apiUsernames():
     for user in users:
         usedUsernames["usernames"].append(user.username)
     return jsonify(usedUsernames)
+
+@app.route('/google-login')
+def googleLogin():
+    redirect_uri = url_for('authorize', _external=True)
+    google = oauth.create_client('google')
+    return google.authorize_redirect(redirect_uri)
+
+@app.route('/authorize')
+def authorize():
+    token = oauth.google.authorize_access_token()
+
+    user = token['userinfo']
+    getUser = Users.query.filter_by(email=user.get('email')).first() 
+    if not Users.query.filter_by(email=user.get('email')).first():
+        userid = generateId(30)
+        firstname = user.get('given_name')
+        lastname = user.get('family_name')
+        email = user.get('email')
+        username = user.get('name')
+        picture = user.get('picture')
+        if email == params["admin_email"]:
+            is_admin = True
+        else:
+            is_admin = False
+        user = Users.query.filter_by(username=username.data).first()
+        while user:
+            if user != None and user.username != current_user.username:
+                username= generateId(5)
+            user = Users.query.filter_by(username=username.data).first()
+        newUser = Users(firstname=firstname,picture=picture, lastname=lastname, userid=userid, email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20))
+        db.session.add(newUser)
+        db.session.commit()
+    else:
+        getUser.picture = user.get('picture')
+        db.session.commit()
+        login_user(getUser)
+    # print(profile)
+    # do something with the token and profile
+    return redirect('/')

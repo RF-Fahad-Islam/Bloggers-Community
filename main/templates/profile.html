@@ -9,16 +9,16 @@
   <!-- TODO:User Profile Cards -->
   <!-- !User Profile Image -->
   <div class="profileImage">
-    {% if user.email == params["admin_email"] %}
+    {% if user.picture == 'avatar' %}
     <img
       id="userImage"
-      src="{{url_for('static', filename='images/fahad.jpg')}}"
+      src="{{url_for('static', filename='images/usericon.png')}}"
       alt="{{user.username}} - The creator"
     />
     {% else %}
     <img
       id="userImage"
-      src="{{url_for('static', filename='images/usericon.png')}}"
+      src="{{user.picture}}"
       alt="{{user.username}}"
     />
     {% endif %}

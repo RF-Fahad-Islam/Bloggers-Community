@@ -10,11 +10,12 @@ class Users(db.Model, UserMixin):
     firstname = db.Column(db.String(30), nullable=False)
     lastname = db.Column(db.String(30), nullable=False)
     username = db.Column(db.String(30), nullable=False, unique=True)
+    picture = db.Column(db.String(200), nullable=True,default='avatar')
     age = db.Column(db.Integer, nullable=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(500), nullable=False)
     bio = db.Column(db.String(101), nullable=True, default="")
-    country = db.Column(db.String(15), nullable=False)
+    country = db.Column(db.String(15), nullable=True)
     hobbies = db.Column(db.String(200), nullable=True, default="Blogging")
     work = db.Column(db.String(200), nullable=True)
     webLink = db.Column(db.String(500), nullable=True, default="")
@@ -96,6 +97,8 @@ class Notices(db.Model):
 #     users = db.relationship('User', backref="role", lazy=True)
 with app.app_context():
     db.create_all()
+    
+#! Admin Views
 admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))
