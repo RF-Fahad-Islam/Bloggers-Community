@@ -24,7 +24,7 @@ class Users(db.Model, UserMixin):
     posts = db.relationship('Posts', backref="writer", lazy="dynamic") #Returns List of posts that the user created
     # role = db.Column(db.Integer, db.ForeignKey('role.id'))
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
-    
+    is_blocked = db.Column(db.Boolean, nullable=True, default=False)
     def __repr__(self):
         return f"<User {self.username}>"
     
