@@ -209,13 +209,14 @@ def handleDeletes(keyword,sno):
     elif keyword == "p":
         if current_user.is_admin:
             user = Users.query.filter_by(sno=sno).first()
-            posts = Posts.query.filter_by(userid=user.userid).all()
-            for post in posts:
-                db.session.delete(post)
-                db.session.commit()
-                
+            posts = Posts.query.filter_by(writer_id=user.sno).all()
+            if not posts:
+                for post in posts:
+                    db.session.delete(post)
+                    db.session.commit()
             db.session.delete(user)
             db.session.commit()
+                
             return redirect(url_for("adminDashboard"))
         else:
             return redirect("/")
@@ -302,13 +303,13 @@ def authorize():
         firstname = user.get('given_name')
         lastname = user.get('family_name')
         email = user.get('email')
-        username = user.get('name')
+        username = user.get('given_name')
         picture = user.get('picture')
         if email == params["admin_email"]:
             is_admin = True
         else:
             is_admin = False
-        user = Users.query.filter_by(username=username.data).first()
+        user = Users.query.filter_by(username=username).first()
         while user:
             if user != None and user.username != current_user.username:
                 username= generateId(5)
