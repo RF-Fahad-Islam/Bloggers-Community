@@ -3,10 +3,10 @@
 <title>Blog Writer</title>
 {% endblock title %}
 {% block css %}
-    <style>
-        .titleInput {
-            outline: none;
-            border-bottom: 4px solid blue;
+<style>
+  .titleInput {
+    outline: none;
+    border-bottom: 4px solid blue;
     /* border: 0; */
     border-top: 0;
     border-left: 0;
@@ -18,107 +18,178 @@
     font-size: 41px;
     font-weight: bold;
     text-align: center
-        }
-        .titleInput:focus {
-            border-bottom: 4px solid rgba(0, 189, 41, 0.808);
+  }
 
-        }
-    </style>
+  .titleInput:focus {
+    border-bottom: 4px solid rgba(0, 189, 41, 0.808);
+
+  }
+</style>
 {% endblock css %}
 {% block body %}
 <div class="container">
-<form action="/blog-writer/edit/{{sno}}" method="POST">
-  {{form.csrf_token}}
-    <input required type="text" class="titleInput" id="title" name="title" value="{{post.title}}" placeholder="Blog Title Here" minLength="10" maxlength="120">
-    <textarea required class="my-3" placeholder="Make sure to write at least 100 Characters. In the tags field multiple tags must be separated with space. (Don't enter a tag twice). i.e: First and Second tag will be shown as recommendations. So make sure to provide the first two tags appropriate to rank your post." name="body" id="body">
-        {{post.body}}
-    </textarea>
-    <input type='hidden' name="sno" id="sno" value="{{sno}}">
-    <div class="my-2">
-        <input id="tag" name="tag" class="titleInput" maxLength="50" placeholder="Tags (space)" value="{{post.tag}}" style="width: 22%; font-size:20px;">
-        {% if sno=="0" %}
-        {% set text = "Publish Blog" %}
-        {% else %}
-        {% set text = "Edit Blog" %}
-        {% endif %}
-        <input type="submit" id="submit"  class="btn btn-lg btn-outline-success float-end" value="{{text}}">
-        <!-- <button class="btn btn-lg btn-outline-primary float-end mx-2">
-            <i class="fa fa-paperclip"></i> Save Draft
-        </button> -->
+
+  <!-- !Tabs -->
+  <!-- <ul class="nav nav-tabs my-3" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
+        aria-controls="home" aria-selected="true"><i class="fa fa-rss"></i> Feed</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab"
+        aria-controls="profile" aria-selected="false"><i class="fa fa-bullhorn"></i> Notices</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"
+        aria-controls="contact" aria-selected="false"><i class="fa fa-comments"></i>
+        Discussion</button>
+    </li>
+  </ul> -->
+  <div class="tab-content" id="myTabContent">
+    <!-- !All Posts Tab -->
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <form action="/blog-writer/edit/{{sno}}" method="POST">
+        {{form.csrf_token}}
+        <input required type="text" class="titleInput" id="title" name="title" value="{{post.title}}"
+          placeholder="Blog Title Here" minLength="10" maxlength="120">
+        <textarea required class="my-3"
+          placeholder="Make sure to write at least 100 Characters. In the tags field multiple tags must be separated with space. (Don't enter a tag twice). i.e: First and Second tag will be shown as recommendations. So make sure to provide the first two tags appropriate to rank your post."
+          name="body" id="body">
+                {{post.body}}
+            </textarea>
+        <input type='hidden' name="sno" id="sno" value="{{sno}}">
+
+        <div class="my-2">
+          <input id="tag" name="tag" class="titleInput" maxLength="50" placeholder="Tags (space)" value="{{post.tag}}"
+            style="width: 22%; font-size:20px;">
+          {% if sno=="0" %}
+          {% set text = "Publish Blog" %}
+          {% else %}
+          {% set text = "Edit Blog" %}
+          {% endif %}
+          <input type="submit" id="submit" class="btn btn-lg btn-outline-success float-end" value="{{text}}">
+          <!-- <button class="btn btn-lg btn-outline-primary float-end mx-2">
+                    <i class="fa fa-paperclip"></i> Save Draft
+                </button> -->
+        </div>
+
+      </form>
     </div>
+  </div>
+
+  <!-- !All Notices Tab -->
+  <!-- <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="card">
+      <div class="card-body">
+        <p>
+          <button class="btn btn-outline-grey" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+            aria-expanded="false" aria-controls="collapseExample">
+            SEO Optimization : Rank your blog in Google Search Engine
+          </button>
+        </p>
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body">
+
+            <label for="basic-url" class="form-label">Custom Url</label>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
+              <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+            </div>
+
+            <div class="mb-3">
+              <label for="exampleFormControlInput1" class="form-label">Meta Title</label>
+              <p class="text-sm-start">sss</p>
+              <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+            </div>
+            <div class="mb-3">
+              <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- !Comments tab -->
+
+
+
 </div>
-</form>
+</div>
+
 
 {% endblock body %}
 {% block script %}
 
 <script src="https://cdn.tiny.cloud/1/8s55fjh97p8z0295i3xgm93498al8v6u61o11kfmzxjk982d/tinymce/5/tinymce.min.js"
-    referrerpolicy="origin"></script>
+  referrerpolicy="origin"></script>
 <script>
 
-    var useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    tinymce.init({
-      selector: 'textarea#body',
-      plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
-      imagetools_cors_hosts: ['picsum.photos'],
-      menubar: 'file edit view insert format tools table help',
-      toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-      toolbar_sticky: true,
-      autosave_ask_before_unload: true,
-      autosave_interval: '30s',
-      autosave_prefix: '{path}{query}-{id}-',
-      autosave_restore_when_empty: false,
-      autosave_retention: '2m',
-      image_advtab: true,
-      link_list: [
-        { title: 'My page 1', value: 'https://www.tiny.cloud' },
-        { title: 'My page 2', value: 'http://www.moxiecode.com' }
-      ],
-      image_list: [
-        { title: 'My page 1', value: 'https://www.tiny.cloud' },
-        { title: 'My page 2', value: 'http://www.moxiecode.com' }
-      ],
-      image_class_list: [
-        { title: 'None', value: '' },
-        { title: 'Some class', value: 'class-name' }
-      ],
-      importcss_append: true,
-      file_picker_callback: function (callback, value, meta) {
-        /* Provide file and text for the link dialog */
-        if (meta.filetype === 'file') {
-          callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
-        }
-    
-        /* Provide image and alt text for the image dialog */
-        if (meta.filetype === 'image') {
-          callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
-        }
-    
-        /* Provide alternative source and posted for the media dialog */
-        if (meta.filetype === 'media') {
-          callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
-        }
-      },
-      templates: [
-            { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
-        { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
-        { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
-      ],
-      template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
-      template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-      height: 380,
-      image_caption: true,
-      quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-      noneditable_noneditable_class: 'mceNonEditable',
-      toolbar_mode: 'sliding',
-      contextmenu: 'link image imagetools table',
-      skin: useDarkMode ? 'oxide-dark' : 'oxide',
-      content_css: useDarkMode ? 'dark' : 'default',
-      content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-     });
-    
-    
-    
+  tinymce.init({
+    selector: 'textarea#body',
+    plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+    imagetools_cors_hosts: ['picsum.photos'],
+    menubar: 'file edit view insert format tools table help',
+    toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+    toolbar_sticky: true,
+    autosave_ask_before_unload: true,
+    autosave_interval: '3s',
+    autosave_prefix: '{path}{query}-{id}-',
+    autosave_restore_when_empty: false,
+    autosave_retention: '2m',
+    image_advtab: true,
+    link_list: [
+      { title: 'My page 1', value: 'https://www.tiny.cloud' },
+      { title: 'My page 2', value: 'http://www.moxiecode.com' }
+    ],
+    image_list: [
+      { title: 'My page 1', value: 'https://www.tiny.cloud' },
+      { title: 'My page 2', value: 'http://www.moxiecode.com' }
+    ],
+    image_class_list: [
+      { title: 'None', value: '' },
+      { title: 'Some class', value: 'class-name' }
+    ],
+    importcss_append: true,
+    file_picker_callback: function (callback, value, meta) {
+      /* Provide file and text for the link dialog */
+      if (meta.filetype === 'file') {
+        callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+      }
+
+      /* Provide image and alt text for the image dialog */
+      if (meta.filetype === 'image') {
+        callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+      }
+
+      /* Provide alternative source and posted for the media dialog */
+      if (meta.filetype === 'media') {
+        callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+      }
+    },
+    templates: [
+      { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+      { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+      { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+    ],
+    template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+    template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+    height: 450,
+    image_caption: true,
+    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+    noneditable_noneditable_class: 'mceNonEditable',
+    toolbar_mode: 'sliding',
+    contextmenu: 'link image imagetools table',
+
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+  });
+
+
+
 </script>
 {% endblock script %}

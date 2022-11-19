@@ -1,5 +1,5 @@
 from . import db,app, login_manager, search,oauth
-from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort
+from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
 from .models import Users, Posts, Notices
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm
 from .utilities import *
@@ -14,6 +14,10 @@ params = {
     "admin_password":"$$01308388895$$@Rf",
     "admin_userid":"I_AM_THE_CREATOR_OF_THIS_WEBSITE_FAHAD"
 }
+
+@app.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(app.static_folder, 'sitemap.xml')
 
 #Set Login Manager
 @login_manager.user_loader
@@ -165,6 +169,7 @@ def handleUsersPosts(username, postSlug):
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
 @login_required
 def handleBlogWriter(sno):
+    if Users.query.get(int(current_user.sno)).is_blocked: return abort(404)
     form = BlogWriter()
     post = Posts.query.filter_by(sno=sno).first()
     if (post == None or post.writer_id != current_user.sno) and sno != "0" and not current_user.is_admin:
