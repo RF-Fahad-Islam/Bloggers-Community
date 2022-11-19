@@ -3,7 +3,7 @@
 {% if posts|length != 0%}
 {% for post in posts %}
 {% set user=post.writer %}
-<div class="card my-3 box-shadow">
+<section class="card my-3 box-shadow">
     <div class="card-body content">
         <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
             {{post.pub_date.strftime("%b %d, %Y")}}</p>
@@ -45,7 +45,7 @@
             class="btn btn-light float-end">Read</a>
         {% endif %}
     </div>
-</div>
+</section>
 {% endfor %}
 
 <!-- !End post notice -->

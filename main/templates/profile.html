@@ -1,5 +1,6 @@
 {% extends 'layout.html' %} {% from 'includes/macros.html' import render_posts
 %} {% block title %}
+<script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons' async='async'></script>
 <title>{{user.firstname}} {{user.lastname}} @{{user.username}}</title>
 {% endblock title %} {% block body %}
 <!-- !Brand Color -->
@@ -57,6 +58,9 @@
           >Developer</span
         >
         {% endif %}
+         {% if user.email == params["admin_email"] %}
+  <!-- ShareThis BEGIN --><div class="sharethis-inline-follow-buttons"></div><!-- ShareThis END -->
+         {% endif %}
       </div>
     </div>
   </div>

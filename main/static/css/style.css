@@ -3,7 +3,7 @@ span.btn:hover {
 }
 
 #brandBox {
-    height: 162px;
+    height: 167px;
     position: absolute;
     top: 53px;
     width: 100%;
@@ -92,14 +92,28 @@ img{
     border-radius: 10px!important;
 }
 
-.card, .card-body,.navbar{
-    background: rgba( 255, 255, 255, 0.4 )!important;
+.card{
+background: rgba( 255, 255, 255, 0.4 )!important;
 box-shadow: 0 8px 32px 0 rgba(200, 191, 191, 0.232)!important;
-backdrop-filter: blur( 13.5px )!important;
--webkit-backdrop-filter: blur( 13.5px )!important;
 border-radius: 10px!important;
 border: 1px solid rgba( 255, 255, 255, 0.18 )!important;
+transition: all 0.2s;
 }
+
+section.card:hover{
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.675)!important;
+    box-shadow: 0 8px 32px 0 rgba(200, 191, 191, 0.036)!important;
+    border: 2px solid blue!important;
+    
+}
+
+.navbar{
+    background: rgb(255, 255, 255)!important;
+box-shadow: 0 8px 32px 0 rgba(200, 191, 191, 0.232)!important;
+border: 1px solid rgba( 255, 255, 255, 0.18 )!important;
+}
+
 
 .btn{
     border-radius: 50px!important;

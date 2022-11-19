@@ -1,5 +1,7 @@
 {% extends 'layout.html' %}
 {% block title %}
+<!-- !Share This Plugin -->
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons&source=platform" async="async"></script>
 <!-- !Prisma CSS & JS-->
 <link rel="stylesheet" href="{{url_for('static',filename='prism/prism.css')}}">
 <title>{{post.title}} @{{post.writer.username}}</title>
@@ -51,6 +53,7 @@
               </div>
             </div>
             {{post.body | safe}}
+            <div class="sharethis-inline-reaction-buttons"></div>
           </article>
 
           <nav class="blog-pagination" aria-label="Pagination">
@@ -82,13 +85,8 @@
       <div class="position-sticky" style="top: 2rem; height:auto;">
         <div class="p-4 mb-3 alert bg-white rounded">
           <div class="text-center d-block">
-            {% if user.email == params["admin_email"] %}
-            {% set img = 'images/fahad.jpg' %}
-            {% else %}
-            {% set img = 'images/usericon.png' %}
-            {% endif %}
 
-            <img src="{{ url_for('static', filename=img) }}
+            <img src="{{ user.picture }}
             " alt="Avatar" class="rounded-circle" width="60" height="60">
             <h5>{{user.firstname}} {{user.lastname}}</h5>
             {% if user.bio %}
