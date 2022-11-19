@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://bloggers-community.onrender.com/</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://bloggers-community.onrender.com/login</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+<url>
+  <loc>https://bloggers-community.onrender.com/search?q=code&amp;type=tag</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bloggers-community.onrender.com/p/admin</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bloggers-community.onrender.com/b/admin/best-chrome-extensions-for-developers</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bloggers-community.onrender.com/search?q=developer&amp;type=tag</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+<url>
+  <loc>https://bloggers-community.onrender.com/b/admin/hello-welcome-to-blogger-community2!</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://bloggers-community.onrender.com/tags</loc>
+  <lastmod>2022-11-19T13:15:25+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>
