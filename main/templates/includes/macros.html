@@ -3,7 +3,7 @@
 {% if posts|length != 0%}
 {% for post in posts %}
 {% set user=post.writer %}
-<section class="card my-3 box-shadow">
+<section class="card my-3 box-shadow" style="z-index: 10!important;">
     <div class="card-body content">
         <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
             {{post.pub_date.strftime("%b %d, %Y")}}</p>
@@ -50,9 +50,9 @@
 
 <!-- !End post notice -->
 {% if show_end %}
-<div class="card animate__rubberBand">
+<div class="card" style="z-index: 10!important;">
     <div class="card-body text-center">
-        <h4 class="animate__rubberBand"><i class="fa fa-check-circle-o"></i> End of The page!</h4>
+        <h4 class=""><i class="fa fa-check-circle-o"></i> End of The page!</h4>
         <h5 class="text-muted">Add your post to expand the community</h5>
         <a href="/blog-writer/edit/0" class="btn btn-primary-lg">Add your blog</a>
         <a href="#" class="btn btn-warning-lg">Go to Top</a>

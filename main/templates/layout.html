@@ -32,7 +32,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="A Blogsite for all the bloggers. Create your profile with a single click and upload writings on the site.
+  <meta name="description" content="A Blogging site for all the bloggers. Create your profile with a single click and upload writings on the site.
   You can even monetize your blogs to earn money!
   ">
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -82,7 +82,14 @@
     }
     window.addEventListener('load', addDarkmodeWidget);
   </script> -->
+  <style>
 
+    @media only screen and (min-width: 990px) {
+      .floating-container{
+        display: none;
+      }
+    }
+  </style>
   <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" />
   <!-- Animate CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -119,12 +126,12 @@
                   padding-left: 30px !important;
                   width: 235px;
                 " type="search" placeholder="Search" minLength="3" maxLength="200" aria-label="Search" />
-            <button class="searchBtn" style="
+            <button onclick="preventDefault()" class="searchBtn" style="
                   position: relative;
                   left: -238px;
                   background: none;
                   border: none;
-                " type="submit">
+                ">
               <i class="fa fa-search"></i>
             </button>
           </form>
