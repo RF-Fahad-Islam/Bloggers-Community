@@ -261,6 +261,7 @@ def search():
     except:
         page = 1
     q = request.args.get("q")
+    if q == "": return redirect('/')
     searchType = request.args.get("type")
     if searchType == "tag":
         posts = Posts.query.msearch(q, fields=["tag"]).paginate(page=page, per_page=3)
@@ -314,11 +315,13 @@ def authorize():
             is_admin = True
         else:
             is_admin = False
+            
+        #If finds the username exists, it will generate username until it's unique
         user = Users.query.filter_by(username=username).first()
         while user:
-            if user != None and user.username != current_user.username:
-                username= generateId(5)
-            user = Users.query.filter_by(username=username.data).first()
+            if user and user.username != current_user.username:
+                username= username+generateId(2)
+            user = Users.query.filter_by(username=username).first()
         newUser = Users(firstname=firstname,picture=picture, lastname=lastname, userid=userid, email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20))
         db.session.add(newUser)
         db.session.commit()

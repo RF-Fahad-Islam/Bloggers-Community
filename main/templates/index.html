@@ -1,8 +1,34 @@
 {% extends "layout.html" %}
 {% from 'includes/macros.html' import render_posts, render_notices %}
 {% block title %} <title>{{params["page_title"]}}</title> {% endblock %}
+{% block css %}
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/floating.css')}}">
+{% endblock css %}
 {% block body %}
 
+<!-- ! Floating Action Button -->
+{% if current_user.is_authenticated %}
+<div class="floating-container">
+  <div class="floating-button"><i class="fa fa-plus"></i></div>
+  <div class="element-container">
+
+    <a href="/p/{{current_user.username}}"> <span class="float-element tooltip-left">
+      <i class="fa fa-user">
+      </i>
+    </a>
+    <a href="/settings"> <span class="float-element tooltip-left">
+      <i class="fa fa-dashboard">
+      </i>
+    </a>
+    <a href="blog-writer/edit/0"> <span class="float-element tooltip-left">
+      <i class="fa fa-pencil">
+      </i>
+    </a>
+    
+  </div>
+</div>
+{% endif %}
 <!-- !Blog Cards -->
 <div class="container">
     {# <h1 class="text-center my-3"><img src="{{url_for('static', filename='contactbook.ico')}}" alt="Icon"> Contacts
