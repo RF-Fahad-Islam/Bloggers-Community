@@ -45,7 +45,7 @@ def all_tags():
     for post in posts:
         tags = post.tag.split(' ') #Converted to list
         for tag in tags:
-            tags_list.append(tag)
+            if tag != "": tags_list.append(tag)
             
     tags_set = set(tags_list)
     for tag in tags_set:

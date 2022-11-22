@@ -62,11 +62,13 @@
 
 {% else %}
 {% if search %}
-<div class="alert my-3 alert-warning d-flex justify-content-center text-center flex-column">
-    <img src="{{url_for('static', filename='images/search-not-found.png')}}" class="d-block mx-auto" width="120"
-        height="120" alt="Search Not Found">
-    <h3>Search Not Found!</h3>
-    <h5 class="fw-bold">No posts found related to this. Search with other keyword.</h5>
+<div class="alert my-3 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
+    <img src="{{url_for('static', filename='images/31.png')}}" style="width: 80vh;" alt="Search Not Found">
+    <div>
+        <h3>Search Not Found!</h3>
+        <hr>
+        <h5 class="text-muted">No posts found related to this. Search with other keyword.</h5>
+    </div>
 </div>
 {% else %}
 <div class="alert alert-warning my-3">

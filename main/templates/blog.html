@@ -1,4 +1,8 @@
 {% extends 'layout.html' %}
+{% block meta %}
+  <meta name="description" content="{{post.summary}}">
+  <meta name="keywords" content="{{post.tag}}">
+{% endblock meta %}
 {% block title %}
 <!-- !Share This Plugin -->
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons&source=platform" async="async"></script>
@@ -7,7 +11,7 @@
 <title>{{post.title}} @{{post.writer.username}}</title>
 {% endblock title %}
 {% block body %}
-<div class="container-fluid my-3" style="width: 90%; margin:auto;">
+<div id="main" class="container-fluid my-3" style="width: 90%; margin:auto;">
 
   <div class="row g-3">
     <!-- !Blog Section -->
@@ -37,7 +41,11 @@
             <div class="mb-2">
               <div class="fb-like float-end" data-href="/b/{{user.username}}/{{post.slug}}" data-width=""
               data-layout="button_count" data-action="like" data-size="large" data-share="true"></div>
+              {% if user.profile == "" %}
               <img src="{{url_for('static', filename='images/usericon.png')}}" alt="Avatar" width="30" height="30">
+              {% else %}
+              <img src="{{user.picture}}" style="border-radius: 50%;" alt="avatar" width="30" height="30">
+              {% endif %}
               <a href="/p/{{user.username}}" class="link fw-bolder text-decoration-none">
                 @{{user.username}}
               </a>
@@ -55,13 +63,13 @@
             {{post.body | safe}}
             <div class="sharethis-inline-reaction-buttons"></div>
           </article>
-
-          <nav class="blog-pagination" aria-label="Pagination">
+          
+          <nav class="blog-pagination my-3" aria-label="Pagination">
             {% if prev_post %}
-            <a class="btn btn-outline-primary float-start" href="/b/{{user.username}}/{{prev_post.slug}}"> <i class="fa fa-arrow-left"></i> Older</a>
+            <a class="btn btn-outline-primary float-start" href="/b/{{user.username}}/{{prev_post.slug}}"> <i class="fa fa-arrow-left"></i> Previous</a>
             {% endif %}
         {% if next_post %}
-            <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Newer <i class="fa fa-arrow-right"></i> </a>
+            <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Next <i class="fa fa-arrow-right"></i> </a>
             {% endif %}
           </nav>
 
@@ -140,4 +148,11 @@
 {% endblock body %}
 {% block script %}
 <script src="{{url_for('static',filename='prism/prism.js')}}"></script>
+<script>
+$(document).ready(
+()=> {
+  $('div#main').fadeIn()
+}
+)
+</script>
 {% endblock script  %}
