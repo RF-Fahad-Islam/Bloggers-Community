@@ -49,10 +49,13 @@ class BlogWriter(FlaskForm):
         for t in tags_list:
             if tags_list.count(t)>1: #if duplicate tag found
                 raise ValidationError(f"You can use a tag only once a post. '{t}' tag use more than once.")
-
+    def validate_summmary(self, summary):
+        if len(summary.data)>200:
+            raise ValidationError(f"SEO Description exceeds 200 characters limit.")
     
     title = StringField(label="Title", validators=[DataRequired(), Length(min=10, max=120)])
     body = TextAreaField(label="body", validators=[DataRequired(), Length(min=15)])
+    summary = TextAreaField(label="body", validators=[Length(max=200)])
     tag = StringField(label="tag", validators=[DataRequired(), Length(min=3, max=50)])
     sno =  HiddenField(label="sno", validators=[DataRequired()])
     submit = SubmitField(label="Publish Blog")

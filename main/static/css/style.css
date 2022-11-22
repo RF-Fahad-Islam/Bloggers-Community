@@ -92,8 +92,15 @@ img{
     border-radius: 10px!important;
 }
 
+.input{
+    border: none!important;
+    background-color: #808080!important;
+    margin: 0 12px!important;
+}
+
 input:focus{
     outline: none!important;
+    background-color: white;
 }
 
 .card{

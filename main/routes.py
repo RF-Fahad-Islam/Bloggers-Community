@@ -6,8 +6,8 @@ from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
 
 params = {
-    "page_title":"Bloggers Community | Made By Fahad",
-    "app_name":"Bloggers Community",
+    "page_title":"Blogsphere | Made By Fahad",
+    "app_name":"Blogsphere",
     "url":"https://bloggers-community.onrender.com",
     "github":"https://github.com/RF-Fahad-Islam/",
     "admin_email":"riyad9949@gmail.com",
@@ -162,7 +162,8 @@ def handleUsersPosts(username, postSlug):
     recommendeds = Posts.query.msearch(post.tags_list[0], fields=["tag"]).order_by(Posts.viewers_count.desc())[:5]
     if not recommendeds and len(post.tags_list)>1:
         recommendeds = Posts.query.msearch(post.tags_list[1], fields=["tag"]).order_by(Posts.viewers_count.desc())[:5]
-        
+    if not recommendeds:
+        recommendeds = posts[:3]
     recommendeds.remove(post)
     return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds)
 
@@ -177,8 +178,11 @@ def handleBlogWriter(sno):
     
     if form.validate_on_submit():
         slug = string_to_slug(form.title.data)
+        tag:str= form.tag.data
+        tag = tag.strip().lower()
         if sno == "0":
-            post = Posts(title=form.title.data, body=form.body.data, tag=form.tag.data, slug=slug, writer_id=current_user.sno)
+            post = Posts(title=form.title.data, summary=form.summary.data,
+                         body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno)
             db.session.add(post)
             db.session.commit()
             flash("Successfully posted the blog! Thanks for posting.", category="success")

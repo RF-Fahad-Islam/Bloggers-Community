@@ -31,7 +31,11 @@
     {% else %}
     {% set searchType="post" %}
     {% endif %}
+
+    
     {{ render_posts(posts.items, false, search=true) }}
+
+
     {% if posts.total > 3 %}
     <nav aria-label="Page navigation example">
         <ul class="pagination">

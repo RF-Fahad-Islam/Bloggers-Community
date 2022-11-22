@@ -21,7 +21,7 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(500), nullable=False)
     bio = db.Column(db.String(101), nullable=True, default="")
-    country = db.Column(db.String(15), nullable=True)
+    country = db.Column(db.String(15), nullable=True, default="")
     hobbies = db.Column(db.String(200), nullable=True, default="Blogging")
     work = db.Column(db.String(200), nullable=True)
     webLink = db.Column(db.String(500), nullable=True, default="")
@@ -30,6 +30,8 @@ class Users(db.Model, UserMixin):
                             default=datetime.utcnow)
     # Returns List of posts that the user created
     posts = db.relationship('Posts', backref="writer", lazy="dynamic")
+    # reading_lists = db.relationship('ReadingList', backref="creator", lazy="dynamic")
+    reading_lists = db.Column(db.Text, nullable=True)
     # following = db.relationship('Blogprofile', secondary=UserBlogProfile, backref="followers")
     # role = db.Column(db.Integer, db.ForeignKey('role.id'))
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
@@ -60,11 +62,16 @@ class Blogprofile(db.Model):
     # Stores the given id of user and and saves the user object in writer_user
     userid = db.Column(db.Integer, db.ForeignKey('users.sno'))
 
+class ReadingLists(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+    # Stores the given id of user and and saves the user object in writer_user
+    userid = db.Column(db.Integer, db.ForeignKey('users.sno'))
 
 class Posts(db.Model):
     __tablename__ = "posts"
-    __searchable__ = ["title", "tag"]
+    __searchable__ = ["title", "tag", "summary"]
     sno = db.Column(db.Integer, primary_key=True)
+    summary = db.Column(db.String(200), nullable=True, default="")
     slug = db.Column(db.String(500), nullable=False)
     title = db.Column(db.String(500), nullable=False, unique=False)
     tag = db.Column(db.String(500), nullable=True)
@@ -74,7 +81,8 @@ class Posts(db.Model):
     viewers_count = db.Column(db.Integer, nullable=False, default=0)
     # Stores the given id of user and and saves the user object in writer_user
     writer_id = db.Column(db.Integer, db.ForeignKey('users.sno'))
-
+    # comments = db.relationship('Comments', backref='post', lazy='dynamic')
+    
     @property
     def publish_date(self):
         if self.pub_date.strftime("%b %d, %Y") == datetime.utcnow.strftime("%b %d, %Y"):
@@ -107,6 +115,20 @@ class Notices(db.Model):
     create_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
 
+
+
+# class Comment(db.Model):
+#     sno = db.Column(db.Integer, primary_key=True)
+#     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
+#     body = db.Column(db.String(500), nullable=False)
+#     to = db.Column(db.String(500), nullable=True)
+#     # replies = db.relationship('SubComment', backref="thread", lazy="dynamic")
+    
+# class SubComment(db.Model):
+#     sno = db.Column(db.Integer, primary_key=True)
+#     comsno = db.Column(db.Integer, db.ForeignKey('comment.sno'))
+#     body = db.Column(db.String(500), nullable=True)
+    
 
 # class Roles(db.Model):
 #     sno = db.Column(db.Integer(), primary_key=True)
