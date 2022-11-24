@@ -4,10 +4,10 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# user_blog_channel = db.Table('user_blog_channel',
-#     db.Column("user_id", db.Integer, db.ForeignKey('users.sno')),
-#     db.Column("blog_profile_id", db.Integer, db.ForeignKey('blogprofile.userid')),
-# )
+user_blog_channel = db.Table('user_blog_channel',
+    db.Column("user_id", db.Integer, db.ForeignKey('users.sno')),
+    db.Column("blog_profile_id", db.Integer, db.ForeignKey('blogprofile.sno')),
+)
 
 
 class Users(db.Model, UserMixin):
@@ -28,11 +28,13 @@ class Users(db.Model, UserMixin):
     brand_color = db.Column(db.String(30), nullable=True, default="black")
     joined_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
+    comments = db.relationship('Comment', backref='commentor', lazy='dynamic')
     # Returns List of posts that the user created
     posts = db.relationship('Posts', backref="writer", lazy="dynamic")
     # reading_lists = db.relationship('ReadingList', backref="creator", lazy="dynamic")
     reading_lists = db.Column(db.Text, nullable=True)
-    # following = db.relationship('Blogprofile', secondary=UserBlogProfile, backref="followers")
+    following = db.relationship('Blogprofile', secondary=user_blog_channel, backref="followers")
+    # blog_profile = db.relationship('BlogProfile', backref='user', lazy=True, uselist=False)
     # role = db.Column(db.Integer, db.ForeignKey('role.id'))
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     is_blocked = db.Column(db.Boolean, nullable=True, default=False)
@@ -60,7 +62,7 @@ class Users(db.Model, UserMixin):
 class Blogprofile(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     # Stores the given id of user and and saves the user object in writer_user
-    userid = db.Column(db.Integer, db.ForeignKey('users.sno'))
+    usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
 
 class ReadingLists(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
@@ -87,9 +89,10 @@ class Posts(db.Model):
     def publish_date(self):
         if self.pub_date.strftime("%b %d, %Y") == datetime.utcnow.strftime("%b %d, %Y"):
             return "Today"
+        elif self.pub_date.strftime("%Y") == datetime.utcnow.strftime("%Y"):
+            return self.pub_date.strftime("%b %d")
         else:
             return self.pub_date.strftime("%b %d, %Y")
-
     @property
     def views(self):
         value = self.viewers_count
@@ -117,12 +120,14 @@ class Notices(db.Model):
 
 
 
-# class Comment(db.Model):
-#     sno = db.Column(db.Integer, primary_key=True)
-#     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
-#     body = db.Column(db.String(500), nullable=False)
-#     to = db.Column(db.String(500), nullable=True)
-#     # replies = db.relationship('SubComment', backref="thread", lazy="dynamic")
+class Comment(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+    usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
+    body = db.Column(db.String(500), nullable=False)
+    to = db.Column(db.String(500), nullable=True)
+    create_date = db.Column(db.DateTime, nullable=True,
+                            default=datetime.utcnow)
+    # replies = db.relationship('SubComment', backref="thread", lazy="dynamic")
     
 # class SubComment(db.Model):
 #     sno = db.Column(db.Integer, primary_key=True)
@@ -142,3 +147,5 @@ with app.app_context():
 admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))
+admin.add_view(MyModelView(Comment, db.session))
+admin.add_view(MyModelView(Blogprofile, db.session))

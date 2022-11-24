@@ -35,7 +35,7 @@
   You can even monetize your blogs to earn money!
   ">
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <meta name="keywords" content="bloggers-community blog blogging articles">
+  <meta name="keywords" content="{{params['app_name']}} blog blogging articles">
   {% block meta %}{% endblock meta %}
 
   <!-- Bootstrap CSS -->
@@ -112,7 +112,7 @@
     <div class="container-fluid">
       <a href="/" class="navbar-barnd">
         <img src="{{url_for('static', filename='images/webIcon.png')}}" alt="" width="30" height="30" />
-        <a class="navbar-brand" href="/">Bloggers Community</a>
+        <a class="navbar-brand" href="/">{{params['app_name']}}</a>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

@@ -1,11 +1,13 @@
 {% extends 'layout.html' %}
 {% block meta %}
-  <meta name="description" content="{{post.summary}}">
-  <meta name="keywords" content="{{post.tag}}">
+<meta name="description" content="{{post.summary}}">
+<meta name="keywords" content="{{post.tag}}">
 {% endblock meta %}
 {% block title %}
 <!-- !Share This Plugin -->
-<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons&source=platform" async="async"></script>
+<script type="text/javascript"
+  src="https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons&source=platform"
+  async="async"></script>
 <!-- !Prisma CSS & JS-->
 <link rel="stylesheet" href="{{url_for('static',filename='prism/prism.css')}}">
 <title>{{post.title}} @{{post.writer.username}}</title>
@@ -32,7 +34,8 @@
           <hr>
           <div class='mb-2'>
             {% for tag in post.tags_list %}
-            <a href="/search?q={{tag}}&type=tag" class="text-black text-decoration-none fw-bolder p-2 badge bg-warning rounded-pill text-dark">#{{tag}}
+            <a href="/search?q={{tag}}&type=tag"
+              class="text-black text-decoration-none fw-bolder p-2 badge bg-warning rounded-pill text-dark">#{{tag}}
             </a>
             {% endfor %}
           </div>
@@ -40,8 +43,8 @@
           <article id="body" class="blog-post position-sticky" style="top: 2rem; height:auto;">
             <div class="mb-2">
               <div class="fb-like float-end" data-href="/b/{{user.username}}/{{post.slug}}" data-width=""
-              data-layout="button_count" data-action="like" data-size="large" data-share="true"></div>
-              {% if user.profile == "" %}
+                data-layout="button_count" data-action="like" data-size="large" data-share="true"></div>
+              {% if user.profile == None %}
               <img src="{{url_for('static', filename='images/usericon.png')}}" alt="Avatar" width="30" height="30">
               {% else %}
               <img src="{{user.picture}}" style="border-radius: 50%;" alt="avatar" width="30" height="30">
@@ -63,13 +66,15 @@
             {{post.body | safe}}
             <div class="sharethis-inline-reaction-buttons"></div>
           </article>
-          
+
           <nav class="blog-pagination my-3" aria-label="Pagination">
             {% if prev_post %}
-            <a class="btn btn-outline-primary float-start" href="/b/{{user.username}}/{{prev_post.slug}}"> <i class="fa fa-arrow-left"></i> Previous</a>
+            <a class="btn btn-outline-primary float-start" href="/b/{{user.username}}/{{prev_post.slug}}"> <i
+                class="fa fa-arrow-left"></i> Previous</a>
             {% endif %}
-        {% if next_post %}
-            <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Next <i class="fa fa-arrow-right"></i> </a>
+            {% if next_post %}
+            <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Next <i
+                class="fa fa-arrow-right"></i> </a>
             {% endif %}
           </nav>
 
@@ -86,16 +91,62 @@
             data-numposts="5"></div>
         </div>
       </div>
-    </div>
+
+
+      <section id="comment" class="card my-3 text-center">
+        <h4 class="card-header text-center">Community Post</h4>
+        <div class="card-body">
+          {% if current_user.is_authenticated %}
+          <form method="post">
+            {{form.csrf_token}}
+            <textarea name="body" id="body">
+            </textarea>
+            <input type="hidden" name="to" value="/b/{{user.sno}}/{{post.sno}}">
+            <input type="hidden" name="url" value="/b/{{user.username}}/{{post.slug}}">
+          </div>
+        <div>
+          <div class="d-flex justify-content-end align-content-center">
+            <button type="submit" class="btn btn-primary">Post</button>
+          </div>
+          </form>
+          {% else %}
+          <div class="text-muted text-center">
+            SignIn to Comment
+          </div>
+          {% endif %}
+        </div>
+
+        <hr>
+            {% for comment in comments %}
+            
+            <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" style="cursor: auto;">
+              <img src="{{comment.commentor.picture}}"
+              width="35" height="35" class="rounded-circle mt-2">
+              <div class="card bg-grey text-start" style="
+              width: 80%;
+              margin: 2px 15px;
+              padding: 13px 8px;
+          ">
+                <a href="{{url_for('userProfile', username=comment.commentor.username)}}" class="text-muted btn-link text-decoration-none text-sm-start" style=" margin:0;">@{{comment.commentor.username}} | {{comment.create_date.strftime("%b %d")}}</a>
+                {{comment.body|safe}}
+              </div>
+              <br>
+            </div>
+            {% endfor %}
+      </div>
+    </section>
 
 
     <div class="col-lg-3">
       <div class="position-sticky" style="top: 2rem; height:auto;">
         <div class="p-4 mb-3 alert bg-white rounded">
           <div class="text-center d-block">
-
+            {% if user.picture == None %}
+            <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle" width="60" height="60">
+            {% else %}
             <img src="{{ user.picture }}
             " alt="Avatar" class="rounded-circle" width="60" height="60">
+            {% endif %}
             <h5>{{user.firstname}} {{user.lastname}}</h5>
             {% if user.bio %}
             <p class="text-muted">{{user.bio}}</p>
@@ -120,20 +171,22 @@
           <div class="list-group">
             {% for recommended in recommendeds%}
             {% if recommended %}
-            <a href="/b/{{recommended.writer.username}}/{{recommended.slug}}" class="list-group-item list-group-item-action" aria-current="true">
+            <a href="/b/{{recommended.writer.username}}/{{recommended.slug}}"
+              class="list-group-item list-group-item-action" aria-current="true">
               <div class="d-flex w- justify-content-between">
                 <h5 class="mb-1">{{recommended.title}}</h5>
               </div>
               <small class="badge rounded-pill bg-primary text-white">by @{{recommended.writer.username}}</small>
-              <small class="badge rounded-pill bg-primary text-white">{{recommended.pub_date.strftime("%b %d, %Y")}}</small>
-      <!-- <small>And some small print.</small> -->
+              <small class="badge rounded-pill bg-primary text-white">{{recommended.pub_date.strftime("%b %d,
+                %Y")}}</small>
+              <!-- <small>And some small print.</small> -->
             </a>
             {% endif %}
             {% endfor %}
             {% if recommendeds|length == 0 %}
-              <div class="alert alert-warning">
-                Noting to Recommend
-              </div>
+            <div class="alert alert-warning">
+              Noting to Recommend
+            </div>
             {% endif %}
           </div>
         </div>
@@ -148,11 +201,23 @@
 {% endblock body %}
 {% block script %}
 <script src="{{url_for('static',filename='prism/prism.js')}}"></script>
+<script src="https://cdn.tiny.cloud/1/8s55fjh97p8z0295i3xgm93498al8v6u61o11kfmzxjk982d/tinymce/6/tinymce.min.js"
+  referrerpolicy="origin"></script>
 <script>
-$(document).ready(
-()=> {
-  $('div#main').fadeIn()
-}
-)
+  $(document).ready(
+    () => {
+      $('div#main').fadeIn()
+    }
+  )
 </script>
-{% endblock script  %}
+<script>
+  tinymce.init({
+    selector: 'textarea',
+    width: '100%',
+    height: '200px',
+    menubar: false,
+    plugins: 'anchor autolink charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+  });
+</script>
+{% endblock script %}
