@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="{{url_for('static', filename='css/floating.css')}}">
 {% endblock css %}
 {% block body %}
-
 <!-- ! Floating Action Button -->
 {% if current_user.is_authenticated %}
 <div class="floating-container">
@@ -53,7 +52,7 @@
                 <i class="fa fa-sign-in"></i> Login</a>
         </div> -->
             <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3" style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn" >
-                Sign up with Google
+                Continue with Google
             </a>
         </div>
               

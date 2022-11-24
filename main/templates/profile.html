@@ -1,6 +1,8 @@
 {% extends 'layout.html' %} {% from 'includes/macros.html' import render_posts
 %} {% block title %}
-<script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons' async='async'></script>
+<script type='text/javascript'
+  src='https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons'
+  async='async'></script>
 <title>{{user.firstname}} {{user.lastname}} @{{user.username}}</title>
 {% endblock title %} {% block body %}
 <!-- !Brand Color -->
@@ -10,55 +12,45 @@
   <!-- TODO:User Profile Cards -->
   <!-- !User Profile Image -->
   <div class="profileImage">
-    {% if user.picture == 'avatar' %}
-    <img
-      id="userImage"
-      src="{{url_for('static', filename='images/usericon.png')}}"
-      alt="{{user.username}} - The creator"
-    />
+    {% if user.picture == None %}
+    <img id="userImage" src="{{url_for('static', filename='images/usericon.png')}}"
+      alt="{{user.username}} - The creator" />
     {% else %}
-    <img
-      id="userImage"
-      src="{{user.picture}}"
-      alt="{{user.username}}"
-    />
+    <img id="userImage" src="{{user.picture}}" alt="{{user.username}}" />
     {% endif %}
   </div>
   <!-- user Info Card -->
   <div class="card">
     <div class="card-body">
       {% if current_user.sno == user.sno %}
-      <a href="/settings" class="btn btn-primary float-end fw-bold"
-        ><i class="fa fa-pencil"></i> Edit Profile</a
-      >
+      <a href="/settings" class="btn btn-primary float-end fw-bold"><i class="fa fa-pencil"></i> Edit Profile</a>
+      {% else %}
+      {% if cnt > 0 %}
+      <a class="btn btn-primary float-end fw-bold"><i class="fa fa-check"></i>Followed</a>
+      {% else %}
+      {% if blogProfile %}
+      <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="btn btn-primary float-end fw-bold"><i
+          class="fa fa-plus-square-o"></i> Follow</a>
+      {% endif %}
+
+      {% endif %}
       {% endif %}
       <p class="card-text float-start text-muted badge rounded-pill bg-light">
-        Joined on <strong>{{user.joined_date.strftime("%B %d, %Y")}}</strong>
+        Joined on <strong>{{user.joined_date.strftime("%b %d, %Y")}}</strong>
       </p>
-      <div
-        id="profileDetails"
-        style="padding-top: 40px; padding-bottom: 18px"
-        class="text-center"
-      >
+      <div id="profileDetails" style="padding-top: 40px; padding-bottom: 18px" class="text-center">
         <h3 class="card-title">
           {{user.firstname}} {{user.lastname}} (@{{user.username}})
         </h3>
         <p id="bio" class="text-muted">{{user.bio}}</p>
         {% if user.email == params["admin_email"] %}
-        <span class="badge bg-primary fw-bolder" style="font-size: 15px"
-          >Admin</span
-        >
-        <span class="badge bg-warning fw-bolder ml-1" style="font-size: 15px"
-          >Creator</span
-        >
-        <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px"
-          >Owner</span
-        >
-        <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px"
-          >Developer</span
-        >
+        <span class="badge bg-primary fw-bolder" style="font-size: 15px">Admin</span>
+        <span class="badge bg-warning fw-bolder ml-1" style="font-size: 15px">Creator</span>
+        <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px">Owner</span>
+        <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px">Developer</span>
         {% endif %}
       </div>
+        <h5 class="text-center text-muted p-2 rounded-3 ">Followers <strong>{{blogProfile.followers|length}}</strong></h5>
     </div>
   </div>
   <!-- !User Blog Cards -->
@@ -69,7 +61,7 @@
         <div class="card alert-info mb-3">
           <div class="card-body">
             <div class="fw-bold text-dark">
-              The creator and the owner of the Bloggers Community
+              The creator and the owner of the {{params['app_name']}}
             </div>
           </div>
         </div>
@@ -92,12 +84,14 @@
           </div>
         </div>
         <div class="card bg-light my-3">
-          <div class="card-header bg-white">Blogs</div>
+          <div class="card-header bg-white"><h5 class="fw-bold">Blog</h5></div>
           <div class="card-body">
             <h5>
               <i class="fa fa-building-o"></i> Blog Posts {{posts|length}}
             </h5>
             <h5><i class="fa fa-eye"></i> Total Viewers {{total_viewers}}</h5>
+            <h5><i class="fa fa-user-o"></i> Following {{user.following|length}}</h5>
+            <h5><i class="fa fa-users"></i> Followers {{blogProfile.followers|length}}</h5>
           </div>
         </div>
       </div>
@@ -110,9 +104,7 @@
       </div>
       {% if current_user.sno == user.sno %}
       <div class="alert alert-light my-3 fw-bold">
-        <a href="/dashboard" class="btn btn-warning float-end fw-bold"
-          ><i class="fa fa-bar-chart"></i> Dashboard</a
-        >
+        <a href="/dashboard" class="btn btn-warning float-end fw-bold"><i class="fa fa-bar-chart"></i> Dashboard</a>
         <h5>Manage Blogs on Dashboard</h5>
       </div>
       {% endif %}
@@ -122,41 +114,33 @@
 
         <div class="card my-3 box-shadow">
           <div class="card-body">
-            <a
-              href="/b/{{user.username}}/{{post.slug}}"
-              class="link-dark"
-              style="text-decoration: none"
-            >
+            <a href="/b/{{user.username}}/{{post.slug}}" class="link-dark" style="text-decoration: none">
               <h3 class="card-title">{{post.title}}</h3>
             </a>
             {% for tag in post.tags_list %}
-            <a
-              class="card-subtitle fw-bold text-primary btn-link btn p-0 text-decoration-none"
-              href="/search?q={{tag}}&type=tag"
-            >
-              <i class="fa fa-hashtag"></i>{{tag}}</a
-            >
+            <a class="card-subtitle fw-bold text-primary btn-link btn p-0 text-decoration-none"
+              href="/search?q={{tag}}&type=tag">
+              <i class="fa fa-hashtag"></i>{{tag}}</a>
             {% endfor %}
-            <a
-              href="/b/{{user.username}}/{{post.slug}}"
-              class="btn btn-light float-end"
-              >Read</a
-            >
+            <a href="/b/{{user.username}}/{{post.slug}}" class="btn btn-light float-end">Read</a>
             <p class="card-text text-muted">{{post.pub_date.strftime("%c")}}</p>
           </div>
         </div>
         {% endfor %} {% if posts|length == 0 %}
+        {% if user.sno == current_user.sno %}
+        <div class="d-grid my-3">
+          <a href="{{url_for('handleBlogWriter', sno=0)}}" class="btn btn-outline-primary btn-lg text-center"><i
+              class="fa fa-plus"></i> Create Blog Profile 🌟</a>
+        </div>
+        {% endif %}
         <div class="alert alert-warning my-3">
           <h5>Empty! No posts.</h5>
-          <strong
-            >No Posts Here. {{user.username}} has not created any post.
-            (*_*)</strong
-          >
+          <strong>No Posts Here. {{user.username}} has not created any post.
+          </strong>
           {% if current_user.sno == user.sno %}
           <hr />
-          <a class="btn btn-primary btn-lg" href="/blog-writer/edit/0"
-            ><i class="fa fa-plus-circle"></i> Create a Blog</a
-          >
+          <a class="btn btn-primary btn-lg" href="/blog-writer/edit/0"><i class="fa fa-plus-circle"></i> Create a
+            Blog</a>
           {% endif %}
         </div>
         {% endif %}

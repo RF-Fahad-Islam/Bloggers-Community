@@ -33,6 +33,10 @@ class LoginForm(FlaskForm):
         user = Users.query.filter_by(email=email.data).first()
         if not user: #If User doesn't exists
             raise ValidationError(f"Account Doesn't exists! Create a account and then try again.")
+    def validate_password(self, password):
+        user = Users.query.filter_by(email=self.email.data).first()
+        if not user.check_password(password.data): #If User doesn't exists
+            raise ValidationError(f"Wrong Password. Try again.")
         
     email = StringField(label="Email")
     password = PasswordField(label="Password",validators=[DataRequired(),Length(min=6, max=30)])
@@ -80,3 +84,13 @@ class SettingForm(RegisterForm, FlaskForm):
     bio = StringField(label="Bio",default="I am new (^_^)", validators=[Length(min=4, max=101)])
     password = PasswordField(label="password")
     submit = SubmitField(label="Update Profile")
+    
+class CommentForm(FlaskForm):
+    def validate_comment(self,body):
+        if len(body)>500:
+            raise ValidationError(f"Comment Can't be greater than 500 characters")
+    body = TextAreaField(label='body',validators=[DataRequired(), Length(min=3, max=500)])
+    to = StringField(label="to")
+    url = StringField(label="url")
+    submit = SubmitField(label="Post")
+        

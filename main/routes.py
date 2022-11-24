@@ -1,14 +1,14 @@
 from . import db,app, login_manager, search,oauth
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
-from .models import Users, Posts, Notices
-from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm
+from .models import Users, Posts, Notices, Comment, Blogprofile
+from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
 
 params = {
     "page_title":"Blogsphere | Made By Fahad",
     "app_name":"Blogsphere",
-    "url":"https://bloggers-community.onrender.com",
+    "url":"https://blogsphere.onrender.com",
     "github":"https://github.com/RF-Fahad-Islam/",
     "admin_email":"riyad9949@gmail.com",
     "admin_password":"$$01308388895$$@Rf",
@@ -53,8 +53,12 @@ def handleTags():
 def userProfile(username):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     posts = user.posts.all()
-    total_viewers_count = total_viewers(posts) 
-    return render_template("profile.html",  user=user,posts=posts, total_viewers=total_viewers_count)
+    blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
+    if not current_user.is_anonymous:
+        cnt = current_user.following.count(blogProfile)
+    else: cnt =0
+    total_viewers_count = total_viewers(posts)
+    return render_template("profile.html",  user=user,posts=posts,blogProfile=blogProfile, total_viewers=total_viewers_count, cnt=cnt)
 
 # @app.route("/signup", methods=["GET", "POST"])
 # def signup():
@@ -80,16 +84,24 @@ def userProfile(username):
 #     print(form.errors)
 #     return render_template("signup.html",  form=form)
 
+atm = 0
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global atm
     form = LoginForm()
-    if form.validate_on_submit():
+    if atm>3:
+        return redirect('/')
+    if form.validate_on_submit() and atm>3:
         user = Users.query.filter_by(email=form.email.data).first()
         if  user != None and user.check_password(form.password.data):
+            atm = 0
             login_user(user)
             return redirect(url_for("home"))
         else:
+            atm+=1 
             flash_form_error_messages(form)
+            if atm>3:
+                return redirect('/')
             
     flash_form_error_messages(form)
     return render_template("login.html", form=form)
@@ -138,10 +150,21 @@ def settingProfile():
     
     return render_template("setting.html",  form=form)
 
-@app.route('/b/<string:username>/<string:postSlug>')
+@app.route('/b/<string:username>/<string:postSlug>', methods=["POST","GET"])
 def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     post = user.posts.filter_by(slug=postSlug).first()
+    comments = Comment.query.filter_by(to=f"/b/{user.sno}/{post.sno}").all()
+    form = CommentForm()
+    if form.validate_on_submit():
+        body = form.body.data
+        to = form.to.data
+        url = form.url.data
+        comment = Comment(body=body, to=to, usersno=current_user.sno)
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url+"#comment")
+        
     if post is None: return abort(404)
     try:
         if current_user.sno == user.sno: pass
@@ -165,12 +188,12 @@ def handleUsersPosts(username, postSlug):
     if not recommendeds:
         recommendeds = posts[:3]
     recommendeds.remove(post)
-    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds)
+    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments)
 
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
 @login_required
 def handleBlogWriter(sno):
-    if Users.query.get(int(current_user.sno)).is_blocked: return abort(404)
+    if current_user.is_blocked: return abort(404)
     form = BlogWriter()
     post = Posts.query.filter_by(sno=sno).first()
     if (post == None or post.writer_id != current_user.sno) and sno != "0" and not current_user.is_admin:
@@ -183,6 +206,12 @@ def handleBlogWriter(sno):
         if sno == "0":
             post = Posts(title=form.title.data, summary=form.summary.data,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno)
+            # If the user doesn't have any post then create blogprofile while saving first post
+            if len(current_user.posts)==0:
+                getUser = current_user
+                blog_profile = Blogprofile(usersno=getUser.sno)
+                db.session.add(blog_profile)
+                db.session.commit()
             db.session.add(post)
             db.session.commit()
             flash("Successfully posted the blog! Thanks for posting.", category="success")
@@ -323,11 +352,15 @@ def authorize():
         #If finds the username exists, it will generate username until it's unique
         user = Users.query.filter_by(username=username).first()
         while user:
-            if user and user.username != current_user.username:
-                username= username+generateId(2)
+            username= username+generateId(2)
             user = Users.query.filter_by(username=username).first()
         newUser = Users(firstname=firstname,picture=picture, lastname=lastname, userid=userid, email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20))
         db.session.add(newUser)
+        db.session.commit()
+        getUser = Users.query.filter_by(email=user.get('email')).first() 
+        login_user(getUser)
+        blog_profile = Blogprofile(usersno=getUser.sno)
+        db.session.add(blog_profile)
         db.session.commit()
     else:
         getUser.picture = user.get('picture')
@@ -336,3 +369,18 @@ def authorize():
     # print(profile)
     # do something with the token and profile
     return redirect('/')
+
+
+ 
+@app.route('/follow', methods=['GET'])
+@login_required
+def follow():
+    sno = int(request.args.get('sno'))
+    url = request.args.get('url')
+    if not sno and not url: abort(404)
+    user = Users.query.get(int(current_user.sno))
+    blogprofile = Blogprofile.query.filter_by(usersno=sno).first()
+    user.following.append(blogprofile)
+    db.session.commit()
+    return redirect(url)
+    

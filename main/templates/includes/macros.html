@@ -1,19 +1,19 @@
 <!-- !Render Posts Macro: Render all posts in the form of cards -->
 {% macro render_posts(posts, show_end=true, dashboard=false, search=false) %}
-{% if posts|length != 0%}
+{% if posts|length != 0 %}
 {% for post in posts %}
 {% set user=post.writer %}
 <section class="card my-3 box-shadow" style="z-index: 10!important;">
     <div class="card-body content">
         <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
-            {{post.pub_date.strftime("%b %d, %Y")}}</p>
+            {{post.pub_date.strftime("%b %d")}}</p>
 
-    {% if user.picture == 'avatar' %}
+    {% if user.picture == None %}
     <img
       id="userImage"
       class="profile"
       src="{{url_for('static', filename='images/usericon.png')}}"
-      alt="{{user.username}} - The creator"
+      alt="{{user.username}}"
     />
     {% else %}
     <img
@@ -106,4 +106,12 @@
 </div>
 {%endif%}
 
+{% endmacro %}
+
+{% macro render_avatar(user,size='30') %}
+{% if user.picture == None %}
+<img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle" width="60" height="60">
+{% else %}
+<img src="{{picture}}" alt="Avatar" class="rounded-circle" width="{{size}}" height="{{size}}">
+{% endif %}
 {% endmacro %}
