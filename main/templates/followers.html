@@ -14,7 +14,7 @@
             <div class="position-sticky" style="top: 2rem; height:auto;">
                 <div class="p-4 mb-3 alert bg-white rounded">
                     <div class="text-center d-block">
-                        {% if user.picture == None %}
+                        {% if user.picture %}
                         <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar"
                             class="rounded-circle" width="60" height="60">
                         {% else %}
@@ -74,17 +74,21 @@
                         <p class="card-text text-muted fw-bold badge badge-pill rounded-pill float-end">
                             {{follower.joined_date.strftime('%B %d, %Y')}}
                         </p>
-                        <img src="{{follower.picture}}" class="rounded-circle mr-2" alt="Blogger" class="mr-3"
-                            width="60" height="60">
-                        <h5 class="d-inline-block">
+                        {% if not follower.picture %}
+                        <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar"
+                            class="rounded-circle" width="60" height="60">
+                        {% else %}
+                        <img src="{{ follower.picture }}
+              " alt="Avatar" class="rounded-circle" width="60" height="60">
+                        {% endif %}                        <h5 class="d-inline-block">
                             <a class="fw-bold text-decoration-none ml-2 text-dark cursor-pointer link d-inline-block"
                                 style="cursor: pointer;" href="/p/{{follower.username}}">
                                 {{follower.firstname}} {{follower.lastname}} (@{{follower.username}})</a>
                         </h5>
                     </div>
                 </section>
-            </div>
             {% endfor %}
+            </div>
             {% if followers|length == 0 %}
             <div class="alert alert-warning my-3">
                 <h5>Empty! No Followers.</h5>

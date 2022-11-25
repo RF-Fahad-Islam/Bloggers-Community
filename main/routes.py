@@ -373,26 +373,38 @@ def authorize():
 
 
  
-@app.route('/follow', methods=['GET'])
-@login_required
+@app.route('/follow', methods=['GET','POST'])
 def follow():
-    sno = request.args.get('sno')
-    url = request.args.get('url')
-    if not sno and not url: abort(404)
-    user = Users.query.get(int(current_user.sno))
-    blogprofile = Blogprofile.query.filter_by(usersno=int(sno)).first()
-    if blogprofile in user.following:
-        user.following.remove(blogprofile)
-    else:
-        user.following.append(blogprofile)
-    db.session.commit()
-    return redirect(url)
+    import json
+    if request.method == "GET":
+        sno = request.args.get("sno")
+        user_sno = request.args.get('usersno')
+        url = request.args.get('url')
+        if not sno and not url: abort(404)
+        if not user_sno:
+            user_sno = current_user.sno
+        user = db.one_or_404(db.select(Users).filter_by(sno=int(user_sno)))
+        blogprofile = db.one_or_404(db.select(Blogprofile).filter_by(usersno=int(sno)))
+        if blogprofile in user.following:
+            user.following.remove(blogprofile)
+        else:
+            user.following.append(blogprofile)
+        db.session.commit()
+        if url:
+            return redirect(url)
+        return json.dumps({
+            "status":200,
+            "success":True,
+            "user":user.username,
+        })
+    abort(404)
 
 @app.route('/followers/<string:username>')
 def getFollowers(username):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     followers = blogProfile.followers
+    followers = followers[::-1]
     if not current_user.is_anonymous:
         cnt = current_user.following.count(blogProfile)
     return render_template('followers.html', user=user, followers=followers, blogProfile=blogProfile,cnt=cnt)
@@ -405,7 +417,7 @@ def getFollowing(username):
     for following in followings:
         userblog = Users.query.get(int(following.usersno))
         followingList.append(userblog)
-    return render_template('followers.html', user=user, followingList=followingList)
+    return render_template('following.html', user=user, followingList=followingList)
 
 @app.route('/notifications')
 @login_required
