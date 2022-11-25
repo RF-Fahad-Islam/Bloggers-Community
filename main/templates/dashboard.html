@@ -10,25 +10,41 @@
 <div style="background-color: black;" id="brandBox"></div>
 
 <div class="container">
-  <div class="card" style="position: realtive; top:50px; padding: 10px 0px;">
-    <div class="card-body text-center">
-      <h1><i class="fa fa-bar-chart"></i> Dashboard</h1>
+  <div class="profileImage">
+    {% if user.picture == None %}
+    <img id="userImage" src="{{url_for('static', filename='images/usericon.png')}}"
+      alt="{{user.username}} - The creator" />
+    {% else %}
+    <img id="userImage" src="{{user.picture}}" alt="{{user.username}}" />
+    {% endif %}
+  </div>
+  <!-- user Info Card -->
+  <div class="card">
+    <div class="card-body">
+      <a href="{{url_for('getFollowers', username=user.username)}}" class="btn btn-primary float-end fw-bold"><i class="fa fa-dot-circle-o"></i> See Followers</a>
+
+      <h3 class="card-text float-start text-muted badge btn-light">
+        Followers <strong>{{blogProfile.followers|length}}</strong>
+      </h3>
+      <div id="profileDetails" style="padding-top: 40px; padding-bottom: 18px" class="text-center">
+        <h3 class="card-title">
+          {{user.firstname}} {{user.lastname}} (@{{user.username}})
+        </h3>
+        <hr>
+        <h3><i class="fa fa-bar-chart"></i> DashBoard</h3>
+      </div>
     </div>
   </div>
   <!-- !User Blog Cards -->
   <div class="row my-3 g-5">
     <!-- !Column of Blogs -->
-    
+
     <div class="col-md-12">
-      <div class="row g-3 d-flex justify-content-around">
-        <div class="alert alert-info col-md-12">
-            <h5 class="text-center fw-bolder"> <i class="fa fa-eye"></i> Total Views : {{total_views}}</h5>
-        </div>
-      </div>
 
       <div class="card text-center">
-        <h5 class="card-body">
-          All Blogs ({{posts|length}})
+        <h5 class="card-header bg-light p-4">
+          All Blogs ({{posts|length}}) | 
+            Total Views : {{total_views}}
         </h5>
       </div>
       <div class="card my-3 text-center">

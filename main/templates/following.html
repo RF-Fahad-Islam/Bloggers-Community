@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block title %}
+<title>
+    @{{user.username}} Followers List
+</title>
+{% endblock title %}
+
+{% block body %}
+<!-- !Brand Color -->
+<div class="container" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <!-- !User Blog Cards -->
+    <div class="row g-5 my-2">
+        <div class="col-lg-3">
+            <div class="position-sticky" style="top: 2rem; height:auto;">
+                <div class="p-4 mb-3 alert bg-white rounded">
+                    <div class="text-center d-block">
+                        {% if user.picture %}
+                        <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar"
+                            class="rounded-circle" width="60" height="60">
+                        {% else %}
+                        <img src="{{ user.picture }}
+              " alt="Avatar" class="rounded-circle" width="60" height="60">
+                        {% endif %}
+                        <h5 class="fwpop">
+                            <a href="/p/{{user.username}}" class="link">
+
+                                {{user.firstname}} {{user.lastname}}
+                            </a>
+                        </h5>
+                        {% if user.bio %}
+                        <p class="text-muted">{{user.bio}}</p>
+                        {% endif %}
+                    </div>
+                    <a class="d-block btn btn-primary my-3 fw-bold" href="/p/{{user.username}}"> <i class="fa fa-link"></i> Visit Profile</a>
+
+                    <!-- <h5 class="text-muted">Country : {{user.country}}</h5> -->
+                    <h6 class="text-success fw-bold"> <i class="fa fa-calendar"></i> Joined on</h6>
+                    <h5 class="text-muted">
+                        {{user.joined_date.strftime('%B %d, %Y')}}</h5>
+                    {% if user.country %}
+                    <h6 class="text-success fw-bold"> <i class="fa fa-map"></i> Country</h6>
+                    <h5 class="text-muted">
+                        {{user.country}}</h5>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- !Column of Blogs -->
+        <div class="col-lg-8">
+            
+            <div class="card text-center">
+                <h5 class="card-body"> <i class="fa fa-users"></i> {{user.username}} Followings List ({{followers|length}})</h5>
+            </div>
+            <!-- !Users All Blogs Fetch From Database -->
+            <div id="blogs">
+                {% for blogUser in followingList %}
+                <div class="card my-3 box-shadow">
+                    <div class="card-body">
+                        <p class="card-text text-muted fw-bold badge badge-pill rounded-pill float-end">
+                            {{blogUser.joined_date.strftime('%B %d, %Y')}}
+                        </p>
+                        <img src="{{blogUser.picture}}" class="rounded-circle mr-2" alt="Blogger" class="mr-3"
+                            width="60" height="60">
+                        <h5 class="d-inline-block">
+                            <a class="fw-bold text-decoration-none ml-2 text-dark cursor-pointer link d-inline-block"
+                                style="cursor: pointer;" href="/p/{{blogUser.username}}">
+                                {{blogUser.firstname}} {{blogUser.lastname}} (@{{blogUser.username}})</a>
+                    </div>
+                    </h5>
+                </div>
+            </div>
+            {% endfor %}
+            {% if followers|length == 0 %}
+            <div class="alert alert-warning my-3">
+                <h5>Empty! No Followings.</h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock body %}

@@ -4,7 +4,6 @@ from .models import Users, Posts, Notices, Comment, Blogprofile
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
-
 params = {
     "page_title":"Blogsphere | Made By Fahad",
     "app_name":"Blogsphere",
@@ -28,7 +27,6 @@ def load_user(user_id):
 @app.context_processor
 def context_processor():
     return dict(params=params)
-
 
 @app.route("/")
 def home():
@@ -207,7 +205,7 @@ def handleBlogWriter(sno):
             post = Posts(title=form.title.data, summary=form.summary.data,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno)
             # If the user doesn't have any post then create blogprofile while saving first post
-            if len(current_user.posts)==0:
+            if not current_user.posts:
                 getUser = current_user
                 blog_profile = Blogprofile(usersno=getUser.sno)
                 db.session.add(blog_profile)
@@ -284,8 +282,9 @@ def adminDashboard():
 @login_required
 def userDashboard():
     posts = current_user.posts.all()
+    blogProfile = Blogprofile.query.filter_by(usersno=current_user.sno).first()
     total_views = total_viewers(posts)
-    return render_template("dashboard.html",  posts=posts, total_views=total_views)
+    return render_template("dashboard.html",user=current_user,  posts=posts, total_views=total_views, blogProfile=blogProfile)
 
 @app.route("/search", methods=["GET"])
 def search():
@@ -354,10 +353,12 @@ def authorize():
         while user:
             username= username+generateId(2)
             user = Users.query.filter_by(username=username).first()
-        newUser = Users(firstname=firstname,picture=picture, lastname=lastname, userid=userid, email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20))
+        loc = get_user_location(request)
+        newUser = Users(firstname=firstname,picture=picture, lastname=lastname, userid=userid, email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20), country=loc)
         db.session.add(newUser)
         db.session.commit()
-        getUser = Users.query.filter_by(email=user.get('email')).first() 
+        
+        getUser = Users.query.filter_by(email=email).first() 
         login_user(getUser)
         blog_profile = Blogprofile(usersno=getUser.sno)
         db.session.add(blog_profile)
@@ -375,12 +376,41 @@ def authorize():
 @app.route('/follow', methods=['GET'])
 @login_required
 def follow():
-    sno = int(request.args.get('sno'))
+    sno = request.args.get('sno')
     url = request.args.get('url')
     if not sno and not url: abort(404)
     user = Users.query.get(int(current_user.sno))
-    blogprofile = Blogprofile.query.filter_by(usersno=sno).first()
-    user.following.append(blogprofile)
+    blogprofile = Blogprofile.query.filter_by(usersno=int(sno)).first()
+    if blogprofile in user.following:
+        user.following.remove(blogprofile)
+    else:
+        user.following.append(blogprofile)
     db.session.commit()
     return redirect(url)
-    
+
+@app.route('/followers/<string:username>')
+def getFollowers(username):
+    user = db.one_or_404(db.select(Users).filter_by(username=username))
+    blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
+    followers = blogProfile.followers
+    if not current_user.is_anonymous:
+        cnt = current_user.following.count(blogProfile)
+    return render_template('followers.html', user=user, followers=followers, blogProfile=blogProfile,cnt=cnt)
+
+@app.route('/following-list/<string:username>')
+def getFollowing(username):
+    user = db.one_or_404(db.select(Users).filter_by(username=username))
+    followings = user.following
+    followingList = []
+    for following in followings:
+        userblog = Users.query.get(int(following.usersno))
+        followingList.append(userblog)
+    return render_template('followers.html', user=user, followingList=followingList)
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    followingList = []
+    for following in current_user.followings:
+        followingList.append(following)
+     

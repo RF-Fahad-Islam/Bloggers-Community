@@ -37,7 +37,6 @@ def flash_form_error_messages(form):
         for field, err_msg in form.errors.items():
             flash(f"{form[field].label()} : {','.join(err_msg)}", category="danger")
             
-
 def all_tags():
     posts = Posts.query.all()
     tags_list = []
@@ -61,3 +60,12 @@ def total_viewers(posts):
         for post in posts:
             total_viewers += post.viewers_count
     return total_viewers
+
+def get_user_location(requests):
+    from flask import request
+    import json
+    url = 'http://freegeoip.net/json/{}'.format(request.remote_addr)
+    r = requests.get(url)
+    j = json.loads(r.text)
+    city = j['country_name']
+    return city
