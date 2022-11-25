@@ -2,11 +2,12 @@
 {% macro render_posts(posts, show_end=true, dashboard=false, search=false) %}
 {% if posts|length != 0 %}
 {% for post in posts %}
+
 {% set user=post.writer %}
 <section class="card my-3 box-shadow" style="z-index: 10!important;">
     <div class="card-body content">
-        <p class="card-text text-muted fw-bold float-end"> <i class="fa fa-calendar"></i>
-            {{post.pub_date.strftime("%b %d")}}</p>
+        <p class="card-text text-muted fw-bold float-end">
+           {{post.pub_date.strftime("%b %d")}}</p>
 
     {% if user.picture == None %}
     <img

@@ -1,4 +1,5 @@
 PROD= True
+TEST = False
 SQLALCHEMY_DATABASE_URI_PROD = "postgresql://bloggers_community_user:SBSIwvrOMsiHjhPw6cfpZyEjmpkUIgI6@dpg-cdqs2mmn6mpqj2cjcncg-a/bloggers_community"
 SQLALCHEMY_DATABASE_URI_DEV = "postgresql://bloggers_community_user:SBSIwvrOMsiHjhPw6cfpZyEjmpkUIgI6@dpg-cdqs2mmn6mpqj2cjcncg-a.singapore-postgres.render.com/bloggers_community"
 # Flask Sqlalchemy Configuration
@@ -12,3 +13,5 @@ GOOGLE_CLIENT_SECRET = "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"
 
 MYSQL_ROOT_PASSWORD="iamfahadtoo"
 MYSQL_PASSWORD="iamfahad"
+
+TEST_URI = "postgresql://postgres:bjhqFU3Dju4BmxaYahUZ@containers-us-west-129.railway.app:7428/railway"

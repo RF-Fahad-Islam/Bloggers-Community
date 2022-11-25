@@ -4,7 +4,8 @@
   src='https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons'
   async='async'></script>
 <title>{{user.firstname}} {{user.lastname}} @{{user.username}}</title>
-{% endblock title %} {% block body %}
+{% endblock title %} 
+{% block body %}
 <!-- !Brand Color -->
 <div style="background-color: {{user.brand_color}};" id="brandBox"></div>
 
@@ -27,12 +28,9 @@
       {% else %}
       {% if cnt > 0 %}
       <a class="btn btn-primary float-end fw-bold"><i class="fa fa-check"></i>Followed</a>
-      {% else %}
-      {% if blogProfile %}
+      {% elif blogProfile %}
       <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="btn btn-primary float-end fw-bold"><i
           class="fa fa-plus-square-o"></i> Follow</a>
-      {% endif %}
-
       {% endif %}
       {% endif %}
       <p class="card-text float-start text-muted badge rounded-pill bg-light">
@@ -50,7 +48,11 @@
         <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px">Developer</span>
         {% endif %}
       </div>
-        <h5 class="text-center text-muted p-2 rounded-3 ">Followers <strong>{{blogProfile.followers|length}}</strong></h5>
+        <h5 class="text-center text-muted p-2 rounded-3 ">
+        <a href="{{url_for('getFollowers', username=user.username)}}" class="link">
+        Followers <strong>{{blogProfile.followers|length}}</strong>
+        </a>
+        </h5>
     </div>
   </div>
   <!-- !User Blog Cards -->
@@ -70,12 +72,16 @@
           <h5 class="card-header bg-white">Intro</h5>
           <div class="card-body">
             <h5><i class="fa fa-map-marker"></i> Lives in {{user.country}}</h5>
-            {% if user.hobbies != None %}
+            {% if user.hobbies %}
             <h5><i class="fa fa-hourglass"></i> Hobby : {{user.hobbies}}</h5>
             {% endif %}
+            {% if user.country%}
             <h5><i class="fa fa-globe"></i> Country : {{user.country}}</h5>
+            {% endif %}
+            {% if user.work %}
             <h5><i class="fa fa-briefcase"></i> Profession : {{user.work}}</h5>
-            {% if user.webLink != None %}
+            {% endif %}
+            {% if user.webLink %}
             <h5>
               <i class="fa fa-link"></i>
               <a href="{{user.webLink}}" target="_blank">Web Link</a>
@@ -83,14 +89,15 @@
             {% endif %}
           </div>
         </div>
-        <div class="card bg-light my-3">
+        <div class="card box-shadow bg-light my-3">
           <div class="card-header bg-white"><h5 class="fw-bold">Blog</h5></div>
           <div class="card-body">
             <h5>
               <i class="fa fa-building-o"></i> Blog Posts {{posts|length}}
             </h5>
             <h5><i class="fa fa-eye"></i> Total Viewers {{total_viewers}}</h5>
-            <h5><i class="fa fa-user-o"></i> Following {{user.following|length}}</h5>
+            <h5><i class="fa fa-user-o"></i>
+            <a href="{{url_for('getFollowing',username=user.username)}}" class="link"> Following {{user.following|length}} </a></h5>
             <h5><i class="fa fa-users"></i> Followers {{blogProfile.followers|length}}</h5>
           </div>
         </div>
@@ -102,7 +109,7 @@
       <div class="card text-center">
         <h5 class="card-body">All Blogs ({{posts|length}})</h5>
       </div>
-      {% if current_user.sno == user.sno %}
+      {% if current_user.sno == user.sno and posts|length >0 %}
       <div class="alert alert-light my-3 fw-bold">
         <a href="/dashboard" class="btn btn-warning float-end fw-bold"><i class="fa fa-bar-chart"></i> Dashboard</a>
         <h5>Manage Blogs on Dashboard</h5>

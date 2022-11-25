@@ -64,11 +64,6 @@ class Blogprofile(db.Model):
     # Stores the given id of user and and saves the user object in writer_user
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
 
-class ReadingLists(db.Model):
-    sno = db.Column(db.Integer, primary_key=True)
-    # Stores the given id of user and and saves the user object in writer_user
-    userid = db.Column(db.Integer, db.ForeignKey('users.sno'))
-
 class Posts(db.Model):
     __tablename__ = "posts"
     __searchable__ = ["title", "tag", "summary"]
