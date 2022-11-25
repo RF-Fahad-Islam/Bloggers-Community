@@ -63,8 +63,13 @@
                         <p class="card-text text-muted fw-bold badge badge-pill rounded-pill float-end">
                             {{blogUser.joined_date.strftime('%B %d, %Y')}}
                         </p>
-                        <img src="{{blogUser.picture}}" class="rounded-circle mr-2" alt="Blogger" class="mr-3"
-                            width="60" height="60">
+                        {% if not blogUser.picture %}
+                        <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar"
+                            class="rounded-circle" width="60" height="60">
+                        {% else %}
+                        <img src="{{ blogUser.picture }}
+              " alt="Avatar" class="rounded-circle" width="60" height="60">
+                        {% endif %}
                         <h5 class="d-inline-block">
                             <a class="fw-bold text-decoration-none ml-2 text-dark cursor-pointer link d-inline-block"
                                 style="cursor: pointer;" href="/p/{{blogUser.username}}">
@@ -74,7 +79,7 @@
                 </div>
             </div>
             {% endfor %}
-            {% if followers|length == 0 %}
+            {% if followingList|length == 0 %}
             <div class="alert alert-warning my-3">
                 <h5>Empty! No Followings.</h5>
             </div>

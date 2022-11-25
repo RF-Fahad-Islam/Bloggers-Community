@@ -1,11 +1,10 @@
 {% extends 'layout.html' %} {% from 'includes/macros.html' import render_posts
 %} {% block title %}
-<script type='text/javascript'
-  src='https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons'
-  async='async'></script>
+<script type="text/javascript"
+  src="https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons"
+  async="async"></script>
 <title>{{user.firstname}} {{user.lastname}} @{{user.username}}</title>
-{% endblock title %} 
-{% block body %}
+{% endblock title %} {% block body %}
 <!-- !Brand Color -->
 <div style="background-color: {{user.brand_color}};" id="brandBox"></div>
 
@@ -25,22 +24,19 @@
     <div class="card-body">
       {% if current_user.sno == user.sno %}
       <a href="/settings" class="btn btn-primary float-end fw-bold"><i class="fa fa-pencil"></i> Edit Profile</a>
-      {% else %}
-      {% if cnt > 0 %}
-      <a class="btn btn-primary float-end fw-bold"><i class="fa fa-check"></i>Followed</a>
+      {% else %} {% if cnt > 0 %}
+      <a onclick="follow()" id="follow" class="btn btn-orange float-end fw-bold"><i class="fa fa-check"></i> Followed</a>
       {% elif blogProfile %}
-      <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="btn btn-primary float-end fw-bold"><i
-          class="fa fa-plus-square-o"></i> Follow</a>
-      {% endif %}
-      {% endif %}
+      <a onclick="follow()" id="follow" class="btn btn-primary float-end fw-bold"><i class="fa fa-plus-square-o"></i> Follow</a>
+      {% endif %} {% endif %}
       <p class="card-text float-start text-muted badge rounded-pill bg-light">
         Joined on <strong>{{user.joined_date.strftime("%b %d, %Y")}}</strong>
       </p>
       <div id="profileDetails" style="padding-top: 40px; padding-bottom: 18px" class="text-center">
-        <h3 class="card-title">
+        <h3 class="card-title fwpop">
           {{user.firstname}} {{user.lastname}} (@{{user.username}})
         </h3>
-        <p id="bio" class="text-muted">{{user.bio}}</p>
+        <p id="bio" class="text-muted fw-bold">{{user.bio}}</p>
         {% if user.email == params["admin_email"] %}
         <span class="badge bg-primary fw-bolder" style="font-size: 15px">Admin</span>
         <span class="badge bg-warning fw-bolder ml-1" style="font-size: 15px">Creator</span>
@@ -48,11 +44,11 @@
         <span class="badge bg-danger fw-bolder ml-1" style="font-size: 15px">Developer</span>
         {% endif %}
       </div>
-        <h5 class="text-center text-muted p-2 rounded-3 ">
+      <h5 class="text-center text-muted p-2 rounded-3">
         <a href="{{url_for('getFollowers', username=user.username)}}" class="link">
-        Followers <strong>{{blogProfile.followers|length}}</strong>
+          Followers <strong>{{blogProfile.followers|length}}</strong>
         </a>
-        </h5>
+      </h5>
     </div>
   </div>
   <!-- !User Blog Cards -->
@@ -74,14 +70,11 @@
             <h5><i class="fa fa-map-marker"></i> Lives in {{user.country}}</h5>
             {% if user.hobbies %}
             <h5><i class="fa fa-hourglass"></i> Hobby : {{user.hobbies}}</h5>
-            {% endif %}
-            {% if user.country%}
+            {% endif %} {% if user.country%}
             <h5><i class="fa fa-globe"></i> Country : {{user.country}}</h5>
-            {% endif %}
-            {% if user.work %}
+            {% endif %} {% if user.work %}
             <h5><i class="fa fa-briefcase"></i> Profession : {{user.work}}</h5>
-            {% endif %}
-            {% if user.webLink %}
+            {% endif %} {% if user.webLink %}
             <h5>
               <i class="fa fa-link"></i>
               <a href="{{user.webLink}}" target="_blank">Web Link</a>
@@ -90,15 +83,24 @@
           </div>
         </div>
         <div class="card box-shadow bg-light my-3">
-          <div class="card-header bg-white"><h5 class="fw-bold">Blog</h5></div>
+          <div class="card-header bg-white">
+            <h5 class="fw-bold">Blog</h5>
+          </div>
           <div class="card-body">
             <h5>
               <i class="fa fa-building-o"></i> Blog Posts {{posts|length}}
             </h5>
             <h5><i class="fa fa-eye"></i> Total Viewers {{total_viewers}}</h5>
-            <h5><i class="fa fa-user-o"></i>
-            <a href="{{url_for('getFollowing',username=user.username)}}" class="link"> Following {{user.following|length}} </a></h5>
-            <h5><i class="fa fa-users"></i> Followers {{blogProfile.followers|length}}</h5>
+            <h5>
+              <i class="fa fa-user-o"></i>
+              <a href="{{url_for('getFollowing',username=user.username)}}" class="link">
+                Following {{user.following|length}}
+              </a>
+            </h5>
+            <h5>
+              <i class="fa fa-users"></i> Followers
+              {{blogProfile.followers|length}}
+            </h5>
           </div>
         </div>
       </div>
@@ -117,6 +119,17 @@
       {% endif %}
       <!-- !Users All Blogs Fetch From Database -->
       <div id="blogs">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
+            <strong class="me-auto">Bootstrap</strong>
+            <small>11 mins ago</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            Hello, world! This is a toast message.
+          </div>
+        </div>
         {% for post in posts %}
 
         <div class="card my-3 box-shadow">
@@ -133,8 +146,8 @@
             <p class="card-text text-muted">{{post.pub_date.strftime("%c")}}</p>
           </div>
         </div>
-        {% endfor %} {% if posts|length == 0 %}
-        {% if user.sno == current_user.sno %}
+        {% endfor %} {% if posts|length == 0 %} {% if user.sno ==
+        current_user.sno %}
         <div class="d-grid my-3">
           <a href="{{url_for('handleBlogWriter', sno=0)}}" class="btn btn-outline-primary btn-lg text-center"><i
               class="fa fa-plus"></i> Create Blog Profile 🌟</a>
@@ -154,5 +167,45 @@
       </div>
     </div>
   </div>
-  {% endblock body %}
 </div>
+{% endblock body %}
+{% block script %}
+<script>
+
+  const follow = async () => {
+    $("#follow").html(`
+    
+    <button class="btn btn-primary" type="button" disabled>
+      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+      Loading...
+    </button>
+    `)
+    var myHeaders = new Headers();
+    myHeaders.append("Cookie", "Cookie_1=value; Cookie_2=value; session=5a67b465-54b3-4ceb-aff3-496d75f28602");
+    
+    var formdata = new FormData();
+    formdata.append("sno", "{{blogProfile.usersno}}");
+    formdata.append("usersno", "{{current_user.sno}}");
+
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      credentials: 'include',
+      redirect: 'follow'
+    };
+
+    await fetch("/follow?sno={{blogProfile.usersno}}&usersno={{current_user.sno}}", requestOptions)
+      .then(response => response.json())
+      .then(result => {
+
+        if (result['success']) {
+          followtxt = $("follow").text()
+          if(followtxt=="Followed"){$("follow").html('<i class="fa fa-plus-square-o"></i> Follow')}
+          else{$("follow").html('<i class="fa fa-plus-square-o"></i> Followed')}
+        }
+      }
+      )
+      .catch(error => console.log('error', error));
+  }
+</script>
+{% endblock script %}
