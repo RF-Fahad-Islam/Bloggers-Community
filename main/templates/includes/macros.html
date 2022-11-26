@@ -1,5 +1,5 @@
 <!-- !Render Posts Macro: Render all posts in the form of cards -->
-{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false) %}
+{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false,txt="Be the first to Post") %}
 {% if posts|length != 0 %}
 {% for post in posts %}
 
@@ -8,31 +8,23 @@
     <div class="card-body content">
         {% if not simple %}
         <p class="card-text text-muted fw-bold float-end">
-           {{post.pub_date.strftime("%b %d")}}</p>
+            {{post.pub_date.strftime("%b %d")}}</p>
 
-    {% if user.picture == None %}
-    <img
-      id="userImage"
-      class="profile"
-      src="{{url_for('static', filename='images/usericon.png')}}"
-      alt="{{user.username}}"
-    />
-    {% else %}
-    <img
-      id="userImage"
-      class="profile"
-      src="{{user.picture}}"
-      alt="{{user.username}}"
-    />
-    {% endif %}
-            <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
-                {{user.firstname}} {{user.lastname}}
-                (@{{user.username}})</a>
-            {% endif %}
-            {% if simple %}
-            <a class="btn float-end rounded-circle btn-outline-warning fw-bolder" href="{{url_for('handleDeletes', sno=post.sno, keyword='r')}}"><i
-                class="fa fa-check" style="font-size: 18px;"></i></a>
-                {% endif %}
+        {% if user.picture == None %}
+        <img id="userImage" class="profile" src="{{url_for('static', filename='images/usericon.png')}}"
+            alt="{{user.username}}" />
+        {% else %}
+        <img id="userImage" class="profile" src="{{user.picture}}" alt="{{user.username}}" />
+        {% endif %}
+        <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
+            {{user.firstname}} {{user.lastname}}
+            (@{{user.username}})</a>
+        {% endif %}
+        {% if simple %}
+        <a class="btn float-end rounded-circle btn-outline-warning fw-bolder"
+            href="{{url_for('handleDeletes', sno=post.sno, keyword='r')}}"><i class="fa fa-check"
+                style="font-size: 18px;"></i></a>
+        {% endif %}
         <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
             class="link text-dark post-title link" style="text-decoration: none;">
             <h3 class="card-title">{{post.title}}</h3>
@@ -44,7 +36,8 @@
         {% if dashboard %}
         <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
                 class="fa fa-edit"></i> Edit</a>
-        <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}" class="btn btn-outline-danger float-end mx-2 delete">
+        <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
+            class="btn btn-outline-danger float-end mx-2 delete">
             <i class="fa fa-trash"></i> Delete</a>
         {% else %}
         <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
@@ -68,7 +61,8 @@
 
 {% else %}
 {% if search %}
-<div class="alert my-3 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
+<div
+    class="alert my-3 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
     <img src="{{url_for('static', filename='images/31.png')}}" style="width: 80vh;" alt="Search Not Found">
     <div>
         <h3>Search Not Found!</h3>
@@ -77,10 +71,14 @@
     </div>
 </div>
 {% else %}
-<div class="alert alert-warning my-3">
-    <h5>No Posts</h5>
-    <hr>
-    <h5>Be the first to create a blog on this site</h5>
+<div
+    class="alert my-3 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
+    <img src="{{url_for('static', filename='images/32.png')}}" style="width: 80vh;" alt="Search Not Found">
+    <div>
+        <h3>Empty! No Blogs Here!</h3>
+        <hr>
+        <h5 class="text-muted">{{txt}}</h5>
+    </div>
 </div>
 {% endif %}
 {% endif %}
@@ -116,8 +114,91 @@
 
 {% macro render_avatar(user,size='30') %}
 {% if user.picture == None %}
-<img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle" width="60" height="60">
+<img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle" width="60"
+    height="60">
 {% else %}
 <img src="{{picture}}" alt="Avatar" class="rounded-circle" width="{{size}}" height="{{size}}">
 {% endif %}
+{% endmacro %}
+
+
+{% macro render_user_profile(user, current_user,blogProfile="",recommendeds="") %}
+
+{% if not current_user.is_anonymous and blogProfile %}
+{% set cnt = current_user.following.count(blogProfile) %}
+{% endif %}
+<div class="position-sticky" style="top: 2rem; height:auto;">
+    <div class="p-4 mb-3 alert bg-white rounded">
+        <div class="text-center d-block">
+            {% if not user.picture %}
+
+            <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle"
+                width="60" height="60">
+            {% else %}
+            <img src="{{ user.picture }}
+        " alt="Avatar" class="rounded-circle" width="60" height="60">
+            {% endif %}
+            <h5>{{user.firstname}} {{user.lastname}} {% if user.is_verified %}
+                <i class="fa fa-check-circle text-primary" title="Verified"></i>
+            </h5>
+            {% endif %}
+            {% if user.bio %}
+            <p class="text-muted">{{user.bio}}</p>
+            {% endif %}
+        </div>
+        {% if user.sno != current_user.sno and not current_user.is_anonymous %}
+        {% if cnt > 0 %}
+        <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="btn btn-orange d-block my-3 fw-bold"><i
+                class="fa fa-check"></i>Followed</a>
+        {% elif blogProfile %}
+        <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="d-block btn btn-primary my-3 fw-bold"><i
+                class="fa fa-plus-square-o"></i> Follow</a>
+        {% endif %}
+        {% else %}
+        <a href="{{url_for('userProfile',username=user.username)}}" class="d-block btn btn-primary my-3 fw-bold"><i
+                class="fa fa-link"></i> Visit Profile</a>
+
+        {% endif %}
+
+        <!-- <h5 class="text-muted">Country : {{user.country}}</h5> -->
+        <h6 class="text-success fw-bold">Joined on</h6>
+        <h5 class="text-muted">
+            {{user.joined_date.strftime('%B %d, %Y')}}</h5>
+        <h6 class="text-success fw-bold">Country</h6>
+        <h5 class="text-muted">
+            {{user.country}}</h5>
+        <h6 class="text-success fw-bold">Profession</h6>
+        <h5 class="text-muted">
+            {{user.work}}</h5>
+    </div>
+
+    <!-- !Recomendation Section -->
+    {% if recommendeds != "" %}
+    <div class="alert bg-white overflow-scroll">
+        <h3>Recommended</h3>
+        <div class="list-group">
+            {% for recommended in recommendeds%}
+            {% if recommended %}
+            <a href="/b/{{recommended.writer.username}}/{{recommended.slug}}"
+                class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w- justify-content-between">
+                    <h5 class="mb-1">{{recommended.title}}</h5>
+                </div>
+                <small class="badge rounded-pill bg-primary text-white">by @{{recommended.writer.username}}</small>
+                <small class="badge rounded-pill bg-primary text-white">{{recommended.pub_date.strftime("%b %d,
+                    %Y")}}</small>
+                <!-- <small>And some small print.</small> -->
+            </a>
+            {% endif %}
+            {% endfor %}
+            {% if recommendeds|length == 0 %}
+            <div class="alert alert-warning">
+                Noting to Recommend
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
 {% endmacro %}

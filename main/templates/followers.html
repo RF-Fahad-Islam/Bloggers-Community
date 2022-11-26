@@ -1,65 +1,18 @@
 {% extends "layout.html" %}
+{% from 'includes/macros.html' import render_user_profile %}
 {% block title %}
 <title>
     @{{user.username}} Followers List
 </title>
 {% endblock title %}
-
 {% block body %}
 <!-- !Brand Color -->
 <div class="container" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <!-- !User Blog Cards -->
     <div class="row g-5 my-2">
         <div class="col-lg-3">
-            <div class="position-sticky" style="top: 2rem; height:auto;">
-                <div class="p-4 mb-3 alert bg-white rounded">
-                    <div class="text-center d-block">
-                        {% if user.picture %}
-                        <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar"
-                            class="rounded-circle" width="60" height="60">
-                        {% else %}
-                        <img src="{{ user.picture }}
-              " alt="Avatar" class="rounded-circle" width="60" height="60">
-                        {% endif %}
-                        <h5 class="fwpop">
-                            <a href="/p/{{user.username}}" class="link">
-
-                                {{user.firstname}} {{user.lastname}}
-                            </a>
-                        </h5>
-                        {% if user.bio %}
-                        <p class="text-muted">{{user.bio}}</p>
-                        {% endif %}
-                    </div>
-                    {% if user.sno != current_user.sno %}
-                    {% if cnt > 0 %}
-                    <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}"
-                        class="btn btn-orange d-block my-3 fw-bold"><i class="fa fa-check"></i>Followed</a>
-                    {% elif blogProfile %}
-                        <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}"
-                            class="d-block btn btn-primary my-3 fw-bold"><i class="fa fa-plus-square-o"></i> Follow</a>
-                    {% endif %}
-                    {% else %}
-                    <a href="{{url_for('userProfile',username=user.username)}}"
-                        class="d-block btn btn-primary my-3 fw-bold"><i class="fa fa-link"></i> Visit Profile</a>
-
-                    {% endif %}
-                    <!-- <h5 class="text-muted">Country : {{user.country}}</h5> -->
-                    <h6 class="text-success fw-bold"> <i class="fa fa-calendar"></i> Joined on</h6>
-                    <h5 class="text-muted">
-                        {{user.joined_date.strftime('%B %d, %Y')}}</h5>
-                    {% if user.country %}
-                    <h6 class="text-success fw-bold"> <i class="fa fa-map"></i> Country</h6>
-                    <h5 class="text-muted">
-                        {{user.country}}</h5>
-
-                    {% endif %}
-
-                </div>
-
+    {{render_user_profile(user, current_user, blogProfile)}}
             </div>
-
-        </div>
         <!-- !Column of Blogs -->
         <div class="col-lg-8">
 

@@ -59,7 +59,9 @@
             {% for user in users %}
             <tr class="contains content search">
               <th scope="row">{{user.sno}}</th>
-              <td>{{user.firstname}}</td>
+              <td>{{user.firstname}}  {% if user.is_verified %}  
+                <i class="fa fa-check-circle text-primary" title="Verified"></i>
+                {% endif %} </td>
               <td>{{user.lastname}}</td>
               <td>{{user.username}}</td>
               <td>{{user.email}}</td>

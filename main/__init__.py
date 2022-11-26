@@ -1,5 +1,5 @@
 from flask import Flask, abort, render_template
-from flask_sqlalchemy import SQLAlchemy as _BaseSQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -9,7 +9,6 @@ from flask_login import current_user
 from flask_msearch import Search
 from authlib.integrations.flask_client import OAuth
 from .settings import *
-
 CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
     
 # App and DB configuration
@@ -27,10 +26,6 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
 app.secret_key = SECRET_KEY
 app.config["SESSION_TYPE"] = SESSION_TYPE
-class SQLAlchemy(_BaseSQLAlchemy):
-    def apply_pool_defaults(self, app, options):
-        super(SQLAlchemy, self).apply_pool_defaults(self, app, options)
-        options["pool_pre_ping"] = True
 db = SQLAlchemy(app)
 app.config["SESSION_SQLALCHEMY"] = db
 # app.config['FLASK_ADMIN_SWATCH'] = 'paper'
