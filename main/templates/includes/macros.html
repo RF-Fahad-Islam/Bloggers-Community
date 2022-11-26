@@ -1,11 +1,12 @@
 <!-- !Render Posts Macro: Render all posts in the form of cards -->
-{% macro render_posts(posts, show_end=true, dashboard=false, search=false) %}
+{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false) %}
 {% if posts|length != 0 %}
 {% for post in posts %}
 
 {% set user=post.writer %}
 <section class="card my-3 box-shadow" style="z-index: 10!important;">
     <div class="card-body content">
+        {% if not simple %}
         <p class="card-text text-muted fw-bold float-end">
            {{post.pub_date.strftime("%b %d")}}</p>
 
@@ -24,10 +25,14 @@
       alt="{{user.username}}"
     />
     {% endif %}
-
-        <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
-            {{user.firstname}} {{user.lastname}}
-            (@{{user.username}})</a>
+            <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
+                {{user.firstname}} {{user.lastname}}
+                (@{{user.username}})</a>
+            {% endif %}
+            {% if simple %}
+            <a class="btn float-end rounded-circle btn-outline-warning fw-bolder" href="{{url_for('handleDeletes', sno=post.sno, keyword='r')}}"><i
+                class="fa fa-check" style="font-size: 18px;"></i></a>
+                {% endif %}
         <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
             class="link text-dark post-title link" style="text-decoration: none;">
             <h3 class="card-title">{{post.title}}</h3>

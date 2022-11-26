@@ -1,4 +1,4 @@
-PROD= False
+PROD= True
 TEST = False
 SQLALCHEMY_DATABASE_URI_PROD = "postgres://bloggers_community_user:SBSIwvrOMsiHjhPw6cfpZyEjmpkUIgI6@dpg-cdqs2mmn6mpqj2cjcncg-a/bloggers_community"
 SQLALCHEMY_DATABASE_URI_DEV = "postgresql://bloggers_community_user:SBSIwvrOMsiHjhPw6cfpZyEjmpkUIgI6@dpg-cdqs2mmn6mpqj2cjcncg-a.singapore-postgres.render.com/bloggers_community"

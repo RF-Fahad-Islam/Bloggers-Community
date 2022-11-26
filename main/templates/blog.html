@@ -22,12 +22,23 @@
         <div class="card-body">
           {% if current_user.is_admin %}
           <a class="btn btn-outline-danger ml-2 rounded-circle float-end" href="/delete/b/{{post.sno}}"><i
-              class="fa fa-trash"></i></a>
+            class="fa fa-trash"></i></a>
           {% endif %}
           {% if current_user.sno == user.sno %}
           <a class="btn btn-outline-success mr-2 rounded-circle float-end" href="/blog-writer/edit/{{post.sno}}"><i
               class="fa fa-pencil"></i></a>
-          {% endif %}
+              <!-- *Bookmark -->
+              {% endif %}
+              {% if cnt>0 %}
+              <span class="text-primary btn btn-outline-primary border-0" style="cursor: pointer;font-size:30px; " id="bookmark">
+                <i class="fa fa-bookmark"></i> 
+              </span>
+              <b id="count">{{post.reading_lists|length}}</b>
+              {% else %}
+              <span class="text-primary" style="cursor: pointer; font-size:30px;" id="bookmark">
+                <i class="fa fa-bookmark-o"></i>
+              </span>
+              {% endif %}
           <h1 class="fw-bolder border-primary text-center">
             {{post.title}}
           </h1>
@@ -204,11 +215,41 @@
 <script src="https://cdn.tiny.cloud/1/8s55fjh97p8z0295i3xgm93498al8v6u61o11kfmzxjk982d/tinymce/6/tinymce.min.js"
   referrerpolicy="origin"></script>
 <script>
-  $(document).ready(
-    () => {
-      $('div#main').fadeIn()
+  $('#bookmark').click(()=> {
+    
+    bookmarkReq()
+    if($('#bookmark').html() == '<i class="fa fa-bookmark-o"></i>'){
+      $('#bookmark').html(`<i class="fa fa-bookmark"></i>`)
+      
+    } else{
+      $('#bookmark').html(`<i class="fa fa-bookmark-o"></i>`)
+      
     }
+  }
+    )
+
+    const bookmarkReq= async()=> {
+      var myHeaders = new Headers();
+myHeaders.append("Cookie", "Cookie_1=value; Cookie_2=value; session=5a67b465-54b3-4ceb-aff3-496d75f28602");
+
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  credentials: 'include',
+  redirect: 'follow'
+};
+
+ await fetch("/bookmark?blogsno={{post.sno}}", requestOptions)
+  .then(response => response.json())
+  .then(result =>{
+    $('#bookmarkCount').text("{{current_user.readinglist.blogs|length}}")
+    $('#count').text("{{post.reading_lists|length}}")
+    console.log(result)
+  }
   )
+  .catch(error => console.log('error', error));
+    }
 </script>
 <script>
   tinymce.init({

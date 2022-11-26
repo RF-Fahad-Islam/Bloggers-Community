@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% from 'includes/macros.html' import render_posts%}
+{% block title %} <title>Reading List ({{posts|length}}})</title> {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="card my-3">
+        <h4 class="card-body text-center">Your Reading List ({{posts|length}}) 
+            <a href="{{url_for('handleDeletes',sno='all',keyword='r')}}" class="btn bg-light float-end">
+
+                <i class="fa fa-check text-danger"></i> All Done
+            
+            </a>
+        </h4>
+    </div>
+
+            {{ render_posts(posts,show_end=False,simple=true) }}
+    </div>
+</div>
+{% endblock body %}

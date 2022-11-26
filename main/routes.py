@@ -1,6 +1,7 @@
+import json
 from . import db,app, login_manager, search,oauth
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
-from .models import Users, Posts, Notices, Comment, Blogprofile
+from .models import Users, Posts, Notices, Comment, Blogprofile,Readinglists
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
@@ -186,7 +187,11 @@ def handleUsersPosts(username, postSlug):
     if not recommendeds:
         recommendeds = posts[:3]
     recommendeds.remove(post)
-    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments)
+    cnt = 0
+    if not user.is_anonymous:
+        cnt = current_user.readinglist.blogs.count(post)
+    
+    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments,cnt=cnt)
 
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
 @login_required
@@ -263,6 +268,16 @@ def handleDeletes(keyword,sno):
             db.session.delete(notice)
             db.session.commit()
             return redirect(url_for("adminDashboard"))
+    elif keyword == "r":
+        if sno == "all":
+            blogs = current_user.readinglist.blogs
+            for blog in blogs:
+                current_user.readinglist.blogs.remove(blog)
+        else:
+            post = Posts.query.filter_by(sno=sno).first()
+            current_user.readinglist.blogs.remove(post)
+        db.session.commit()
+        return redirect(url_for('readinglist'))
     else:
         abort(404)
 
@@ -360,11 +375,14 @@ def authorize():
         
         getUser = Users.query.filter_by(email=email).first() 
         login_user(getUser)
-        blog_profile = Blogprofile(usersno=getUser.sno)
-        db.session.add(blog_profile)
+        readinglist = Readinglists(user=getUser)
+        db.session.add_all(readinglist)
         db.session.commit()
     else:
         getUser.picture = user.get('picture')
+        db.session.commit()
+        readinglist = Readinglists(user=getUser)
+        db.session.add(readinglist)
         db.session.commit()
         login_user(getUser)
     # print(profile)
@@ -423,6 +441,39 @@ def getFollowing(username):
 @login_required
 def notifications():
     followingList = []
-    for following in current_user.followings:
+    for following in current_user.following:
         followingList.append(following)
-     
+    posts=[]
+    for userBlog in followingList:
+        posts.append(Posts.query.filter_by(writer_id=userBlog.usersno).first())
+    return render_template('notifications.html', posts=posts)
+
+@app.route('/bookmark', methods=["GET"])
+@login_required
+def bookmark():
+    if request.method == "GET":
+        blogsno = request.args.get('blogsno')
+        user = Users.query.get(int(current_user.sno))
+        if not user.readinglist:
+            readinglist = Readinglists(user=user)
+            db.session.add(readinglist)
+            db.session.commit()
+        blog = Posts.query.get(int(blogsno))
+        readinglist = user.readinglist.blogs
+        if blog in readinglist:
+            user.readinglist.blogs.remove(blog)
+        else:
+            user.readinglist.blogs.append(blog)
+        db.session.commit()
+        return json.dumps({
+            "success":True,
+            "blogsno":blogsno,
+            "username":user.username,
+        })
+    return abort(404)
+
+@app.route('/readinglist/u')
+@login_required
+def readinglist():
+    posts = current_user.readinglist.blogs
+    return render_template('readinglist.html',posts=posts)
