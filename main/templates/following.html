@@ -14,7 +14,7 @@
             <div class="position-sticky" style="top: 2rem; height:auto;">
                 <div class="p-4 mb-3 alert bg-white rounded">
                     <div class="text-center d-block">
-                        {% if user.picture %}
+                        {% if not user.picture %}
                         <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar"
                             class="rounded-circle" width="60" height="60">
                         {% else %}
@@ -25,6 +25,9 @@
                             <a href="/p/{{user.username}}" class="link">
 
                                 {{user.firstname}} {{user.lastname}}
+                                {% if user.is_verified %}  
+                                <i class="fa fa-check-circle text-primary" title="Verified"></i>
+                                {% endif %} 
                             </a>
                         </h5>
                         {% if user.bio %}

@@ -188,10 +188,11 @@ def handleUsersPosts(username, postSlug):
         recommendeds = posts[:3]
     recommendeds.remove(post)
     cnt = 0
-    if not user.is_anonymous:
+    if not current_user.is_anonymous:
         cnt = current_user.readinglist.blogs.count(post)
-    
-    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments,cnt=cnt)
+    blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
+
+    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments,cnt=cnt,blogProfile=blogProfile)
 
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
 @login_required
@@ -423,6 +424,7 @@ def getFollowers(username):
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     followers = blogProfile.followers
     followers = followers[::-1]
+    cnt = 0
     if not current_user.is_anonymous:
         cnt = current_user.following.count(blogProfile)
     return render_template('followers.html', user=user, followers=followers, blogProfile=blogProfile,cnt=cnt)
@@ -469,6 +471,7 @@ def bookmark():
             "success":True,
             "blogsno":blogsno,
             "username":user.username,
+            "bookmarkCount": len(current_user.readinglist.blogs)
         })
     return abort(404)
 

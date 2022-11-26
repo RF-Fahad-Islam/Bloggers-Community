@@ -146,7 +146,7 @@
         <a class="btn rounded-pill btn-light border-0 fw-bolder" style="font-size: 23px" href="{{url_for('notifications')}}"><i
             class="fa fa-bell-o"></i></a>
         <a class="btn rounded-pill btn-light border-0 ml-2 fw-bolder position-relative"href="/readinglist/u"><i
-            class="fa fa-bookmark-o"  style="font-size: 26px" ></i>
+            class="fa fa-bookmark-o"  style="font-size: 26px; " ></i>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
               <b id="bookmarkCount">{{current_user.readinglist.blogs|length}}</b>
               <span class="visually-hidden">unread messages</span>
@@ -220,6 +220,7 @@
     /* When the user scrolls down, hide the navbar. When the user scrolls up, show the navbar */
 
   </script>
+
 
   <!-- !Instant Page Load CDN -->
   <!-- <script src="//instant.page/5.1.1" type="module"
