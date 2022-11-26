@@ -143,8 +143,15 @@
         <a class="btn btn-primary mx-3" href="/blog-writer/edit/0">
           <i class="fa fa-plus-circle"></i> Create Post
         </a>
-        <a class="btn rounded-pill btn-light border-0 fw-bolder" style="font-size: 23px" href="/notifications"><i
+        <a class="btn rounded-pill btn-light border-0 fw-bolder" style="font-size: 23px" href="{{url_for('notifications')}}"><i
             class="fa fa-bell-o"></i></a>
+        <a class="btn rounded-pill btn-light border-0 ml-2 fw-bolder position-relative"href="/readinglist/u"><i
+            class="fa fa-bookmark-o"  style="font-size: 26px" ></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+              <b id="bookmarkCount">{{current_user.readinglist.blogs|length}}</b>
+              <span class="visually-hidden">unread messages</span>
+            </span>
+          </a>
 
         <span class="btn btn-light rounded-pill text-dark mx-3" style="cursor: pointer" id="profilePopover"
           data-bs-toggle="popover" data-bs-placement="left" data-bs-container="false" data-bs-animation="true"

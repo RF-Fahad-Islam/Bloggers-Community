@@ -25,9 +25,11 @@
       {% if current_user.sno == user.sno %}
       <a href="/settings" class="btn btn-primary float-end fw-bold"><i class="fa fa-pencil"></i> Edit Profile</a>
       {% else %} {% if cnt > 0 %}
-      <a onclick="follow()" id="follow" class="btn btn-orange float-end fw-bold"><i class="fa fa-check"></i> Followed</a>
+      <a onclick="follow()" id="follow" class="btn btn-orange float-end fw-bold"><i class="fa fa-check"></i>
+        Followed</a>
       {% elif blogProfile %}
-      <a onclick="follow()" id="follow" class="btn btn-primary float-end fw-bold"><i class="fa fa-plus-square-o"></i> Follow</a>
+      <a onclick="follow()" id="follow" class="btn btn-primary float-end fw-bold"><i class="fa fa-plus-square-o"></i>
+        Follow</a>
       {% endif %} {% endif %}
       <p class="card-text float-start text-muted badge rounded-pill bg-light">
         Joined on <strong>{{user.joined_date.strftime("%b %d, %Y")}}</strong>
@@ -46,7 +48,7 @@
       </div>
       <h5 class="text-center text-muted p-2 rounded-3">
         <a href="{{url_for('getFollowers', username=user.username)}}" class="link">
-          Followers <strong>{{blogProfile.followers|length}}</strong>
+          Followers <strong id="followCount">{{blogProfile.followers|length}}</strong>
         </a>
       </h5>
     </div>
@@ -173,16 +175,17 @@
 <script>
 
   const follow = async () => {
-    $("#follow").html(`
+    $("#follow").fadeIn()
+    $("#follow").attr('disabled')
+        $("#follow").html(`
     
-    <button class="btn btn-primary" type="button" disabled>
       <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
       Loading...
-    </button>
     `)
+
     var myHeaders = new Headers();
     myHeaders.append("Cookie", "Cookie_1=value; Cookie_2=value; session=5a67b465-54b3-4ceb-aff3-496d75f28602");
-    
+
     var formdata = new FormData();
     formdata.append("sno", "{{blogProfile.usersno}}");
     formdata.append("usersno", "{{current_user.sno}}");
@@ -199,9 +202,16 @@
       .then(result => {
 
         if (result['success']) {
+          $("#follow").fadeIn()
           followtxt = $("follow").text()
-          if(followtxt=="Followed"){$("follow").html('<i class="fa fa-plus-square-o"></i> Follow')}
-          else{$("follow").html('<i class="fa fa-plus-square-o"></i> Followed')}
+          if (followtxt == "Followed") {
+            $("follow").html('<i class="fa fa-plus-square-o"></i> Follow');
+            $("#followCount").text(Number($("#followCount").text()) + 1)
+          }
+          else {
+            $("follow").html('<i class="fa fa-plus-square-o"></i> Followed')
+            $("#followCount").text(Number($("#followCount").text()) -1)
+          }
         }
       }
       )

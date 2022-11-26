@@ -9,6 +9,11 @@ user_blog_channel = db.Table('user_blog_channel',
     db.Column("blog_profile_id", db.Integer, db.ForeignKey('blogprofile.sno')),
 )
 
+user_reading_list = db.Table('user_reading_list',
+    db.Column("post_id", db.Integer, db.ForeignKey('posts.sno')),
+    db.Column("reading_list_id", db.Integer, db.ForeignKey('readinglists.sno')),
+)
+
 
 class Users(db.Model, UserMixin):
     sno = db.Column(db.Integer, primary_key=True)
@@ -31,8 +36,9 @@ class Users(db.Model, UserMixin):
     comments = db.relationship('Comment', backref='commentor', lazy='dynamic')
     # Returns List of posts that the user created
     posts = db.relationship('Posts', backref="writer", lazy="dynamic")
+    readinglist = db.relationship('Readinglists', backref="user",uselist=False)
     # reading_lists = db.relationship('ReadingList', backref="creator", lazy="dynamic")
-    reading_lists = db.Column(db.Text, nullable=True)
+    
     following = db.relationship('Blogprofile', secondary=user_blog_channel, backref="followers")
     # blog_profile = db.relationship('BlogProfile', backref='user', lazy=True, uselist=False)
     # role = db.Column(db.Integer, db.ForeignKey('role.id'))
@@ -63,6 +69,13 @@ class Blogprofile(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     # Stores the given id of user and and saves the user object in writer_user
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
+    
+class Readinglists(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+    # Stores the given id of user and and saves the user object in writer_user
+    usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
+    blogs = db.relationship('Posts', secondary=user_reading_list, backref="reading_lists")
+
 
 class Posts(db.Model):
     __tablename__ = "posts"
@@ -144,3 +157,4 @@ admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))
 admin.add_view(MyModelView(Comment, db.session))
 admin.add_view(MyModelView(Blogprofile, db.session))
+admin.add_view(MyModelView(Readinglists, db.session))
