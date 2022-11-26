@@ -18,8 +18,6 @@ oauth = OAuth()
 
 if PROD:
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_PROD
-elif TEST:
-    app.config["SQLALCHEMY_DATABASE_URI"] = TEST_URI
 else:
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_DEV
     
