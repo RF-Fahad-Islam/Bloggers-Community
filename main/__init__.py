@@ -51,8 +51,12 @@ login_manager.login_message_category = "warning"
 def page_not_found(e):
     return render_template("404.html"), 404
 
+#Register Error
+def server_error(e):
+    return render_template("500.html"), 500
+
 app.register_error_handler(404, page_not_found)
-app.register_error_handler(500, abort)
+app.register_error_handler(500, server_error)
 
 #Configure Admin Panel
 class MyModelView(ModelView):

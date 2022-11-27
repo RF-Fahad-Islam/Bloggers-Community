@@ -208,7 +208,7 @@ def handleBlogWriter(sno):
             post = Posts(title=form.title.data, summary=form.summary.data,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno)
             # If the user doesn't have any post then create blogprofile while saving first post
-            if len(current_user.posts) == 0 or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
+            if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
                 getUser = current_user
                 blog_profile = Blogprofile(usersno=getUser.sno)
                 db.session.add(blog_profile)
@@ -391,8 +391,9 @@ def authorize():
     else:
         getUser.picture = user.get('picture')
         blogprofile = Blogprofile(usersno=getUser.sno)
-        readinglist = Readinglists(user=getUser)
-        db.session.add_all([readinglist,blogprofile])
+        readinglist = Readinglists(usersno=getUser.sno)
+        db.session.add(blogprofile)
+        db.session.add(readinglist)
         db.session.commit()
         login_user(getUser)
     # print(profile)
