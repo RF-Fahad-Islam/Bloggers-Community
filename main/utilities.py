@@ -59,6 +59,11 @@ def total_viewers(posts):
     if posts:
         for post in posts:
             total_viewers += post.viewers_count
+            
+    if total_viewers >= 1000000:
+        total_viewers = "%.0f%s" % (total_viewers/1000000.00, 'M')
+    elif total_viewers >= 1000:
+        total_viewers = "%.0f%s" % (total_viewers/1000.0, 'k')
     return total_viewers
 
 def get_user_location(requests):

@@ -1,5 +1,5 @@
 <!-- !Render Posts Macro: Render all posts in the form of cards -->
-{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false,txt="Be the first to Post") %}
+{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false,txt="Be the first to Post", viewers_count=false) %}
 {% if posts|length != 0 %}
 {% for post in posts %}
 
@@ -19,6 +19,11 @@
         <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
             {{user.firstname}} {{user.lastname}}
             (@{{user.username}})</a>
+            {% if viewers_count %}
+            <span class="badge p-2  bg-light text-black">
+                <i class="fa fa-eye"></i> {{post.views}}
+              </span>
+            {% endif %}
         {% endif %}
         {% if simple %}
         <a class="btn float-end rounded-circle btn-outline-warning fw-bolder"
