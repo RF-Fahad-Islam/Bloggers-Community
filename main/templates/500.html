@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <div class="card my-3">
+        <h4 class="card-body text-center">500: Internal Server Error
+        </h4>
+    </div>
+    <div
+    class="alert my-3 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
+    <img src="{{url_for('static', filename='images/12.png')}}" style="width: 80vh;" alt="Search Not Found">
+    <div>
+        <h3>Oww! Some Error Ocurred!</h3>
+        <hr>
+        <h5 class="text-danger text-muted">Sorry for the inconvenience. We have reported the issue. Hope it will be fixed soon....</h5>
+        <hr>
+        <a class="btn btn-primary btn-lg" href="/"
+            ><i class="fa fa-home">Go Home</i> </a
+          >
+    </div>
+</div>
+    </div>
+</div>
+{% endblock body %}
