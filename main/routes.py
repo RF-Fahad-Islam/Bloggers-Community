@@ -5,6 +5,7 @@ from .models import Users, Posts, Notices, Comment, Blogprofile,Readinglists
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
+import random
 params = {
     "page_title":"Blogsphere | Made By Fahad",
     "app_name":"Blogsphere",
@@ -34,7 +35,7 @@ def home():
     posts = Posts.query.all()
     notices = Notices.query.all()
     notices.reverse()
-    posts.reverse()
+    random.shuffle(posts)
     return render_template('index.html',notices=notices,  posts=posts)
 
 # Handle Other Urls
