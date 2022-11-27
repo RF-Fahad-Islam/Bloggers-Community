@@ -72,6 +72,7 @@ class Blogprofile(db.Model):
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
     def __repr__(self):
         return f"<Profile {self.sno}"
+    
 class Readinglists(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     # Stores the given id of user and and saves the user object in writer_user

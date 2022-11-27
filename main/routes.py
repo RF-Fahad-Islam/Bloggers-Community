@@ -243,10 +243,8 @@ def handleDeletes(keyword,sno):
                 db.session.commit()
             db.session.delete(post)
             db.session.commit()
-            if current_user.is_admin:
-                return redirect(url_for("adminDashboard"))
-            else:
-                return redirect(url_for("userDashboard"))
+            return redirect(url_for("userDashboard"))
+
                     
     elif keyword == "p":
         if current_user.is_admin:
@@ -361,7 +359,7 @@ def authorize():
 
     user = token['userinfo']
     getUser = Users.query.filter_by(email=user.get('email')).first() 
-    if not Users.query.filter_by(email=user.get('email')).first():
+    if not getUser:
         userid = generateId(30)
         firstname = user.get('given_name')
         lastname = user.get('family_name')
@@ -390,11 +388,16 @@ def authorize():
         db.session.commit()
     else:
         getUser.picture = user.get('picture')
-        blogprofile = Blogprofile(usersno=getUser.sno)
-        readinglist = Readinglists(usersno=getUser.sno)
-        db.session.add(blogprofile)
-        db.session.add(readinglist)
-        db.session.commit()
+        blogprofile = Blogprofile.query.filter_by(usersno=getUser.sno).first()
+        readinglist = Readinglists.query.filter_by(user=getUser).first()
+        if not blogprofile:
+            blogprofile = Blogprofile(usersno=getUser.sno)
+            db.session.add(blogprofile)
+            db.session.commit()
+        if not readinglist:
+            readinglist = Readinglists(user=getUser)
+            db.session.add(readinglist)
+            db.session.commit()
         login_user(getUser)
     # print(profile)
     # do something with the token and profile
