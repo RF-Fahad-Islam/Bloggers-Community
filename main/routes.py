@@ -238,8 +238,9 @@ def handleDeletes(keyword,sno):
     if keyword == "b":
         post = Posts.query.filter_by(sno=sno).first()
         if post.writer_id == current_user.sno or current_user.is_admin:
-            db.session.query(Readinglists.query.join(Posts.reading_lists).filter(Posts.sno == post.sno).all()).delete()
-            db.session.commit()
+            for readinglist in post.reading_lists:
+                readinglist.blogs.remove(post)
+                db.session.commit()
             db.session.delete(post)
             db.session.commit()
             if current_user.is_admin:
@@ -251,11 +252,20 @@ def handleDeletes(keyword,sno):
         if current_user.is_admin:
             user = Users.query.filter_by(sno=sno).first()
             posts = Posts.query.filter_by(writer_id=user.sno).all()
+            blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
+            readinglist = Readinglists.query.filter_by(usersno=user.sno).first()
+            for blog in readinglist.blogs:
+                blog.reading_lists.remove(readinglist)
+                db.session.commit()
             if not posts:
                 for post in posts:
                     db.session.delete(post)
                     db.session.commit()
             db.session.delete(user)
+            if blogProfile:
+                db.session.delete(blogProfile)
+            if readinglist:
+                db.session.delete(readinglist)
             db.session.commit()
                 
             return redirect(url_for("adminDashboard"))
@@ -396,17 +406,19 @@ def follow():
     import json
     if request.method == "GET":
         sno = request.args.get("sno")
-        user_sno = request.args.get('usersno')
         url = request.args.get('url')
+        user_sno = request.args.get('user_sno')
         if not sno and not url: abort(404)
         if not user_sno:
             user_sno = current_user.sno
-        user = db.one_or_404(db.select(Users).filter_by(sno=int(user_sno)))
+        user = db.one_or_404(db.select(Users).filter_by(sno=current_user.sno))
         blogprofile = db.one_or_404(db.select(Blogprofile).filter_by(usersno=int(sno)))
         if blogprofile in user.following:
             user.following.remove(blogprofile)
+            is_follow = False
         else:
             user.following.append(blogprofile)
+            is_follow = True
         db.session.commit()
         if url:
             return redirect(url)
@@ -414,6 +426,8 @@ def follow():
             "status":200,
             "success":True,
             "user":user.username,
+            "followCount":len(blogprofile.followers),
+            "is_follow":is_follow
         })
     abort(404)
 
