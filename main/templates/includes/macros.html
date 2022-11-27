@@ -124,7 +124,7 @@
 
 {% macro render_user_profile(user, current_user,blogProfile="",recommendeds="") %}
 
-{% if not current_user.is_anonymous and blogProfile %}
+{% if not current_user.is_anonymous %}
 {% set cnt = current_user.following.count(blogProfile) %}
 {% endif %}
 <div class="position-sticky" style="top: 2rem; height:auto;">
