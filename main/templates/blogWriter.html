@@ -96,7 +96,7 @@
         <input type='hidden' name="sno" id="sno" value="{{sno}}">
 
         <div class="my-2">
-          <input id="tag" name="tag" min="3" class="titleInput" maxLength="50" placeholder="Tags (space)" value="{{post.tag}}"
+          <input id="tag" name="tag" min="3" class="titleInput" maxLength="50" minlength="3" placeholder="Tags (space)" value="{{post.tag}}"
             style="width: 22%; font-size:20px;">
           {% if sno=="0" %}
           {% set text = "Publish Blog" %}

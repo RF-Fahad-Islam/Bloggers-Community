@@ -68,10 +68,10 @@ class MyModelView(ModelView):
 #         return abort(404)
 
 # class MyHomeView(AdminIndexView):
-#     # @expose('/')
-#     # def index(self):
-#     #     arg1 = 'Hello'
-#     #     return self.render('admin/index.html', arg1=arg1)
+#     @expose('/')
+#     def index(self):
+#         arg1 = 'Hello'
+#         return self.render('admin/index.html', arg1=arg1)
 #     def is_accessible(self):
 #         return (current_user.is_authenticated and current_user.is_admin)
 #     def inaccessible_callback(self, name, **kwargs):

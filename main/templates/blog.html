@@ -32,7 +32,7 @@
           {% endif %}
 
           {% if not current_user.is_anonymous %}
-
+            {% set  cnt = current_user.readinglist.blogs.count(post) %}
           {% if cnt>0 %}
           <span class="text-primary btn btn-outline-primary border-0" style="cursor: pointer;font-size:30px; "
             id="bookmark">

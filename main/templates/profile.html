@@ -215,13 +215,15 @@
           >
         </div>
         {% endif %}
-        <div class="alert alert-warning my-3">
-          <h5>Empty! No posts.</h5>
-          <strong
-            >No Posts Here. {{user.username}} has not created any post.
-          </strong>
-          {% if current_user.sno == user.sno %}
+       <div
+    class="alert mb-2 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
+    <img src="{{url_for('static', filename='images/30.png')}}" style="width: 40vh;" alt="Search Not Found">
+    <div>
+        <h3>No Posts Here!</h3>
+        <hr>
+        <h5 class="text-muted">@{{user.username}} have not published any blog.</h5>
           <hr />
+          {% if current_user.sno == user.sno  %}
           <a class="btn btn-primary btn-lg" href="/blog-writer/edit/0"
             ><i class="fa fa-plus-circle"></i> Create a Blog</a
           >

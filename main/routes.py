@@ -187,12 +187,9 @@ def handleUsersPosts(username, postSlug):
     if not recommendeds:
         recommendeds = posts[:3]
     recommendeds.remove(post)
-    cnt = 0
-    if not current_user.is_anonymous:
-        cnt = current_user.readinglist.blogs.count(post)
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
 
-    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments,cnt=cnt,blogProfile=blogProfile)
+    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments,blogProfile=blogProfile)
 
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
 @login_required
@@ -211,7 +208,7 @@ def handleBlogWriter(sno):
             post = Posts(title=form.title.data, summary=form.summary.data,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno)
             # If the user doesn't have any post then create blogprofile while saving first post
-            if not current_user.posts:
+            if len(current_user.posts) == 0 or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
                 getUser = current_user
                 blog_profile = Blogprofile(usersno=getUser.sno)
                 db.session.add(blog_profile)
@@ -241,6 +238,8 @@ def handleDeletes(keyword,sno):
     if keyword == "b":
         post = Posts.query.filter_by(sno=sno).first()
         if post.writer_id == current_user.sno or current_user.is_admin:
+            db.session.query(Readinglists.query.join(Posts.reading_lists).filter(Posts.sno == post.sno).all()).delete()
+            db.session.commit()
             db.session.delete(post)
             db.session.commit()
             if current_user.is_admin:
@@ -377,13 +376,13 @@ def authorize():
         getUser = Users.query.filter_by(email=email).first() 
         login_user(getUser)
         readinglist = Readinglists(user=getUser)
-        db.session.add_all(readinglist)
+        db.session.add(readinglist)
         db.session.commit()
     else:
         getUser.picture = user.get('picture')
-        db.session.commit()
+        blogprofile = Blogprofile(usersno=getUser.sno)
         readinglist = Readinglists(user=getUser)
-        db.session.add(readinglist)
+        db.session.add_all([readinglist,blogprofile])
         db.session.commit()
         login_user(getUser)
     # print(profile)
