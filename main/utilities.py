@@ -65,12 +65,3 @@ def total_viewers(posts):
     elif total_viewers >= 1000:
         total_viewers = "%.0f%s" % (total_viewers/1000.0, 'k')
     return total_viewers
-
-def get_user_location(requests):
-    from flask import request
-    import json
-    url = 'http://freegeoip.net/json/{}'.format(request.remote_addr)
-    r = requests.get(url)
-    j = json.loads(r.text)
-    city = j['country_name']
-    return city

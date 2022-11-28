@@ -377,7 +377,6 @@ def authorize():
         while user:
             username= username+generateId(2)
             user = Users.query.filter_by(username=username).first()
-        loc = get_user_location(request)
         newUser = Users(firstname=firstname,picture=picture, lastname=lastname, userid=userid, email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20), country=loc)
         db.session.add(newUser)
         db.session.commit()
