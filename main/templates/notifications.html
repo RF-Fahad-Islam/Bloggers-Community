@@ -1,13 +1,14 @@
 {% extends "layout.html" %}
 {% from 'includes/macros.html' import render_posts%}
-{% block title %} <title>Notifications ({{posts|length}}})</title> {% endblock %}
+{% block title %} <title>Notifications ({{posts|length}})</title> {% endblock %}
 {% block body %}
 <div class="container">
     <div class="card my-3">
-        <h4 class="card-body text-center">All Notifications ({{posts|length}})</h4>
+        <h4 class="card-body text-center"> <i class="fa fa-bell text-primary"></i> Notifications ({{posts|length}})</h4>
+        
     </div>
 
-            {{ render_posts(posts,show_end=False) }}
+            {{ render_posts(posts,show_end=False,txt="No Notifications Here.") }}
       
 
 
