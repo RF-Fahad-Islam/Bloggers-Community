@@ -30,7 +30,7 @@ class Users(db.Model, UserMixin):
     hobbies = db.Column(db.String(200), nullable=True, default="Blogging")
     work = db.Column(db.String(200), nullable=True)
     webLink = db.Column(db.String(500), nullable=True, default="")
-    brand_color = db.Column(db.String(30), nullable=True, default="black")
+    brand_color = db.Column(db.String(30), nullable=True, default="#009EFF")
     joined_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
     comments = db.relationship('Comment', backref='commentor', lazy='dynamic')
@@ -71,15 +71,21 @@ class Blogprofile(db.Model):
     # Stores the given id of user and and saves the user object in writer_user
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
     def __repr__(self):
-        return f"<Profile {self.sno}"
+        return f"<Profile {self.sno}>"
     
 class Readinglists(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     # Stores the given id of user and and saves the user object in writer_user
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
     blogs = db.relationship('Posts', secondary=user_reading_list, backref="reading_lists")
+    def __repr__(self):
+        return f"Usersno {self.usersno}"
 
-
+class Urlshortner(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+    point_to = db.Column(db.Text, nullable=False)
+    pointer = db.Column(db.String(8), nullable=False, unique=True)
+    
 class Posts(db.Model):
     __tablename__ = "posts"
     __searchable__ = ["title", "tag", "summary"]
@@ -92,6 +98,7 @@ class Posts(db.Model):
     public = db.Column(db.Boolean, nullable=False, default=True)
     pub_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     viewers_count = db.Column(db.Integer, nullable=False, default=0)
+    shorturl = db.Column(db.Integer, db.ForeignKey('urlshortner.sno'), nullable=True)
     # Stores the given id of user and and saves the user object in writer_user
     writer_id = db.Column(db.Integer, db.ForeignKey('users.sno'))
     # comments = db.relationship('Comments', backref='post', lazy='dynamic')
@@ -139,7 +146,8 @@ class Comment(db.Model):
     create_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
     # replies = db.relationship('SubComment', backref="thread", lazy="dynamic")
-    
+    def __repr__(self):
+        return f"{self.body}"
 # class SubComment(db.Model):
 #     sno = db.Column(db.Integer, primary_key=True)
 #     comsno = db.Column(db.Integer, db.ForeignKey('comment.sno'))
@@ -161,3 +169,4 @@ admin.add_view(MyModelView(Notices, db.session))
 admin.add_view(MyModelView(Comment, db.session))
 admin.add_view(MyModelView(Blogprofile, db.session))
 admin.add_view(MyModelView(Readinglists, db.session))
+admin.add_view(MyModelView(Urlshortner, db.session))

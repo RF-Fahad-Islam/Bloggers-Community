@@ -13,7 +13,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact"
-                type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Others</button>
+                type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Dashboard</button>
         </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
@@ -391,16 +391,29 @@
             </div>
         </div>
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            {% if blogProfile %}
             <div class="alert alert-light my-3 fw-bold">
                 <a href="{{url_for('getFollowers', username=current_user.username)}}" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> See</a>
                 <h5>See Your Blog Followers</h5>
               </div>
+              {% else %}
+              <div class="alert alert-warning my-3 fw-bold">
+                  <h5 class="text-center">You don't have a blog profile. Publish a blog first.</h5>
+                </div>
+              {% endif %}
+
             <div class="alert alert-light my-3 fw-bold">
                 <a href="{{url_for('getFollowing', username=current_user.username)}}" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> See</a>
                 <h5>See Your Following List</h5>
               </div>
         </div>
-        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
+        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+            <div class="alert alert-light my-3 fw-bold">
+                <a href="/dashboard" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> Go</a>
+                <h5> <i class="fa fa-bar-chart"></i> Open Dashboard</h5>
+              </div>
+
+        </div>
     </div>
 
 

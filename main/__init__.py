@@ -58,6 +58,9 @@ def server_error(e):
 app.register_error_handler(404, page_not_found)
 app.register_error_handler(500, server_error)
 
+
+
+
 #Configure Admin Panel
 class MyModelView(ModelView):
     def is_accessible(self):

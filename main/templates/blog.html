@@ -55,12 +55,40 @@
               class="text-black text-decoration-none fw-bolder p-2 badge bg-warning rounded-pill text-dark">#{{tag}}
             </a>
             {% endfor %}
+            <button type="button" class="text-black text-decoration-none fw-bolder p-2 badge bg-light border-0 rounded-pill text-dark float-end"
+             data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <i class="fa fa-link" style="font-size: 15px;"></i>
+            </button>
           </div>
+          <!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa fa-link"></i> Share shorten link</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <div class="card-title"><h4 class="text-center">Shorten Url</h4></div>
+          <input type="text" class="form-control d-block" value="{{shorturl}}" disabled>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- TODO:!Article -->
           <hr>
           <article id="body" class="blog-post position-sticky" style="top: 2rem; height:auto;">
             <div class="mb-2">
               <div class="fb-like float-end" data-href="/b/{{user.username}}/{{post.slug}}" data-width=""
-                data-layout="button_count" data-action="like" data-size="large" data-share="true"></div>
+                data-layout="button_count" data-action="like" data-size="large" data-share="false"></div>
               {% if user.profile == None %}
               <img src="{{url_for('static', filename='images/usericon.png')}}" alt="Avatar" width="30" height="30">
               {% else %}
