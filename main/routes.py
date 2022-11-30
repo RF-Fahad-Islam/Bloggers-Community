@@ -185,7 +185,7 @@ def settingProfile():
 @app.route('/b/<string:username>/<string:postSlug>', methods=["POST", "GET"])
 def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
-    post = user.posts.filter_by(slug=postSlug).first()
+    post = Posts.query.filter_by(slug=postSlug).first()
     comments = Comment.query.filter_by(to=f"/b/{user.sno}/{post.sno}").all()
     form = CommentForm()
     if form.validate_on_submit():
@@ -227,7 +227,7 @@ def handleUsersPosts(username, postSlug):
     recommendeds.remove(post)
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     try:
-        shorturl = params["url"] +"/l?p="+ Urlshortner.query.filter_by(sno=post.shorturl).first().pointer
+        shorturl = f'{params["url"]}/l?p={Urlshortner.query.filter_by(point_to=f"/b/{current_user.username}/{post.slug}").first().pointer}'
     except: shorturl = "No short url found"
     return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments, blogProfile=blogProfile, shorturl=shorturl)
 
@@ -246,12 +246,12 @@ def handleBlogWriter(sno):
         slug = string_to_slug(form.title.data)
         tag: str = form.tag.data
         tag = tag.strip().lower()
-        urlshort = Urlshortner(point_to=f"/{current_user.username}/{slug}", pointer=generate_pointer(3))
-        db.session.add(urlshort)
-        db.session.commit()
         if sno == "0":
             post = Posts(title=form.title.data, summary=form.summary.data,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, shorturl=urlshort.sno)
+            urlshort = Urlshortner(point_to=f"/{current_user.username}/{slug}", pointer=generate_pointer(3))
+            db.session.add(urlshort)
+            db.session.commit()
             # If the user doesn't have any post then create blogprofile while saving first post
             if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
                 getUser = current_user
@@ -260,24 +260,29 @@ def handleBlogWriter(sno):
                 db.session.commit()
             db.session.add(post)
             db.session.commit()
-            db.session.commit()
             flash("Successfully posted the blog! Thanks for posting.",
                   category="success")
             return redirect(f"/b/{current_user.username}/{slug}")
         else:
             post = Posts.query.filter_by(sno=sno).first()
+            prev_slug = post.slug
             if current_user.sno == post.writer_id:
                 post.title = form.title.data
                 post.body = form.body.data
                 post.tag = form.tag.data
                 post.slug = slug
                 db.session.commit()
-                urlshort = Urlshortner.query.filter_by(point_to=f"/{current_user.username}/{post.slug}")
-                urlshort.point_to = f"/{current_user.username}/{slug}" 
-                db.session.commit()
+                urlshort = Urlshortner.query.filter_by(point_to=f"/b/{current_user.username}/{prev_slug}").first()
+                if urlshort is not None:
+                    urlshort.point_to = f"/b/{current_user.username}/{slug}" 
+                    db.session.commit()
+                else:
+                    urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}",pointer=generate_pointer(3))
+                    db.session.add(urlshort)
+                    db.session.commit()
                 flash(
                     f"Successfully apply the updates on '{post.title}' post", category="success")
-                return redirect(f"/b/{current_user.username}/{post.slug}")
+                return redirect(f"/b/{current_user.username}/{slug}")
             else:
                 abort(404)
     flash_form_error_messages(form)
