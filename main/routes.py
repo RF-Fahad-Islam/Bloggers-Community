@@ -185,7 +185,7 @@ def settingProfile():
 @app.route('/b/<string:username>/<string:postSlug>', methods=["POST", "GET"])
 def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
-    post = Posts.query.filter_by(slug=string_to_slug(postSlug)).first()
+    post = Posts.query.filter_by(slug=postSlug).first()
     comments = Comment.query.filter_by(to=f"/b/{user.sno}/{post.sno}").all()
     form = CommentForm()
     if form.validate_on_submit():
@@ -285,7 +285,7 @@ def handleBlogWriter(sno):
                     db.session.commit()
                 flash(
                     f"Successfully apply the updates on '{post.title}' post", category="success")
-                return redirect(f"/b/{current_user.username}/{slug}")
+                return redirect(f"{urlshort.point_to}")
             else:
                 abort(404)
     flash_form_error_messages(form)

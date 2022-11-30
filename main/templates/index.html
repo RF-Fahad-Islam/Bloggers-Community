@@ -33,16 +33,16 @@
     {# <h1 class="text-center my-3"><img src="{{url_for('static', filename='contactbook.ico')}}" alt="Icon"> Contacts
         Book</h1> #}
 
-
-    <!-- !Login Alert -->
-    {% if not current_user.is_authenticated %}
-    <div class="alert alert-primary my-3" role="alert" style="border-radius: 30px;">
-        <h4 class="alert-heading">Welcome User! You are not logged in!</h4>
-        <p>
-            <b>
-                Login to create your blog profile and create blogs.
-            </b>
-        </p>
+        
+        <!-- !Login Alert -->
+        {% if not current_user.is_authenticated %}
+        <div class="alert alert-primary my-3" role="alert" style="border-radius: 30px;">
+            <h4 class="alert-heading">Welcome User! You are not logged in! Login to stop Ads!</h4>
+            <p>
+                <b>
+                    Login to create your blog profile and create blogs.
+                </b>
+            </p>
         <hr>
         <div class="flex flex-wrap justify-content-between align-content-center align-items-center"
         >
@@ -55,7 +55,7 @@
                 Continue with Google
             </a>
         </div>
-              
+        
     </div>
 
     {% endif %}
@@ -73,17 +73,17 @@
             <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
                 role="tab" aria-controls="contact" aria-selected="false"><i class="fa fa-comments"></i>
                 Discussion</button>
-        </li>
+            </li>
     </ul>
     <div class="tab-content" id="myTabContent">
         <!-- !All Posts Tab -->
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
             {{ render_posts(posts) }}
         </div>
-
+        
         <!-- !All Notices Tab -->
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-           {{render_notices(notices)}}
+            {{render_notices(notices)}}
         </div>
 
         <!-- !Comments tab -->
@@ -95,12 +95,11 @@
                 </div>
             </div>
         </div>
-
+        
         
     </div>
+    {% if not current_user.is_authenticated %}
+    <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
+    {% endif %}
 </div>
 {% endblock body %}
-{% block script %}
-<script src="{{url_for('static', filename='js/searcher.js')}}"></script>
-
-{% endblock script %}

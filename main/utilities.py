@@ -9,7 +9,7 @@ def string_to_slug(string):
     string = string.strip().lower()
     string = string.replace("  ", " ") #Replace double spaces by single space
     string = string.replace(" ", "-")
-    return quote(string)
+    return string
 
 def generateId(length):
     """Generate a unique ID for each user id
