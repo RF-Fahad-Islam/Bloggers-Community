@@ -76,7 +76,7 @@ def handleTags():
 @app.route("/p/<string:username>")
 def userProfile(username):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
-    posts = user.posts.all()
+    posts = user.posts.order_by(Posts.pub_date.desc()).all()
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     if not current_user.is_anonymous:
         cnt = current_user.following.count(blogProfile)
@@ -226,9 +226,9 @@ def handleUsersPosts(username, postSlug):
         recommendeds = posts[:3]
     recommendeds.remove(post)
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
-    urlshort = Urlshortner.query.filter_by(point_to=f"/b/{current_user.username}/{post.slug}").first()
+    urlshort = Urlshortner.query.filter_by(point_to=f"/b/{user.username}/{post.slug}").first()
     if urlshort is None or not urlshort:
-        urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{post.slug}", pointer=generate_pointer(4))
+        urlshort = Urlshortner(point_to=f"/b/{user.username}/{post.slug}", pointer=generate_pointer(4))
         db.session.add(urlshort)
         db.session.commit()
     shorturl = f'{params["url"]}/l?p={urlshort.pointer}'
@@ -366,7 +366,7 @@ def adminDashboard():
 @app.route("/dashboard")
 @login_required
 def userDashboard():
-    posts = current_user.posts.all()
+    posts = current_user.posts.order_by(Posts.pub_date.desc()).all()
     blogProfile = Blogprofile.query.filter_by(usersno=current_user.sno).first()
     total_views = total_viewers(posts)
     return render_template("dashboard.html", user=current_user,  posts=posts, total_views=total_views, blogProfile=blogProfile)
