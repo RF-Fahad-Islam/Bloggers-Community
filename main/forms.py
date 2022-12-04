@@ -1,6 +1,6 @@
 # Flask WTF Forms Classes for forms management
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField,SubmitField, TextAreaField, IntegerField
+from wtforms.fields import StringField, PasswordField,SubmitField, TextAreaField, IntegerField, BooleanField
 from wtforms.fields.simple import HiddenField
 from wtforms.validators import Length, DataRequired, EqualTo, Email, ValidationError, Optional
 from .models import Users, Posts
@@ -60,6 +60,7 @@ class BlogWriter(FlaskForm):
     title = StringField(label="Title", validators=[DataRequired(), Length(min=10, max=120)])
     body = TextAreaField(label="body", validators=[DataRequired(), Length(min=15)])
     summary = TextAreaField(label="body", validators=[Length(max=200)])
+    draft = BooleanField(label="Draft", default=0)
     tag = StringField(label="tag", validators=[DataRequired(), Length(min=3, max=50)])
     sno =  HiddenField(label="sno", validators=[DataRequired()])
     submit = SubmitField(label="Publish Blog")
@@ -68,6 +69,7 @@ class NoticeForm(FlaskForm):
     title = StringField(label="Title", validators=[DataRequired(), Length(min=3, max=100)])
     desc = TextAreaField(label="Descrption", validators=[DataRequired(), Length(max=300)])
     submit = SubmitField(label="Create Notice")
+
     
 class SettingForm(RegisterForm, FlaskForm):
     def validate_username(self, username):

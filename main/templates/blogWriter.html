@@ -2,30 +2,6 @@
 {% block title %}
 <title>Blog Writer</title>
 {% endblock title %}
-{% block css %}
-<style>
-  .titleInput {
-    outline: none;
-    border-bottom: 4px solid blue;
-    /* border: 0; */
-    border-top: 0;
-    border-left: 0;
-    border-right: 0;
-    width: 100%;
-    padding: 11px 20px;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-size: 41px;
-    font-weight: bold;
-    text-align: center
-  }
-
-  .titleInput:focus {
-    border-bottom: 4px solid rgba(0, 189, 41, 0.808);
-
-  }
-</style>
-{% endblock css %}
 {% block body %}
 <div class="container">
 
@@ -51,9 +27,10 @@
       <form action="/blog-writer/edit/{{sno}}" method="POST">
         {{form.csrf_token}}
         <input required type="text" class="titleInput" id="title" name="title" value="{{post.title}}"
-          placeholder="Blog Title Here" minLength="10" maxlength="120">
+          placeholder="🚩 Blog Title Here" minLength="10" maxlength="120">
 
         <!-- !SEO Settings -->
+
         <div class="card mb-2">
           <div class="card-title">
             <button class="btn d-block btn-outline-grey font-weight-bold" type="button" data-bs-toggle="collapse"
@@ -81,8 +58,11 @@
                     </div> -->
               <div class="mb-3">
                 <label for="summary" class="form-label font-weight-bolder">📃 SEO description</label>
-                <p class="text-muted font-italic">Limit 200 chars. The SEO Description will be used in place of your Subtitle on search engine results pages. Good SEO descriptions utilize keywords, summarize the article and are between 140-156 characters long</p>
-                <textarea class="form-control" placeholder="Write a summary of your blog post" id="summary" name="summary" maxlength="200" rows="3">{{post.summary}}</textarea>
+                <p class="text-muted font-italic">Limit 200 chars. The SEO Description will be used in place of your
+                  Subtitle on search engine results pages. Good SEO descriptions utilize keywords, summarize the
+                  article and are between 140-156 characters long</p>
+                <textarea class="form-control" placeholder="Write a summary of your blog post" id="summary"
+                  name="summary" maxlength="200" rows="3">{{post.summary}}</textarea>
               </div>
             </div>
           </div>
@@ -95,15 +75,23 @@
             </textarea>
         <input type='hidden' name="sno" id="sno" value="{{sno}}">
 
+        <input id="tag" name="tag" min="3" class="titleInput d-block mx-auto" maxLength="50" minlength="3"
+          placeholder="Tags (format : 1tag 2tag)" value="{{post.tag}}" style="font-size:20px;">
+        {% if sno=="0" or post.public == false %}
+        {% set text = "Publish Blog" %}
+        {% else %}
+        {% set text = "Edit Blog" %}
+        {% endif %}
         <div class="my-2">
-          <input id="tag" name="tag" min="3" class="titleInput" maxLength="50" minlength="3" placeholder="Tags (space)" value="{{post.tag}}"
-            style="width: 22%; font-size:20px;">
-          {% if sno=="0" %}
-          {% set text = "Publish Blog" %}
+          {% if post.public == false %}
+
+          <input type="checkbox" class="btn-check" id="btn-check-outlined" name="draft" autocomplete="off"  checked>
+          <label class="btn btn-lg btn-outline-primary" for="btn-check-outlined">📎 Drafted</label>
           {% else %}
-          {% set text = "Edit Blog" %}
+          <input type="checkbox" class="btn-check" id="btn-check-outlined" name="draft" autocomplete="off">
+          <label class="btn btn-lg btn-outline-primary" for="btn-check-outlined">📎 Draft</label>
           {% endif %}
-          <input type="submit" id="submit" class="btn btn-lg btn-outline-success float-end" value="{{text}}">
+          <input type="submit" id="submit" class="btn btn-lg btn-outline-success float-end" value="🎉 {{text}}">
           <!-- <button class="btn btn-lg btn-outline-primary float-end mx-2">
                     <i class="fa fa-paperclip"></i> Save Draft
                 </button> -->
@@ -124,11 +112,11 @@
 {% endblock body %}
 {% block script %}
 <script>
-  $('#tag').on('input',(e)=> {
+  $('#tag').on('input', (e) => {
     let tags = $('#tag').val().split(" ")
-    
-    if( tags.length > 5){$('#tag').css({'border-bottom':'5px solid red'})}
-    else{$('#tag').css({'border-bottom':'5px solid green'})}
+
+    if (tags.length > 5) { $('#tag').css({ 'border-bottom': '5px solid red' }) }
+    else { $('#tag').css({ 'border-bottom': '5px solid green' }) }
   })
 </script>
 <script src="https://cdn.tiny.cloud/1/8s55fjh97p8z0295i3xgm93498al8v6u61o11kfmzxjk982d/tinymce/5/tinymce.min.js"

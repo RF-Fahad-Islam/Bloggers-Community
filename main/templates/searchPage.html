@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% from 'includes/macros.html' import render_posts%}
+{% block title %} <title>Dynamic search</title> {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="card my-3">
+        <h4 class="card-body text-center"> <i class="fa fa-list-alt text-primary"></i> Dynamic Search
+        </h4>
+    </div>
+    <input class="titleInput" min="3" max="100" name="q" hx-get="{{url_for('search')}}" hx-trigger="keyup changed delay:500ms" placeholder="Search..." hx-indicator="#spinner" hx-target="#searchitems" hx-swap="innerHTML">
+    <div id="searchitems">
+        <div
+        class="alert my-3 d-flex justify-content-center text-center flex-row align-content-center align-items-center flex-wrap">
+        <img src="{{url_for('static', filename='images/31.png')}}" style="width: 80vh;" alt="Search Not Found">
+        <div>
+            <h3>Search Any Post!</h3>
+            <hr>
+        </div>
+    </div>
+    </div>
+
+    <div class="card my-2 htmx-indicator" id="spinner" style="width: 100%;" aria-hidden="true">
+        <div class="card-body">
+          <h5 class="card-title placeholder-glow">
+            <span class="placeholder col-6"></span>
+          </h5>
+          <p class="card-text placeholder-glow">
+            <span class="placeholder col-7"></span>
+            <span class="placeholder col-4"></span>
+            <span class="placeholder col-4"></span>
+            <span class="placeholder col-4"></span>
+            <span class="placeholder col-4"></span>
+            <span class="placeholder col-7"></span>
+            <span class="placeholder col-4"></span>
+          </p>
+        </div>
+      </div>
+    <div class="card my-3">
+        <h4 class="text-center bg-white card-header">
+            <span class="float-start">Most Popular Tags</span>
+            <!-- !Search Bar -->
+            <!-- <label for="exampleDataList" class="form-label">Datalist example</label> -->
+            <input class="form-control float-end mx-3"  type="search" style="width: 40%;" list="datalistOptions"
+                id="query" placeholder="Filter Tags">
+        </h4>
+        <div class="card-body text-center">
+            {% for tag, i in tags.items() %}
+            <h3 class="d-inline-block mr-1 content"><a href="/search?q={{tag}}&type=tag"
+                    class="badge text-decoration-none bg-light text-dark">#{{tag}} <span
+                        class="badge bg-primary text-white rounded-circle" style="font-size: 13px;">{{i}}</span> </a>
+            </h3>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock body %}

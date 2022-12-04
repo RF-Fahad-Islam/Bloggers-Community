@@ -1,5 +1,6 @@
 <!-- !Render Posts Macro: Render all posts in the form of cards -->
-{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false,txt="Be the first to Post", viewers_count=false) %}
+{% macro render_posts(posts, show_end=true, dashboard=false, search=false,simple=false,txt="Be the first to Post",
+viewers_count=false) %}
 {% if posts|length != 0 %}
 {% for post in posts %}
 
@@ -19,19 +20,31 @@
         <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
             {{user.firstname}} {{user.lastname}}
             (@{{user.username}})</a>
-            {% if viewers_count %}
-            <span class="badge p-2  bg-light text-black">
-                <i class="fa fa-eye"></i> {{post.views}}
-              </span>
-            {% endif %}
+        {% if viewers_count %}
+
+        {% if post.public %}
+        <span class="badge p-2 rounded-pill  bg-light text-black">
+            <i class="fa fa-eye"></i> {{post.views}}
+        </span>
+        {% else %}
+        <span class="badge rounded-pill p-2  btn-orange text-black">📌 Draft
+        </span>
+
+        {% endif %}
+        {% endif %}
+
         {% endif %}
         {% if simple %}
         <a class="btn float-end rounded-circle btn-outline-warning fw-bolder"
             href="{{url_for('handleDeletes', sno=post.sno, keyword='r')}}"><i class="fa fa-check"
                 style="font-size: 18px;"></i></a>
         {% endif %}
-        <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
-            class="link text-dark post-title link" style="text-decoration: none;">
+        {% if post.public %}
+        {% set url = url_for('handleUsersPosts', username=user.username, postSlug=post.slug) %}
+        {% else %}
+        {% set url = url_for('handleBlogWriter', sno=post.sno) %}
+        {% endif %}
+        <a href="{{url}}" class="link text-dark post-title link" style="text-decoration: none;">
             <h3 class="card-title">{{post.title}}</h3>
         </a>
         {% for tag in post.tags_list %}
@@ -45,8 +58,7 @@
             class="btn btn-outline-danger float-end mx-2 delete">
             <i class="fa fa-trash"></i> Delete</a>
         {% else %}
-        <a href="{{url_for('handleUsersPosts', username=user.username, postSlug=post.slug)}}"
-            class="btn btn-light float-end">Read</a>
+        <a href="{{url}}" class="btn btn-light float-end">Read</a>
         {% endif %}
     </div>
 </section>
@@ -204,6 +216,8 @@
         </div>
     </div>
     {% endif %}
+    <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" class="rounded-3" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
+
 </div>
 
 {% endmacro %}
