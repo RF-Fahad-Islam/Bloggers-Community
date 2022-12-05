@@ -431,27 +431,34 @@ def userDashboard():
 @app.route("/search", methods=["GET"])
 def search():
     type = request.args.get('t')
+    q = request.args.get("q")
     try:
         page = int(request.args.get("p"))
-        q = request.args.get("q")
     except:
         page = 1
-        q = ""
+        
+    #If it is a dynamic search page
     if q == "" and not htmx:
-        return redirect('/search?t=dynamic')
+        return redirect('/search?t=dynamic&q=any')
     searchType = request.args.get("type")
+    
     if searchType == "tag":
+        #If search for tags
         posts = Posts.query.msearch(
             q, fields=["tag"]).paginate(page=page, per_page=8)
     else:
+        #Else Default serach in title and tag
         posts = Posts.query.msearch(
             q, fields=["title", "tag"]).paginate(page=page, per_page=8)
-    if htmx:
-        if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
-        return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
+        
     if type is not None:
         tags= all_tags()
         return render_template('searchPage.html', tags=tags)
+    
+    # If a AJAX Request via HTMX
+    if htmx:
+        if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
+        return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
     return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url)
 
 
