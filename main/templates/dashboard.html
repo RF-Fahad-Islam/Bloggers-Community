@@ -48,13 +48,17 @@
         </h5>
       </div>
       <div class="card my-3 text-center">
-        <h4 class="text-center card-header">
+        <h4 class="text-center card-title p-2">
           <!-- !Search Bar -->
           <!-- <label for="exampleDataList" class="form-label">Datalist example</label> -->
           <input class="form-control mx-3" type="search" style="width: 40%;" list="datalistOptions" id="query"
             placeholder="Type to search...">
+          </h4>
+        </div>
+        <h4 class="text-center">
+
+          <span class="btn badge rounded-pill btn-light text-black" id="draft"> <i class="fa fa-filter"></i> Filter Drafts</span>
         </h4>
-      </div>
       <!-- !Users All Blogs Fetch From Database -->
       <div id="blogs">
         {{ render_posts(posts, show_end=false, dashboard=true, viewers_count=true) }}
@@ -77,6 +81,11 @@
     let query = document.getElementById("query")
     query.addEventListener('input', (e) => {
       e.preventDefault();
+      search()
+      
+    });
+
+    const search = ()=> {
       let searchItem = document.getElementsByClassName('content');
       Array.from(searchItem).forEach(function (element) {
         inputVal = query.value.toLowerCase();
@@ -98,6 +107,15 @@
           }
         }
       });
-    });
+    }
+
+    $('#draft').click(()=> {
+      if($('input').val() != "draft"){
+        $('input').val("draft")
+      } else {
+        $('input').val("")
+      }
+      search()
+    })
   </script>
   {% endblock script %}

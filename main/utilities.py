@@ -69,9 +69,10 @@ def all_tags():
     tags_list = []
     tagsObj = {}
     for post in posts:
-        tags = post.tag.split(' ') #Converted to list
-        for tag in tags:
-            if tag != "": tags_list.append(tag)
+        if post.tag is not None:
+            tags = post.tag.split(' ') #Converted to list
+            for tag in tags:
+                if tag != "": tags_list.append(tag)
             
     tags_set = set(tags_list)
     for tag in tags_set:

@@ -159,25 +159,6 @@
       {% endif %}
       <!-- !Users All Blogs Fetch From Database -->
       <div id="blogs">
-        <div
-          class="toast"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div class="toast-header">
-            <img src="..." class="rounded me-2" alt="..." />
-            <strong class="me-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="toast"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="toast-body">Hello, world! This is a toast message.</div>
-        </div>
         {% for post in posts %}
 
         <div class="card my-3 box-shadow">
@@ -205,7 +186,8 @@
             <p class="card-text text-muted">{{post.pub_date.strftime("%c")}}</p>
           </div>
         </div>
-        {% endfor %} {% if posts|length == 0 %} {% if user.sno ==
+        {% endfor %}
+         {% if posts|length == 0 %} {% if user.sno ==
         current_user.sno %}
         <div class="d-grid my-3">
           <a
@@ -271,6 +253,10 @@
             $("#follow").html('<i class="fa fa-check"></i> Followed');
             $("#follow").removeClass('btn-primary')
             $("#follow").addClass('btn-orange')
+            const toastLiveExample = document.getElementById('liveToast')
+            const toast = new bootstrap.Toast(toastLiveExample)
+        
+            toast.show()
           } else {
             $("#follow").html('<i class="fa fa-plus-square-o"></i> Follow');
             $("#follow").removeClass('btn-orange')
@@ -278,6 +264,7 @@
           }
             $("#followCount").text(String(result['followCount']));
 
+         
       })
       .catch((error) => console.log("error", error));
   };

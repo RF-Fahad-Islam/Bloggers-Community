@@ -1,11 +1,12 @@
 import json
-from . import db, app, login_manager, search, oauth
+from . import db, app, login_manager, search, oauth,htmx,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
 from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
 import random
+from datetime import datetime
 params = {
     "page_title": "Blogsphere | Made By Fahad",
     "app_name": "Blogsphere",
@@ -35,9 +36,7 @@ params = {
 def static_from_root():
     return send_from_directory(app.static_folder, 'sitemap.xml')
 
-# Set Login Manager
-
-
+# Set Login Manager and get user credentials as current_user
 @login_manager.user_loader
 def load_user(user_id):
     return Users.query.get(int(user_id))
@@ -50,13 +49,31 @@ def context_processor():
     return dict(params=params)
 
 
+async def simple_send():
+    await mail.send_message("HELLO", sender='riyad9949@gmail.com', recipients=['riyad9949@gmail.com'],body='HELLO THIS IS')
+
+
 @app.route("/")
 def home():
-    posts = Posts.query.all()
+    posts = Posts.query.filter_by(public=True).all()
     notices = Notices.query.all()
     notices.reverse()
     random.shuffle(posts)
     return render_template('index.html', notices=notices,  posts=posts)
+
+@app.route('/draft', methods=['POST'])
+def draftpost():
+    if request.method == "POST":
+        title = request.form.get('title')
+        content = request.form.get('content')
+        if len(title)<3 or len(title)>100 or len(content)>500 or "<script" in content: 
+            flash("(XSS Protection) : Detected scripting code!", category="danger")
+            return redirect('/')
+        post = Posts(title=title, body=content, public=False,writer_id=current_user.sno, slug=string_to_slug(title))
+        db.session.add(post)
+        db.session.commit()
+        flash(f'Successfully Saved the Draft : {title}')
+        return redirect(url_for('userDashboard'))
 
 # Handle Other Urls
 
@@ -65,6 +82,17 @@ def home():
 @app.route('/<path:path>')
 def catch_all(path):
     abort(404)
+
+@app.route('/get-blogs', methods=["GET"])
+def blogs():
+    page =1
+    try:
+        page = int(request.args.get('p'))
+    except:
+        pass
+    posts = Posts.query.paginate(page=page,per_page=2)
+    return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs", showend=True)
+
 
 
 @app.route("/tags")
@@ -76,7 +104,7 @@ def handleTags():
 @app.route("/p/<string:username>")
 def userProfile(username):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
-    posts = user.posts.order_by(Posts.pub_date.desc()).all()
+    posts = user.posts.filter_by(public=True).order_by(Posts.pub_date.desc()).all()
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     if not current_user.is_anonymous:
         cnt = current_user.following.count(blogProfile)
@@ -217,10 +245,10 @@ def handleUsersPosts(username, postSlug):
             next_post = posts[pos+1]
         else:
             prev_post = posts[pos-1]
-    recommendeds = Posts.query.msearch(post.tags_list[0], fields=[
+    recommendeds = Posts.query.filter_by(public=True).msearch(post.tags_list[0], fields=[
                                        "tag"]).order_by(Posts.viewers_count.desc())[:5]
     if not recommendeds and len(post.tags_list) > 1:
-        recommendeds = Posts.query.msearch(post.tags_list[1], fields=[
+        recommendeds = Posts.query.filter_by(public=True).msearch(post.tags_list[1], fields=[
                                            "tag"]).order_by(Posts.viewers_count.desc())[:5]
     if not recommendeds:
         recommendeds = posts[:3]
@@ -232,11 +260,29 @@ def handleUsersPosts(username, postSlug):
         db.session.add(urlshort)
         db.session.commit()
     shorturl = f'{params["url"]}/l?p={urlshort.pointer}'
-    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds, form=form, comments=comments, blogProfile=blogProfile, shorturl=shorturl)
+    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds,comments=comments, blogProfile=blogProfile, shorturl=shorturl, form=form)
+
+@app.route('/comment', methods=["POST","GET"])
+@login_required
+def comment():
+    if request.method == "POST":
+        form = request.form
+        body = form.get("body")
+        to = form.get("to")
+        uid = form.get('uid')
+        user = Users.query.filter_by(userid=uid).first()
+        if(len(body))>300: return "Too Long comment"
+        comment = Comment(body=body, to=to, usersno=user.sno)
+        db.session.add(comment)
+        db.session.commit()
+        comments = Comment.query.filter_by(to=to).all()
+        return render_template('particles/comment.html', comments=comments)
+    abort(404)
 
 
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
 @login_required
+# codiga-disable
 def handleBlogWriter(sno):
     if current_user.is_blocked:
         return abort(404)
@@ -249,12 +295,16 @@ def handleBlogWriter(sno):
         slug = string_to_slug(form.title.data)
         tag: str = form.tag.data
         tag = tag.strip().lower()
+        draft = bool(form.draft.data)
+        body = form.body.data
+        body = body.replace('<scipt ', "XSS").replace('<script/>', "XSS")
         if sno == "0":
             post = Posts(title=form.title.data, summary=form.summary.data,
-                         body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, shorturl=urlshort.sno)
-            urlshort = Urlshortner(point_to=f"/{current_user.username}/{slug}", pointer=generate_pointer(3))
-            db.session.add(urlshort)
-            db.session.commit()
+                         body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft )
+            if not draft:
+                urlshort = Urlshortner(point_to=f"/{current_user.username}/{slug}", pointer=generate_pointer(3))
+                db.session.add(urlshort)
+                db.session.commit()
             # If the user doesn't have any post then create blogprofile while saving first post
             if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
                 getUser = current_user
@@ -263,6 +313,7 @@ def handleBlogWriter(sno):
                 db.session.commit()
             db.session.add(post)
             db.session.commit()
+            if draft: return redirect(url_for('userDashboard'))
             flash("Successfully posted the blog! Thanks for posting.",
                   category="success")
             return redirect(f"/b/{current_user.username}/{slug}")
@@ -275,8 +326,13 @@ def handleBlogWriter(sno):
                 post.tag = form.tag.data
                 post.slug = slug
                 db.session.commit()
+                if draft:
+                    return redirect(url_for('userDashboard'))
+                else:
+                    post.public = True
+                    db.session.commit()
                 urlshort = Urlshortner.query.filter_by(point_to=f"/b/{current_user.username}/{prev_slug}").first()
-                if urlshort is not None or not urlshort:
+                if urlshort is not None:
                     urlshort.point_to = f"/b/{current_user.username}/{slug}" 
                     db.session.commit()
                 else:
@@ -374,21 +430,37 @@ def userDashboard():
 
 @app.route("/search", methods=["GET"])
 def search():
+    type = request.args.get('t')
+    q = request.args.get("q")
     try:
-        page = int(request.args.get("page"))
+        page = int(request.args.get("p"))
     except:
         page = 1
-    q = request.args.get("q")
-    if q == "":
-        return redirect('/')
+        
+    #If it is a dynamic search page
+    if q == "" and not htmx:
+        return redirect('/search?t=dynamic&q=any')
     searchType = request.args.get("type")
+    
     if searchType == "tag":
+        #If search for tags
         posts = Posts.query.msearch(
-            q, fields=["tag"]).paginate(page=page, per_page=3)
+            q, fields=["tag"]).paginate(page=page, per_page=8)
     else:
+        #Else Default serach in title and tag
         posts = Posts.query.msearch(
-            q, fields=["title", "tag"]).paginate(page=page, per_page=3)
+            q, fields=["title", "tag"]).paginate(page=page, per_page=8)
+        
+    if type is not None:
+        tags= all_tags()
+        return render_template('searchPage.html', tags=tags)
+    
+    # If a AJAX Request via HTMX
+    if htmx:
+        if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
+        return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
     return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url)
+
 
 
 @app.route("/notices/create", methods=["GET", "POST"])

@@ -8,6 +8,26 @@ span.btn:hover {
     font-family: 'Poppins', sans-serif;
 }
 
+.titleInput {
+    outline: none;
+    border-bottom: 4px solid blue;
+    /* border: 0; */
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    width: 100%;
+    padding: 11px 20px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 41px;
+    font-weight: bold;
+    text-align: center
+  }
+
+  .titleInput:focus {
+    border-bottom: 4px solid rgba(0, 189, 41, 0.808);
+
+  }
 
 #brandBox {
     height: 167px;
@@ -23,7 +43,13 @@ span.btn:hover {
     background: none;
     border: none;
 }
-
+.htmx-indicator{
+    opacity:0;
+    transition: opacity 2ms ease-in;
+}
+.htmx-request .htmx-indicator{
+    opacity:1
+}
 a.link{
     color: black;
     text-decoration: none;
@@ -109,6 +135,15 @@ img{
     background-color: #808080!important;
     margin: 0 12px!important;
 }
+
+.custom-popover {
+    --bs-popover-max-width: 200px;
+    --bs-popover-border-color: var(--bs-primary);
+    --bs-popover-header-bg: var(--bs-primary);
+    --bs-popover-header-color: var(--bs-white);
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+  }
 
 input:focus{
     outline: none!important;

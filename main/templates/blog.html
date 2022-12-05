@@ -76,6 +76,7 @@
           <input type="text" class="form-control d-block" value="{{shorturl}}" id="surl" disabled>
         </div>
       </div>
+      <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/700%20x%2090%20px.png" /></a>      <div class="modal-footer">
 <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="copy()">Copy</button>
@@ -139,20 +140,26 @@
       </div>
 
 
-      <section id="comment" class="card my-3 text-center">
+      <section class="card my-3 text-center">
         <h4 class="card-header text-center">Community Post</h4>
         <div class="card-body">
           {% if current_user.is_authenticated %}
-          <form method="post">
+          <!-- <form hx-post="/comment" hx-target="#comment" hx-swap="innerHTML"> -->
+          <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             {{form.csrf_token}}
             <textarea name="body" id="body">
             </textarea>
             <input type="hidden" name="to" value="/b/{{user.sno}}/{{post.sno}}">
             <input type="hidden" name="url" value="/b/{{user.username}}/{{post.slug}}">
+            <input type="hidden" name="uid" value="{{current_user.userid}}">
         </div>
         <div>
           <div class="d-flex justify-content-end align-content-center">
-            <button type="submit" class="btn btn-primary">Post</button>
+            <button type="submit" class="btn btn-primary" hx-indicator="#spinner">Post</button>
+            <div  id="spinner" class="htmx-indicator spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
           </form>
           {% else %}
@@ -167,7 +174,7 @@
         <hr>
         {% for comment in comments %}
 
-        <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" style="cursor: auto;">
+        <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment" style="cursor: auto;">
           <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
           <div class="card bg-grey text-start" style="
               width: 80%;
@@ -191,6 +198,8 @@
       <!-- !User Profile -->
      
       {{render_user_profile(user, current_user, blogProfile, recommendeds=recommendeds)}}
+      <!-- <a class="d-block mx-auto" href="https://www.digitalocean.com/?refcode=14513172b5f4&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="DigitalOcean Referral Badge" /></a> -->
+
   <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
     
     </div>

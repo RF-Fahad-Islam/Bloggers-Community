@@ -1,0 +1,17 @@
+{% for comment in comments %}
+
+<div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment" style="cursor: auto;">
+  <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+  <div class="card bg-grey text-start" style="
+      width: 80%;
+      margin: 2px 15px;
+      padding: 13px 8px;
+  ">
+    <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+      class="text-muted btn-link text-decoration-none text-sm-start"
+      style=" margin:0;">@{{comment.commentor.username}} | {{comment.create_date.strftime("%b %d")}}</a>
+    {{comment.body|safe}}
+  </div>
+  <br>
+</div>
+{% endfor %}
