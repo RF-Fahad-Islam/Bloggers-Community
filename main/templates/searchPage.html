@@ -8,7 +8,7 @@
     </h4>
   </div>
   <input class="titleInput" min="3" max="100" name="q" hx-get="{{url_for('search')}}"
-    hx-trigger="keyup changed delay:500ms" placeholder="Search..." hx-indicator="#spinner" hx-target="#searchitems"
+    hx-trigger="keyup changed" placeholder="Search..." hx-indicator="#spinner" hx-target="#searchitems"
     hx-swap="innerHTML">
  
     <div id="searchitems">

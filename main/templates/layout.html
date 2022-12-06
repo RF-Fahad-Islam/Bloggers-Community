@@ -6,7 +6,7 @@
     src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js"></script>
   <link rel="manifest" href="manifest.json" />
   <!-- HTMX -->
-  <script src="https://unpkg.com/htmx.org@1.8.4" integrity="sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV" crossorigin="anonymous"></script>
+  <script src="{{url_for('static', filename='js/htmx.min.js')}}" defer></script>
   <!-- ios support -->
   <link rel="apple-touch-icon" href="{{url_for('static', filename='images/webIcon.png')}}" />
   <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
@@ -125,7 +125,7 @@
     <div class="container-fluid">
       <a href="/" class="navbar-barnd">
         <img src="{{url_for('static', filename='images/webIcon.png')}}" alt="" width="30" height="30" />
-        <a class="navbar-brand" href="/">{{params['app_name']}}</a>
+        <a class="navbar-brand fw-bold text-muted" href="/">{{params['app_name']}}</a>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,18 +134,9 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <form class="d-flex" action="/search">
-            <input class="form-control me-2" name="q" class="searchBar" style="
-                  border-radius: 32px !important;
-                  padding-left: 30px !important;
-                  width: 235px;
-                " type="search" placeholder="Search" minLength="3" maxLength="200" aria-label="Search" />
-            <button onclick="preventDefault()" class="searchBtn" style="
-                  position: relative;
-                  left: -238px;
-                  background: none;
-                  border: none;
-                ">
-              <i class="fa fa-search"></i>
+            <input class="form-control me-2 searchBar" name="q"  type="search" placeholder=" Search....." minLength="3" maxLength="200" aria-label="Search" />
+            <button class="searchBtn btn btn-light" style="border-radius: 4px!important;">
+              <i class="fa fa-search text-muted"></i>
             </button>
           </form>
         </ul>

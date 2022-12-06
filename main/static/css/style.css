@@ -37,15 +37,8 @@ span.btn:hover {
     z-index: -2;
 }
 
-.searchBtn{
-    position: relative;
-    left: -15px;
-    background: none;
-    border: none;
-}
 .htmx-indicator{
     opacity:0;
-    transition: opacity 2ms ease-in;
 }
 .htmx-request .htmx-indicator{
     opacity:1
@@ -89,10 +82,8 @@ th {
     background: none;
     outline: none;
     border: 0px;
-    font-size: 17.8px;
-    position: relative;
-    top: 0px;
-    right: 240px;
+    font-size: 22px;
+    padding: 0 4px !important;
 }
 
 img{
@@ -225,4 +216,12 @@ border: 1px solid rgba( 255, 255, 255, 0.18 )!important;
 
 .btn-orange{
     background-color: rgb(255, 167, 4)!important;
+}
+
+.searchBar{
+    border-radius: 13px !important;
+    padding-left: 16px !important;
+    width: 272px;
+    text-align: center;
+    margin-left: 0%;
 }
