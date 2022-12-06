@@ -32,7 +32,7 @@
 <div id="main" class="container-fluid my-3" style="width: 90%; margin:auto;">
   <div class="row my-3">
 
-    <div class="col-lg-10">
+    <div class="col-lg-12">
       <div class="container-fluid">
         {# <h1 class="text-center my-3"><img src="{{url_for('static', filename='contactbook.ico')}}" alt="Icon">
           Contacts
@@ -135,25 +135,6 @@
         <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
         {% endif %}
         <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
-      </div>
-    </div>
-
-    <div class="col-lg-2">
-      <div class="position-sticky  box-shadow" style="top: 4rem; height:auto;">
-          <div class="card">
-    
-            <h5 class="card-title box-shadow">#Trending Topics</h5>
-          <div class="d-grid gap-1">
-            <!-- <a class="btn btn-light text-black" style="background:none;" type="button">Button</a>
-              <a class="btn btn-light text-black " style="background: none;" type="button">Button</a> -->
-            {% for i in range(5) %}
-
-            <h5 class="p-2 mb-1 content"><a href="/search?q={{tag}}&type=tag"
-                class="text-decoration-none text-dark">#Home </a>
-            </h5>
-            {% endfor %}
-          </div>
-        </div>
       </div>
     </div>
   </div>

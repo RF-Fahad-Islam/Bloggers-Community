@@ -1,5 +1,5 @@
 import json
-from . import db, app, login_manager, search, oauth,htmx,mail
+from . import db, app, login_manager, search, oauth,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
 from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
@@ -458,7 +458,7 @@ def search():
         return render_template('searchPage.html', tags=tags)
     
     # If a AJAX Request via HTMX
-    if htmx:
+    if request.META.get('HTTP_HX_REQUEST'):
         if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
         return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
     return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url)

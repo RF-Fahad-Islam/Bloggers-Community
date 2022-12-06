@@ -10,18 +10,16 @@ from flask_msearch import Search
 from authlib.integrations.flask_client import OAuth
 from .settings import *
 from flask_wtf.csrf import CSRFProtect
-from flask_htmx import HTMX
 from flask_mail import Mail
 from dotenv import load_dotenv
+import os
+load_dotenv('.env')
 # from flask_uploads import UploadSet, configure_uploads, IMAGES
 
-load_dotenv('.env')
-import os
 CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
     
 # App and DB configuration
 app = Flask(__name__)
-htmx = HTMX(app)
 # photos = UploadSet('photos', IMAGES)
 
 #Authlib
@@ -35,7 +33,7 @@ csrf = CSRFProtect(app)
 # else:
 #     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_DEV
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
-    
+print(os.getenv("SQLALCHEMY_DATABASE_URI"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
 app.config["SESSION_TYPE"] = SESSION_TYPE
 app.config["UPLOAD_PHOTOS_DEST"] = 'static/images'
