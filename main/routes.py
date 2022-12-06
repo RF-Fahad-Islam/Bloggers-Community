@@ -440,8 +440,9 @@ def search():
         page = 1
         
     #If it is a dynamic search page
-    if q == "" and not htmx:
+    if q == "" and not request.headers.get('HX-Request'):
         return redirect('/search?t=dynamic&q=any')
+    
     searchType = request.args.get("type")
     
     if searchType == "tag":
@@ -458,7 +459,7 @@ def search():
         return render_template('searchPage.html', tags=tags)
     
     # If a AJAX Request via HTMX
-    if request.META.get('HTTP_HX_REQUEST'):
+    if request.headers.get('HX-Request'):
         if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
         return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
     return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url)
