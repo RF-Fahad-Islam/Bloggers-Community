@@ -16,7 +16,9 @@ params = {
     "admin_password": "$$01308388895$$@Rf",
     "admin_userid": "I_AM_THE_CREATOR_OF_THIS_WEBSITE_FAHAD"
 }
-
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # with app.app_context():
 #     users = Users.query.all()
@@ -59,7 +61,7 @@ def home():
     notices = Notices.query.all()
     notices.reverse()
     random.shuffle(posts)
-    return render_template('index.html', notices=notices,  posts=posts)
+    return render_template('index.html', notices=notices,  posts=posts, tags=all_tags())
 
 @app.route('/draft', methods=['POST'])
 def draftpost():
@@ -90,7 +92,7 @@ def blogs():
         page = int(request.args.get('p'))
     except:
         pass
-    posts = Posts.query.paginate(page=page,per_page=2)
+    posts = Posts.query.paginate(page=page,per_page=5)
     return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs", showend=True)
 
 
@@ -300,7 +302,7 @@ def handleBlogWriter(sno):
         body = body.replace('<scipt ', "XSS").replace('<script/>', "XSS")
         if sno == "0":
             post = Posts(title=form.title.data, summary=form.summary.data,
-                         body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft )
+                         body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
             if not draft:
                 urlshort = Urlshortner(point_to=f"/{current_user.username}/{slug}", pointer=generate_pointer(3))
                 db.session.add(urlshort)
@@ -449,7 +451,7 @@ def search():
     else:
         #Else Default serach in title and tag
         posts = Posts.query.msearch(
-            q, fields=["title", "tag"]).paginate(page=page, per_page=8)
+            q, fields=["title", "tag", "summary"]).paginate(page=page, per_page=8)
         
     if type is not None:
         tags= all_tags()

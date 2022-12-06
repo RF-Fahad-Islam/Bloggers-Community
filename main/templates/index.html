@@ -29,138 +29,133 @@
 </div>
 {% endif %}
 <!-- !Blog Cards -->
-<div class="container">
-  {# <h1 class="text-center my-3"><img src="{{url_for('static', filename='contactbook.ico')}}" alt="Icon"> Contacts
-    Book</h1> #}
+<div id="main" class="container-fluid my-3" style="width: 90%; margin:auto;">
+  <div class="row my-3">
+
+    <div class="col-lg-10">
+      <div class="container-fluid">
+        {# <h1 class="text-center my-3"><img src="{{url_for('static', filename='contactbook.ico')}}" alt="Icon">
+          Contacts
+          Book</h1> #}
 
 
-  <!-- !Login Alert -->
-  {% if not current_user.is_authenticated %}
-  <div class="alert alert-primary my-3" role="alert" style="border-radius: 30px;">
-    <h4 class="alert-heading">Welcome User! You are not logged in! Login to stop Ads!</h4>
-    <p>
-      <b>
-        Login to create your blog profile and create blogs.
-      </b>
-    </p>
-    <hr>
-    <div class="flex flex-wrap justify-content-between align-content-center align-items-center">
-      <!-- <div>
-            <a href="/signup" class="btn btn-warning"><i class="fa fa-user-plus"></i> Sign Up</a>
-            <a href="/login" class="btn btn-outline-primary">
-                <i class="fa fa-sign-in"></i> Login</a>
-        </div> -->
-      <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3"
-        style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn">
-        Continue with Google
-      </a>
-    </div>
-
-  </div>
-    {% endif %}
-
-  {% endif %}
-
-
-  <ul class="nav nav-tabs my-3" id="myTab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
-        aria-controls="home" aria-selected="true"><i class="fa fa-rss"></i> Feed</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab"
-        aria-controls="profile" aria-selected="false"><i class="fa fa-bullhorn"></i> Notices</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"
-        aria-controls="contact" aria-selected="false"><i class="fa fa-comments"></i>
-        Discussion</button>
-    </li>
-  </ul>
-  <div class="tab-content" id="myTabContent">
-    <!-- !All Posts Tab -->
-    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div hx-get="{{url_for('blogs')}}" hx-trigger="load" hx-indicator="#spinner" hx-swap="innerHTML">
-
-        <div class="card mx-2" style="width: 100%;" aria-hidden="true">
-          <div class="card-body">
-            <h5 class="card-title placeholder-glow">
-              <span class="placeholder col-6"></span>
-            </h5>
-            <p class="card-text placeholder-glow">
-              <span class="placeholder col-7"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-6"></span>
-              <span class="placeholder col-8"></span>
-            </p>
-            <a href="#" tabindex="-1" class="btn btn-primary disabled placeholder col-2"></a>
+        <!-- !Login Alert -->
+        {% if not current_user.is_authenticated %}
+        <div class="alert alert-primary my-3" role="alert" style="border-radius: 30px;">
+          <h4 class="alert-heading">Welcome User! You are not logged in! Login to stop Ads!</h4>
+          <p>
+            <b>
+              Login to create your blog profile and create blogs.
+            </b>
+          </p>
+          <hr>
+          <div class="flex flex-wrap justify-content-between align-content-center align-items-center">
+            <!-- <div>
+                <a href="/signup" class="btn btn-warning"><i class="fa fa-user-plus"></i> Sign Up</a>
+                <a href="/login" class="btn btn-outline-primary">
+                    <i class="fa fa-sign-in"></i> Login</a>
+            </div> -->
+            <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3"
+              style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn">
+              Continue with Google
+            </a>
           </div>
-        </div>
-        <div class="card my-2" style="width: 100%;" aria-hidden="true">
-          <div class="card-body">
-            <h5 class="card-title placeholder-glow">
-              <span class="placeholder col-6"></span>
-            </h5>
-            <p class="card-text placeholder-glow">
-              <span class="placeholder col-7"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-6"></span>
-              <span class="placeholder col-8"></span>
-            </p>
-            <a href="#" tabindex="-1" class="btn btn-primary disabled placeholder col-2"></a>
-          </div>
-        </div>
-        <div class="card my-2" style="width: 100%;" aria-hidden="true">
-          <div class="card-body">
-            <h5 class="card-title placeholder-glow">
-              <span class="placeholder col-6"></span>
-            </h5>
-            <p class="card-text placeholder-glow">
-              <span class="placeholder col-7"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-4"></span>
-              <span class="placeholder col-6"></span>
-              <span class="placeholder col-8"></span>
-            </p>
-            <a href="#" tabindex="-1" class="btn btn-primary disabled placeholder col-2"></a>
-          </div>
-        </div>
 
-      </div>
-      <!-- Loader -->
-      <div class="card my-2 htmx-indicator" id="spinner" style="width: 100%;" aria-hidden="true">
-        <div class="card-body">
+        </div>
+        {% endif %}
 
-          <div class="text-center">
-            <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
-              <span class="visually-hidden">Loading...</span>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+              role="tab" aria-controls="home" aria-selected="true"><i class="fa fa-rss"></i> Feed</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+              role="tab" aria-controls="profile" aria-selected="false"><i class="fa fa-bullhorn"></i> Notices</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+              role="tab" aria-controls="contact" aria-selected="false"><i class="fa fa-comments"></i>
+              Discussion</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <!-- !All Posts Tab -->
+          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div hx-get="{{url_for('blogs')}}" hx-trigger="load" hx-indicator="#spinner" hx-swap="innerHTML">
+              {% for i in range(5) %}
+
+              <div class="card my-3" style="width: 100%;" aria-hidden="true">
+                <div class="card-body">
+                  <h5 class="card-title placeholder-glow">
+                    <span class="placeholder col-6"></span>
+                  </h5>
+                  <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-6"></span>
+                    <span class="placeholder col-8"></span>
+                  </p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <!-- Loader -->
+            <div class="card my-2 htmx-indicator" id="spinner" style="width: 100%;" aria-hidden="true">
+              <div class="card-body">
+
+                <div class="text-center">
+                  <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          <!-- !All Notices Tab -->
+          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            {{render_notices(notices)}}
+          </div>
+
+          <!-- !Comments tab -->
+          <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <div class="card my-3 text-center">
+              <h4 class="card-header text-center">Comments / Discussion</h4>
+              <div class="card-body">
+                <div class="fb-comments" data-href="{{params['url']}}" data-width="" data-numposts="5"></div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        {% if not current_user.is_authenticated %}
+        <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
+        {% endif %}
+        <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
+      </div>
+    </div>
+
+    <div class="col-lg-2">
+      <div class="position-sticky  box-shadow" style="top: 4rem; height:auto;">
+          <div class="card">
+    
+            <h5 class="card-title box-shadow">#Trending Topics</h5>
+          <div class="d-grid gap-1">
+            <!-- <a class="btn btn-light text-black" style="background:none;" type="button">Button</a>
+              <a class="btn btn-light text-black " style="background: none;" type="button">Button</a> -->
+            {% for i in range(5) %}
+
+            <h5 class="p-2 mb-1 content"><a href="/search?q={{tag}}&type=tag"
+                class="text-decoration-none text-dark">#Home </a>
+            </h5>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
-    <!-- !All Notices Tab -->
-    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-      {{render_notices(notices)}}
-    </div>
-
-    <!-- !Comments tab -->
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-      <div class="card my-3 text-center">
-        <h4 class="card-header text-center">Comments / Discussion</h4>
-        <div class="card-body">
-          <div class="fb-comments" data-href="{{params['url']}}" data-width="" data-numposts="5"></div>
-        </div>
-      </div>
-    </div>
-
-
   </div>
-  {% if not current_user.is_authenticated %}
-  <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
-  {% endif %}
-  <div id="container-9a2c7ef27929b21d1b46e913ecf43340"></div>
 </div>
 {% endblock body %}

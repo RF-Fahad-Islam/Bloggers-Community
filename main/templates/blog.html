@@ -32,7 +32,7 @@
           {% endif %}
 
           {% if not current_user.is_anonymous %}
-            {% set  cnt = current_user.readinglist.blogs.count(post) %}
+          {% set cnt = current_user.readinglist.blogs.count(post) %}
           {% if cnt>0 %}
           <span class="text-primary btn btn-outline-primary border-0" style="cursor: pointer;font-size:30px; "
             id="bookmark">
@@ -55,37 +55,42 @@
               class="text-black text-decoration-none fw-bolder p-2 badge bg-warning rounded-pill text-dark">#{{tag}}
             </a>
             {% endfor %}
-            <button type="button" class="text-black text-decoration-none fw-bolder p-2 badge bg-light border-0 rounded-pill text-dark float-end"
-             data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <button type="button"
+              class="text-black text-decoration-none fw-bolder p-2 badge bg-light border-0 rounded-pill text-dark float-end"
+              data-bs-toggle="modal" data-bs-target="#exampleModal">
               <i class="fa fa-link" style="font-size: 15px;"></i>
             </button>
           </div>
           <!-- Button trigger modal -->
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa fa-link"></i> Share shorten link</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="card">
-          <div class="card-title"><h4 class="text-center">Shorten Url</h4></div>
-          <input type="text" class="form-control d-block" value="{{shorturl}}" id="surl" disabled>
-        </div>
-      </div>
-      <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/700%20x%2090%20px.png" /></a>      <div class="modal-footer">
-<a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="copy()">Copy</button>
-      </div>
-    </div>
-  </div>
-</div>
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa fa-link"></i> Share shorten link
+                  </h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="card">
+                    <div class="card-title">
+                      <h4 class="text-center">Shorten Url</h4>
+                    </div>
+                    <input type="text" class="form-control d-block" value="{{shorturl}}" id="surl" disabled>
+                  </div>
+                </div>
+                <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner"
+                    src="https://landings-cdn.adsterratech.com/referralBanners/png/700%20x%2090%20px.png" /></a>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="copy()">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <!-- TODO:!Article -->
+          <!-- TODO:!Article -->
           <hr>
           <article id="body" class="blog-post position-sticky" style="top: 2rem; height:auto;">
             <div class="mb-2">
@@ -129,7 +134,6 @@
 
 
       </div>
-
       <!-- !Comment Section -->
       <div class="card my-3 text-center">
         <h4 class="card-header text-center">Comments / Discussion</h4>
@@ -157,16 +161,17 @@
         <div>
           <div class="d-flex justify-content-end align-content-center">
             <button type="submit" class="btn btn-primary" hx-indicator="#spinner">Post</button>
-            <div  id="spinner" class="htmx-indicator spinner-border" role="status">
+            <div id="spinner" class="htmx-indicator spinner-border" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
           </form>
           {% else %}
           <div class="d-flex justify-content-center align-content-center text-center">
-            <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3" style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn" >
+            <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3"
+              style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn">
               Continue with Google
-          </a>
+            </a>
           </div>
           {% endif %}
         </div>
@@ -174,7 +179,8 @@
         <hr>
         {% for comment in comments %}
 
-        <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment" style="cursor: auto;">
+        <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment"
+          style="cursor: auto;">
           <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
           <div class="card bg-grey text-start" style="
               width: 80%;
@@ -189,19 +195,16 @@
           <br>
         </div>
         {% endfor %}
+      </section>
+
     </div>
-    </section>
-
-
 
     <div class="col-lg-3">
       <!-- !User Profile -->
-     
+
       {{render_user_profile(user, current_user, blogProfile, recommendeds=recommendeds)}}
       <!-- <a class="d-block mx-auto" href="https://www.digitalocean.com/?refcode=14513172b5f4&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="DigitalOcean Referral Badge" /></a> -->
 
-  <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
-    
     </div>
 
 
@@ -229,14 +232,14 @@
   function copy() {
     // Get the text field
     var copyText = document.getElementById("surl");
-  
+
     // Select the text field
     copyText.select();
     copyText.setSelectionRange(0, 99999); // For mobile devices
-  
-     // Copy the text inside the text field
+
+    // Copy the text inside the text field
     navigator.clipboard.writeText(copyText.value);
-  
+
     // Alert the copied text
     alert("Copied the text: " + copyText.value);
   }

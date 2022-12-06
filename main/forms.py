@@ -1,6 +1,6 @@
 # Flask WTF Forms Classes for forms management
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField,SubmitField, TextAreaField, IntegerField, BooleanField
+from wtforms.fields import StringField, PasswordField,SubmitField, TextAreaField, IntegerField, BooleanField, FileField
 from wtforms.fields.simple import HiddenField
 from wtforms.validators import Length, DataRequired, EqualTo, Email, ValidationError, Optional
 from .models import Users, Posts

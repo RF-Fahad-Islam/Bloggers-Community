@@ -98,6 +98,7 @@ class Posts(db.Model):
     public = db.Column(db.Boolean, nullable=False, default=True)
     pub_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     viewers_count = db.Column(db.Integer, nullable=False, default=0)
+    thumbnail = db.Column(db.String(100), nullable=True)
     # Stores the given id of user and and saves the user object in writer_user
     writer_id = db.Column(db.Integer, db.ForeignKey('users.sno'))
     # comments = db.relationship('Comments', backref='post', lazy='dynamic')
