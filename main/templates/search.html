@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% from 'includes/macros.html' import render_posts %}
+{% from 'includes/macros.html' import render_posts,render_user_cards %}
 {% block title %}
 {% if searchType == "tag" %}
 <title>({{posts.items|length}}) #{{q}}</title>
@@ -32,10 +32,31 @@
     {% set searchType="post" %}
     {% endif %}
 
-    
+    {% if userList %}
+      {{render_user_cards(userList.items)}}
+      {% if userList.total > 8 %}
+      <nav aria-label="Page navigation example">
+          <ul class="pagination">
+              <li class="page-item">
+                  <a class="page-link" href="?q={{q}}&type={{searchType}}&page={{posts.page}}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                  </a>
+              </li>
+              {% for userList in userList.iter_pages() %}
+              {% if userList %}
+              <li class="page-item"><a class="page-link" href="?q={{q}}&type={{searchType}}&page={{post}}">{{post}}</a>
+              </li>
+              {% endif %}
+              {% endfor %}
+              <a class="page-link" href="?q={{q}}&type={{searchType}}&page={{posts.page+1}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+              </a>
+              </li>
+          </ul>
+      </nav>
+      {% endif %}
+    {% else %}
     {{ render_posts(posts.items, false, search=true) }}
-
-
     {% if posts.total > 8 %}
     <nav aria-label="Page navigation example">
         <ul class="pagination">
@@ -46,7 +67,8 @@
             </li>
             {% for post in posts.iter_pages() %}
             {% if post %}
-            <li class="page-item"><a class="page-link" href="?q={{q}}&type={{searchType}}&page={{post}}">{{post}}</a></li>
+            <li class="page-item"><a class="page-link" href="?q={{q}}&type={{searchType}}&page={{post}}">{{post}}</a>
+            </li>
             {% endif %}
             {% endfor %}
             <a class="page-link" href="?q={{q}}&type={{searchType}}&page={{posts.page+1}}" aria-label="Next">
@@ -56,6 +78,8 @@
         </ul>
     </nav>
     {% endif %}
+    {% endif %}
+
 </div>
 {% endblock body %}
 {% block script %}

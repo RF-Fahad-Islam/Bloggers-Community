@@ -1,4 +1,5 @@
 import json
+from .settings import *
 from . import db, app, login_manager, search, oauth,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
 from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
@@ -8,31 +9,23 @@ from flask_login import login_required, login_user, logout_user, current_user
 import random
 from datetime import datetime
 params = {
-    "page_title": "Blogsphere | Made By Fahad",
-    "app_name": "Blogsphere",
-    "url": "https://blogsphere.onrender.com",
+    "page_title": APP_TITLE,
+    "app_name": APP_NAME,
+    "url": APP_URL,
     "github": "https://github.com/RF-Fahad-Islam/",
-    "admin_email": "riyad9949@gmail.com",
-    "admin_password": "$$01308388895$$@Rf",
-    "admin_userid": "I_AM_THE_CREATOR_OF_THIS_WEBSITE_FAHAD"
+    "admin_email": ADMIN_EMAIL,
+    "admin_password": ADMIN_PASSWORD,
+    "admin_userid": ADMIN_USERID
 }
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # with app.app_context():
-#     users = Users.query.all()
-#     for user in users:
-#         blogprofile = Blogprofile.query.filter_by(usersno=user.sno).first()
-#         readinglist = Readinglists.query.filter_by(user=user).first()
-#         if not blogprofile:
-#             blogprofile = Blogprofile(usersno=user.sno)
-#             db.session.add(blogprofile)
-#             db.session.commit()
-#         if not readinglist:
-#             readinglist = Readinglists(user=user)
-#             db.session.add(readinglist)
-#             db.session.commit()
+#     user = Users.query.filter_by(username="rf-fahad").first()
+#     for i in range(30):
+#         title = generateId(13)
+#         post = Posts(slug=string_to_slug(title),title=title, body=generateId(40), tag=generateId(4),writer=user)
 
 @app.route('/sitemap.xml')
 def static_from_root():
@@ -44,8 +37,6 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 # Global Variables for templates
-
-
 @app.context_processor
 def context_processor():
     return dict(params=params)
@@ -60,7 +51,6 @@ def home():
     posts = Posts.query.filter_by(public=True).all()
     notices = Notices.query.all()
     notices.reverse()
-    random.shuffle(posts)
     return render_template('index.html', notices=notices,  posts=posts, tags=all_tags())
 
 @app.route('/draft', methods=['POST'])
@@ -87,12 +77,13 @@ def catch_all(path):
 
 @app.route('/get-blogs', methods=["GET"])
 def blogs():
+    if not request.headers.get('HX-Request'): abort(404)
     page =1
     try:
         page = int(request.args.get('p'))
     except:
         pass
-    posts = Posts.query.paginate(page=page,per_page=5)
+    posts = Posts.query.paginate(page=page,per_page=POSTS_PER_PAGE)
     return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs", showend=True)
 
 
@@ -434,6 +425,7 @@ def userDashboard():
 def search():
     type = request.args.get('t')
     q = request.args.get("q")
+    users = False
     try:
         page = int(request.args.get("p"))
     except:
@@ -442,6 +434,9 @@ def search():
     #If it is a dynamic search page
     if q == "" and not request.headers.get('HX-Request'):
         return redirect('/search?t=dynamic&q=any')
+    
+    if q.startswith("@"):
+        users = Users.query.filter(Users.username.startswith(q[1:])).paginate(page=page, per_page=8)
     
     searchType = request.args.get("type")
     
@@ -460,9 +455,10 @@ def search():
     
     # If a AJAX Request via HTMX
     if request.headers.get('HX-Request'):
+        if len(users.items)>0 and q.startswith("@") and len(q)>1: return render_template("particles/profile_card.html", userList=users.items)
         if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
         return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
-    return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url)
+    return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url,userList=users)
 
 
 

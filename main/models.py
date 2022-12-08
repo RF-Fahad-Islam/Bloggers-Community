@@ -4,6 +4,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+#MANY to MANY Relationship
 user_blog_channel = db.Table('user_blog_channel',
     db.Column("user_id", db.Integer, db.ForeignKey('users.sno')),
     db.Column("blog_profile_id", db.Integer, db.ForeignKey('blogprofile.sno')),

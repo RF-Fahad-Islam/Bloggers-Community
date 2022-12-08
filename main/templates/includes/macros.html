@@ -221,3 +221,35 @@ viewers_count=false) %}
 </div>
 
 {% endmacro %}
+
+{% macro render_user_cards(users) %}
+<!-- !Users All Blogs Fetch From Database -->
+<div id="blogsusers">
+    {% for blogUser in users %}
+    <div class="card my-3 box-shadow">
+        <div class="card-body">
+            <p class="card-text text-muted fw-bold badge badge-pill rounded-pill float-end">
+                {{blogUser.joined_date.strftime('%B %d, %Y')}}
+            </p>
+            {% if not blogUser.picture %}
+            <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle"
+                width="60" height="60">
+            {% else %}
+            <img src="{{ blogUser.picture }}
+      " alt="Avatar" class="rounded-circle" width="60" height="60">
+            {% endif %}
+            <h5 class="d-inline-block">
+                <a class="fw-bold text-decoration-none ml-2 text-dark cursor-pointer link d-inline-block"
+                    style="cursor: pointer;" href="/p/{{blogUser.username}}">
+                    {{blogUser.firstname}} {{blogUser.lastname}} (@{{blogUser.username}})</a>
+        </div>
+        </h5>
+    </div>
+</div>
+{% endfor %}
+{% if users|length == 0 %}
+<div class="alert alert-warning my-3">
+    <h5>No Users Found (*_*).</h5>
+</div>
+{% endif %}
+{% endmacro %}

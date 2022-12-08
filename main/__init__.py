@@ -109,6 +109,7 @@ class MyModelView(ModelView):
 #         return abort(404)
 
 admin = Admin(app, name="Bloggers Community")
+login_manager.session_protection = SESSION_MANAGER_STRICT
 #Static file Protector
 # app.view_functions['static'] = login_required(app.send_static_file)
 # Database Migrations Setup
