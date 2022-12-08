@@ -54,7 +54,7 @@ viewers_count=false) %}
         {% if dashboard %}
         <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
                 class="fa fa-edit"></i> Edit</a>
-        <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
+        <a href="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
             class="btn btn-outline-danger float-end mx-2 delete">
             <i class="fa fa-trash"></i> Delete</a>
         {% else %}
@@ -216,7 +216,8 @@ viewers_count=false) %}
         </div>
     </div>
     {% endif %}
-    <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" class="rounded-3" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
+    <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" class="rounded-3"
+            src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
 
 </div>
 
@@ -245,8 +246,8 @@ viewers_count=false) %}
         </div>
         </h5>
     </div>
+    {% endfor %}
 </div>
-{% endfor %}
 {% if users|length == 0 %}
 <div class="alert alert-warning my-3">
     <h5>No Users Found (*_*).</h5>
