@@ -66,6 +66,7 @@ google = oauth.register(
 #Configure the M_Search
 search = Search(app)
 
+
 #Login Manager Configuration
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
