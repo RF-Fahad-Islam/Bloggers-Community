@@ -4,6 +4,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+#MANY to MANY Relationship
 user_blog_channel = db.Table('user_blog_channel',
     db.Column("user_id", db.Integer, db.ForeignKey('users.sno')),
     db.Column("blog_profile_id", db.Integer, db.ForeignKey('blogprofile.sno')),
@@ -21,7 +22,7 @@ class Users(db.Model, UserMixin):
     firstname = db.Column(db.String(30), nullable=False)
     lastname = db.Column(db.String(30), nullable=False)
     username = db.Column(db.String(30), nullable=False, unique=True)
-    picture = db.Column(db.String(200), nullable=True, default='avatar')
+    picture = db.Column(db.String(200), nullable=True, default='/static/images/usericon.png')
     age = db.Column(db.Integer, nullable=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(500), nullable=False)
@@ -93,7 +94,7 @@ class Posts(db.Model):
     summary = db.Column(db.String(200), nullable=True, default="")
     slug = db.Column(db.String(500), nullable=False)
     title = db.Column(db.String(500), nullable=False, unique=False)
-    tag = db.Column(db.String(500), nullable=True)
+    tag = db.Column(db.String(500), nullable=False)
     body = db.Column(db.Text, nullable=False)
     public = db.Column(db.Boolean, nullable=False, default=True)
     pub_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

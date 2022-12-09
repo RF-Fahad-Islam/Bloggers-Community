@@ -46,23 +46,7 @@
             <span class="placeholder col-4"></span>
           </p>
         </div> -->
-    <div class="card my-3">
-      <h4 class="text-center bg-white card-header">
-        <span class="float-start">Most Popular Tags</span>
-        <!-- !Search Bar -->
-        <!-- <label for="exampleDataList" class="form-label">Datalist example</label> -->
-        <input class="form-control float-end mx-3" type="search" style="width: 40%;" list="datalistOptions" id="query"
-          placeholder="Filter Tags">
-      </h4>
-      <div class="card-body text-center">
-        {% for tag, i in tags.items() %}
-        <h3 class="d-inline-block mr-1 content"><a href="/search?q={{tag}}&type=tag"
-            class="badge text-decoration-none bg-light text-dark">#{{tag}} <span
-              class="badge bg-primary text-white rounded-circle" style="font-size: 13px;">{{i}}</span> </a>
-        </h3>
-        {% endfor %}
-      </div>
-    </div>
+  
   </div>
 </div>
 {% endblock body %}

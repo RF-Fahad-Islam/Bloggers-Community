@@ -66,6 +66,7 @@ google = oauth.register(
 #Configure the M_Search
 search = Search(app)
 
+
 #Login Manager Configuration
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -109,6 +110,7 @@ class MyModelView(ModelView):
 #         return abort(404)
 
 admin = Admin(app, name="Bloggers Community")
+login_manager.session_protection = SESSION_MANAGER_STRICT
 #Static file Protector
 # app.view_functions['static'] = login_required(app.send_static_file)
 # Database Migrations Setup

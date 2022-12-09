@@ -1,4 +1,6 @@
 import json
+from sqlalchemy.sql.expression import func
+from .settings import *
 from . import db, app, login_manager, search, oauth,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
 from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
@@ -8,32 +10,21 @@ from flask_login import login_required, login_user, logout_user, current_user
 import random
 from datetime import datetime
 params = {
-    "page_title": "Blogsphere | Made By Fahad",
-    "app_name": "Blogsphere",
-    "url": "https://blogsphere.onrender.com",
+    "page_title": APP_TITLE,
+    "app_name": APP_NAME,
+    "url": APP_URL,
     "github": "https://github.com/RF-Fahad-Islam/",
-    "admin_email": "riyad9949@gmail.com",
-    "admin_password": "$$01308388895$$@Rf",
-    "admin_userid": "I_AM_THE_CREATOR_OF_THIS_WEBSITE_FAHAD"
+    "admin_email": ADMIN_EMAIL,
+    "admin_password": ADMIN_PASSWORD,
+    "admin_userid": ADMIN_USERID
 }
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# with app.app_context():
-#     users = Users.query.all()
-#     for user in users:
-#         blogprofile = Blogprofile.query.filter_by(usersno=user.sno).first()
-#         readinglist = Readinglists.query.filter_by(user=user).first()
-#         if not blogprofile:
-#             blogprofile = Blogprofile(usersno=user.sno)
-#             db.session.add(blogprofile)
-#             db.session.commit()
-#         if not readinglist:
-#             readinglist = Readinglists(user=user)
-#             db.session.add(readinglist)
-#             db.session.commit()
-
+with app.app_context():
+    blogprofiles = Blogprofile.query.all()
+    
 @app.route('/sitemap.xml')
 def static_from_root():
     return send_from_directory(app.static_folder, 'sitemap.xml')
@@ -44,8 +35,6 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 # Global Variables for templates
-
-
 @app.context_processor
 def context_processor():
     return dict(params=params)
@@ -60,7 +49,6 @@ def home():
     posts = Posts.query.filter_by(public=True).all()
     notices = Notices.query.all()
     notices.reverse()
-    random.shuffle(posts)
     return render_template('index.html', notices=notices,  posts=posts, tags=all_tags())
 
 @app.route('/draft', methods=['POST'])
@@ -87,13 +75,14 @@ def catch_all(path):
 
 @app.route('/get-blogs', methods=["GET"])
 def blogs():
+    if not request.headers.get('HX-Request'): abort(404)
     page =1
     try:
         page = int(request.args.get('p'))
     except:
         pass
-    posts = Posts.query.paginate(page=page,per_page=5)
-    return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs", showend=True)
+    posts = Posts.query.order_by(func.random()).paginate(page=page,per_page=POSTS_PER_PAGE)
+    return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs?p=", showend=True)
 
 
 
@@ -254,7 +243,8 @@ def handleUsersPosts(username, postSlug):
                                            "tag"]).order_by(Posts.viewers_count.desc())[:5]
     if not recommendeds:
         recommendeds = posts[:3]
-    recommendeds.remove(post)
+    # recommendeds.remove(post)
+    random.shuffle(recommendeds)
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     urlshort = Urlshortner.query.filter_by(point_to=f"/b/{user.username}/{post.slug}").first()
     if urlshort is None or not urlshort:
@@ -355,12 +345,14 @@ def handleBlogWriter(sno):
 def handleDeletes(keyword, sno):
     if keyword == "b":
         post = Posts.query.filter_by(sno=sno).first()
+        title = post.title
         if post.writer_id == current_user.sno or current_user.is_admin:
             for readinglist in post.reading_lists:
                 readinglist.blogs.remove(post)
                 db.session.commit()
             db.session.delete(post)
             db.session.commit()
+            flash(f"Deleted post : {title}")
             return redirect(url_for("userDashboard"))
 
     elif keyword == "p":
@@ -403,6 +395,9 @@ def handleDeletes(keyword, sno):
             post = Posts.query.filter_by(sno=sno).first()
             current_user.readinglist.blogs.remove(post)
         db.session.commit()
+        if request.headers.get('HX-Request'):
+            posts = current_user.readinglist.blogs
+            return redirect('particles/bookmark.html', posts=posts)
         return redirect(url_for('readinglist'))
     else:
         abort(404)
@@ -434,6 +429,7 @@ def userDashboard():
 def search():
     type = request.args.get('t')
     q = request.args.get("q")
+    users = False
     try:
         page = int(request.args.get("p"))
     except:
@@ -443,26 +439,28 @@ def search():
     if q == "" and not request.headers.get('HX-Request'):
         return redirect('/search?t=dynamic&q=any')
     
-    searchType = request.args.get("type")
-    
-    if searchType == "tag":
-        #If search for tags
-        posts = Posts.query.msearch(
-            q, fields=["tag"]).paginate(page=page, per_page=8)
+    if q.startswith("@"):
+        users = Users.query.filter(Users.username.startswith(q[1:])).paginate(page=page, per_page=8)
     else:
-        #Else Default serach in title and tag
-        posts = Posts.query.msearch(
-            q, fields=["title", "tag", "summary"]).paginate(page=page, per_page=8)
+        searchType = request.args.get("type")
         
-    if type is not None:
-        tags= all_tags()
-        return render_template('searchPage.html', tags=tags)
-    
+        if searchType == "tag":
+            #If search for tags
+            posts = Posts.query.msearch(q, fields=["tag"]).paginate(page=page, per_page=8)
+        else:
+            #Else Default serach in title and tag
+            posts = Posts.query.msearch(
+                q, fields=["title", "tag", "summary"]).paginate(page=page, per_page=8)
+    if type is not None: return render_template('searchPage.html')
     # If a AJAX Request via HTMX
     if request.headers.get('HX-Request'):
+        #IF search for user
+        if users and q.startswith("@") and len(q)>1: return render_template("particles/profile_card.html", userList=users,page=page,url=f"search?q={q}&p=")
+        #If search doesn't match
         if len(q)<=3 or len(posts.items)==0: return render_template('particles/searchnotfound.html') 
-        return render_template('particles/blog.html', posts=posts,page=page,url="search",showend=False)
-    return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url)
+        return render_template('particles/blog.html', posts=posts,page=page,url=f"search?q={q}&p=",showend=False)
+    
+    return render_template("search.html",  posts=posts, q=q, searchType=searchType, url=request.url,userList=users)
 
 
 
@@ -554,14 +552,10 @@ def follow():
     if request.method == "GET":
         sno = request.args.get("sno")
         url = request.args.get('url')
-        user_sno = request.args.get('user_sno')
         if not sno and not url:
             abort(404)
-        if not user_sno:
-            user_sno = current_user.sno
-        user = db.one_or_404(db.select(Users).filter_by(sno=current_user.sno))
-        blogprofile = db.one_or_404(
-            db.select(Blogprofile).filter_by(usersno=int(sno)))
+        user = current_user
+        blogprofile = Blogprofile.query.filter_by(usersno=int(sno)).first()
         if blogprofile in user.following:
             user.following.remove(blogprofile)
             is_follow = False

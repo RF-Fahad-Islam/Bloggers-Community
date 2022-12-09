@@ -6,14 +6,20 @@
     src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js"></script>
   <link rel="manifest" href="manifest.json" />
   <!-- HTMX -->
-  <script src="{{url_for('static', filename='js/htmx.min.js')}}" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.8.4/htmx.min.js"
+    integrity="sha512-KaCnhbNFxSS4ydQMZ4zrTrk/Gf8wx2xPJ8tfZgkkmY6+hVql4eFa04HqMnM1RdUygzLEIByqbClYHvDoKm1H/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <!-- ios support -->
   <link rel="apple-touch-icon" href="{{url_for('static', filename='images/webIcon.png')}}" />
   <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
   <meta name="theme-color" content="#db4938" />
+  <!-- CSP XSS Protection -->
+  <!-- <meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'self'; img-src https://*; child-src 'none';" /> -->
   <!-- Adsterra -->
   <script async="async" data-cfasync="false"
-    src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js"></script>
+    src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js" defer></script>
 
   <!-- Google Adsense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5004388589023803"
@@ -41,12 +47,15 @@
       a.appendChild(r);
     })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
   </script>
+  <!-- !Instant Page Load CDN -->
+  <script src="//instant.page/5.1.1" type="module"
+    integrity="sha384-MWfCL6g1OTGsbSwfuMHc8+8J2u71/LA8dzlIN3ycajckxuZZmF+DNjdm7O6H3PSq" defer></script>
+
   <script defer data-domain="blogsphere.onrender.com" src="https://plausible.io/js/script.js"></script>
   <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="A Blogging site for all the bloggers. Create your profile with a single click and upload writings on the site.
-  You can even monetize your blogs to earn money!
+  <meta name="description" content="Blogsphere is a free platform where anyone can create an account and start blogging. This ensures that all bloggers are equal, allowing them to publish their thoughts on any topic. Anyone can follow other blogs and read updates from across the world with just a few clicks.
   ">
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <meta name="keywords" content="{{params['app_name']}} blog blogging articles">
@@ -104,9 +113,6 @@
     }
   </style>
   <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" />
-  <!-- Animate CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-
 </head>
 
 <body class="bg-light">
@@ -134,7 +140,8 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <form class="d-flex" action="/search">
-            <input class="form-control me-2 searchBar" name="q"  type="search" placeholder=" Search....." minLength="3" maxLength="200" aria-label="Search" />
+            <input class="form-control me-2 searchBar" name="q" type="search" placeholder=" Search....." minLength="3"
+              maxLength="200" aria-label="Search" />
             <button class="searchBtn btn btn-light" style="border-radius: 4px!important;">
               <i class="fa fa-search text-muted"></i>
             </button>
@@ -245,11 +252,11 @@
     </div>
   </div>
   {% block body %} {% endblock body %}
-
   <!-- <footer class="container bg-white d-block text-center" style="margin-top: 10px; position:absolute; bottom:0;">
     <p><i class="fa fa-thumb-tack"></i> © 2020-2021 | Owned By <b class="text-muted font-weight-bolder">RF Fahad
             Islam<b> | <a href="https://github.com/RF-Fahad-Islam/" style="text-decoration: none; color: black;">My Github</a> <i class="fa fa-git-square"></i>
 </b></b></p></footer> -->
+  <!-- <script src="{{url_for('static',filename='js/searcher.js')}}"></script> -->
   <!-- Option 1: Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
@@ -264,7 +271,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
     integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script>
+  <script type="module">
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 
@@ -273,12 +280,8 @@
 
   </script>
 
-
-  <!-- !Instant Page Load CDN -->
-  <!-- <script src="//instant.page/5.1.1" type="module"
-    integrity="sha384-MWfCL6g1OTGsbSwfuMHc8+8J2u71/LA8dzlIN3ycajckxuZZmF+DNjdm7O6H3PSq"></script> -->
-  <script src="{{url_for('static', filename='js/sw.js')}}"></script>
-  <script src="{{url_for('static', filename='js/app.js')}}"></script>
+  <!-- <script src="{{url_for('static', filename='js/sw.js')}}"></script>
+  <script src="{{url_for('static', filename='js/app.js')}}"></script> -->
   <script
     type="text/javascript">window.setTimeout("document.getElementById('msg').style.display='none';", 5000); </script>
   {% block script %} {% endblock script %}

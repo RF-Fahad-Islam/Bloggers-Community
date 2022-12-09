@@ -54,7 +54,7 @@ viewers_count=false) %}
         {% if dashboard %}
         <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
                 class="fa fa-edit"></i> Edit</a>
-        <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
+        <a href="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
             class="btn btn-outline-danger float-end mx-2 delete">
             <i class="fa fa-trash"></i> Delete</a>
         {% else %}
@@ -216,8 +216,41 @@ viewers_count=false) %}
         </div>
     </div>
     {% endif %}
-    <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" class="rounded-3" src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
+    <a href="https://publishers.adsterra.com/referral/dJhxetn3AL"><img alt="banner" class="rounded-3"
+            src="https://landings-cdn.adsterratech.com/referralBanners/png/468%20x%20120%20px.png" /></a>
 
 </div>
 
+{% endmacro %}
+
+{% macro render_user_cards(users) %}
+<!-- !Users All Blogs Fetch From Database -->
+<div id="blogsusers">
+    {% for blogUser in users %}
+    <div class="card my-3 box-shadow">
+        <div class="card-body">
+            <p class="card-text text-muted fw-bold badge badge-pill rounded-pill float-end">
+                {{blogUser.joined_date.strftime('%B %d, %Y')}}
+            </p>
+            {% if not blogUser.picture %}
+            <img src="{{url_for('static',filename='images/usericon.png')}}" alt="Avatar" class="rounded-circle"
+                width="60" height="60">
+            {% else %}
+            <img src="{{ blogUser.picture }}
+      " alt="Avatar" class="rounded-circle" width="60" height="60">
+            {% endif %}
+            <h5 class="d-inline-block">
+                <a class="fw-bold text-decoration-none ml-2 text-dark cursor-pointer link d-inline-block"
+                    style="cursor: pointer;" href="/p/{{blogUser.username}}">
+                    {{blogUser.firstname}} {{blogUser.lastname}} (@{{blogUser.username}})</a>
+        </div>
+        </h5>
+    </div>
+    {% endfor %}
+</div>
+{% if users|length == 0 %}
+<div class="alert alert-warning my-3">
+    <h5>No Users Found (*_*).</h5>
+</div>
+{% endif %}
 {% endmacro %}
