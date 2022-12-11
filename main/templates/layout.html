@@ -6,9 +6,7 @@
     src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js"></script>
   <link rel="manifest" href="manifest.json" />
   <!-- HTMX -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.8.4/htmx.min.js"
-    integrity="sha512-KaCnhbNFxSS4ydQMZ4zrTrk/Gf8wx2xPJ8tfZgkkmY6+hVql4eFa04HqMnM1RdUygzLEIByqbClYHvDoKm1H/g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="{{url_for('static',filename='js/htmx.min.js')}}"></script>
   <!-- ios support -->
   <link rel="apple-touch-icon" href="{{url_for('static', filename='images/webIcon.png')}}" />
   <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
@@ -18,8 +16,8 @@
   http-equiv="Content-Security-Policy"
   content="default-src 'self'; img-src https://*; child-src 'none';" /> -->
   <!-- Adsterra -->
-  <script async="async" data-cfasync="false"
-    src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js" defer></script>
+  <!-- <script async="async" data-cfasync="false"
+    src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js" defer></script> -->
 
   <!-- Google Adsense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5004388589023803"
@@ -58,7 +56,7 @@
   <meta name="description" content="Blogsphere is a free platform where anyone can create an account and start blogging. This ensures that all bloggers are equal, allowing them to publish their thoughts on any topic. Anyone can follow other blogs and read updates from across the world with just a few clicks.
   ">
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <meta name="keywords" content="{{params['app_name']}} blog blogging articles">
+  <meta name="keywords" content="{{params['app_name']}} blog blogging articles rf-fahad-islam fahad">
   {% block meta %}{% endblock meta %}
 
   <!-- Bootstrap CSS -->
@@ -285,7 +283,7 @@
   <script
     type="text/javascript">window.setTimeout("document.getElementById('msg').style.display='none';", 5000); </script>
   {% block script %} {% endblock script %}
-  <script type="text/javascript">
+  <!-- <script type="text/javascript">
     atOptions = {
       'key': '429494a5122044482cb83ede049b2e47',
       'format': 'iframe',
@@ -294,7 +292,7 @@
       'params': {}
     };
     document.write('<scr' + 'ipt type="text/javascript" src="http' + (location.protocol === 'https:' ? 's' : '') + '://materialisticconstitution.com/429494a5122044482cb83ede049b2e47/invoke.js"></scr' + 'ipt>');
-  </script>
+  </script> -->
 </body>
 
 </html>

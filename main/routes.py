@@ -25,9 +25,14 @@ def allowed_file(filename):
 with app.app_context():
     blogprofiles = Blogprofile.query.all()
     
+
 @app.route('/sitemap.xml')
 def static_from_root():
     return send_from_directory(app.static_folder, 'sitemap.xml')
+
+@app.route('/manifest.json')
+def send_manifest_json():
+    return send_from_directory(app.static_folder, 'manifest.json')
 
 # Set Login Manager and get user credentials as current_user
 @login_manager.user_loader
@@ -56,10 +61,11 @@ def draftpost():
     if request.method == "POST":
         title = request.form.get('title')
         content = request.form.get('content')
+        tag = ""
         if len(title)<3 or len(title)>100 or len(content)>500 or "<script" in content: 
             flash("(XSS Protection) : Detected scripting code!", category="danger")
             return redirect('/')
-        post = Posts(title=title, body=content, public=False,writer_id=current_user.sno, slug=string_to_slug(title))
+        post = Posts(title=title, body=content, public=False,writer_id=current_user.sno, slug=string_to_slug(title),tag=tag)
         db.session.add(post)
         db.session.commit()
         flash(f'Successfully Saved the Draft : {title}')
@@ -73,18 +79,29 @@ def draftpost():
 def catch_all(path):
     abort(404)
 
+#! HTMX ROUTES
 @app.route('/get-blogs', methods=["GET"])
 def blogs():
     if not request.headers.get('HX-Request'): abort(404)
-    page =1
+    page = 1
     try:
         page = int(request.args.get('p'))
     except:
-        pass
-    posts = Posts.query.order_by(func.random()).paginate(page=page,per_page=POSTS_PER_PAGE)
+        page = 1
+    posts = Posts.query.filter_by(public=True).order_by(func.random()).paginate(page=page,per_page=POSTS_PER_PAGE)
     return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs?p=", showend=True)
 
-
+@app.route('/get-recommendations', methods=["GET"])
+def recommendations():
+    if not request.headers.get('HX-Request'): abort(404)
+    tag1 = request.args.get('t1')
+    tag2 = request.args.get('t2')
+    recommendeds = Posts.query.filter_by(public=True).msearch(tag1, fields=[
+                                        "tag"]).order_by(Posts.viewers_count.desc()).limit(5).all()
+    if not recommendeds and tag2:
+        recommendeds = Posts.query.filter_by(public=True).msearch(tag2, fields=[
+                                            "tag"]).order_by(Posts.viewers_count.desc()).limit(5).all()
+    return render_template('particles/recommendation.html', recommendeds=recommendeds)
 
 @app.route("/tags")
 def handleTags():
@@ -205,24 +222,26 @@ def settingProfile():
 def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     post = Posts.query.filter_by(slug=postSlug).first()
-    comments = Comment.query.filter_by(to=f"/b/{user.sno}/{post.sno}").all()
-    form = CommentForm()
-    if form.validate_on_submit():
-        body = form.body.data
-        to = form.to.data
-        url = form.url.data
-        comment = Comment(body=body, to=to, usersno=current_user.sno)
-        db.session.add(comment)
-        db.session.commit()
-        return redirect(url+"#comment")
-
-    if post is None:
-        return abort(404)
+    if post is None: return abort(404)
+    # comments = Comment.query.filter_by(to=f"/b/{user.sno}/{post.sno}").all()
+    # form = CommentForm()
+    # if form.validate_on_submit():
+    #     body = form.body.data
+    #     to = form.to.data
+    #     url = form.url.data
+    #     comment = Comment(body=body, to=to, usersno=current_user.sno)
+    #     db.session.add(comment)
+    #     db.session.commit()
+    #     return redirect(url+"#comment")
+    
+    #* Add viewers count
     try:
         if current_user.sno == user.sno:
             pass
     except:
         post.viewers_count += 1
+    
+    #TODO: Retrive the next blog and previous blog
     posts = user.posts.all()
     pos = posts.index(post)
     next_post = None
@@ -236,23 +255,28 @@ def handleUsersPosts(username, postSlug):
             next_post = posts[pos+1]
         else:
             prev_post = posts[pos-1]
+    
     recommendeds = Posts.query.filter_by(public=True).msearch(post.tags_list[0], fields=[
-                                       "tag"]).order_by(Posts.viewers_count.desc())[:5]
+                                       "tag"]).order_by(Posts.viewers_count.desc()).limit(5).all()
     if not recommendeds and len(post.tags_list) > 1:
         recommendeds = Posts.query.filter_by(public=True).msearch(post.tags_list[1], fields=[
-                                           "tag"]).order_by(Posts.viewers_count.desc())[:5]
+                                           "tag"]).order_by(Posts.viewers_count.desc()).limit(5).all()
     if not recommendeds:
         recommendeds = posts[:3]
-    # recommendeds.remove(post)
-    random.shuffle(recommendeds)
+    if post in recommendeds:
+        recommendeds.remove(post)
+        
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     urlshort = Urlshortner.query.filter_by(point_to=f"/b/{user.username}/{post.slug}").first()
-    if urlshort is None or not urlshort:
-        urlshort = Urlshortner(point_to=f"/b/{user.username}/{post.slug}", pointer=generate_pointer(4))
-        db.session.add(urlshort)
-        db.session.commit()
+    # if urlshort is None or not urlshort:
+    #     urlshort = Urlshortner(point_to=f"/b/{user.username}/{post.slug}", pointer=generate_pointer(4))
+    #     db.session.add(urlshort)
+    #     db.session.commit()
     shorturl = f'{params["url"]}/l?p={urlshort.pointer}'
-    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds,comments=comments, blogProfile=blogProfile, shorturl=shorturl, form=form)
+    return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds
+                           , blogProfile=blogProfile, shorturl=shorturl)
+
+
 
 @app.route('/comment', methods=["POST","GET"])
 @login_required
@@ -269,6 +293,8 @@ def comment():
         db.session.commit()
         comments = Comment.query.filter_by(to=to).all()
         return render_template('particles/comment.html', comments=comments)
+    else:
+        to = request.args.get('to')
     abort(404)
 
 
@@ -276,8 +302,7 @@ def comment():
 @login_required
 # codiga-disable
 def handleBlogWriter(sno):
-    if current_user.is_blocked:
-        return abort(404)
+    if current_user.is_blocked: return abort(404)
     form = BlogWriter()
     post = Posts.query.filter_by(sno=sno).first()
     if (post == None or post.writer_id != current_user.sno) and sno != "0" and not current_user.is_admin:
@@ -294,7 +319,7 @@ def handleBlogWriter(sno):
             post = Posts(title=form.title.data, summary=form.summary.data,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
             if not draft:
-                urlshort = Urlshortner(point_to=f"/{current_user.username}/{slug}", pointer=generate_pointer(3))
+                urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}", pointer=generate_pointer(3))
                 db.session.add(urlshort)
                 db.session.commit()
             # If the user doesn't have any post then create blogprofile while saving first post
@@ -310,8 +335,7 @@ def handleBlogWriter(sno):
                   category="success")
             return redirect(f"/b/{current_user.username}/{slug}")
         else:
-            post = Posts.query.filter_by(sno=sno).first()
-            prev_slug = post.slug
+            post = Posts.query.get(int(sno))
             if current_user.sno == post.writer_id:
                 post.title = form.title.data
                 post.body = form.body.data
@@ -323,11 +347,11 @@ def handleBlogWriter(sno):
                 else:
                     post.public = True
                     db.session.commit()
-                urlshort = Urlshortner.query.filter_by(point_to=f"/b/{current_user.username}/{prev_slug}").first()
-                if urlshort is not None:
+                if post.slug is not None: urlshort = Urlshortner.query.filter_by(point_to=f"/b/{current_user.username}/{post.slug}").first()
+                if urlshort is not None: #*Update the short url location
                     urlshort.point_to = f"/b/{current_user.username}/{slug}" 
                     db.session.commit()
-                else:
+                else: #Generate a short URL
                     urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}",pointer=generate_pointer(3))
                     db.session.add(urlshort)
                     db.session.commit()
