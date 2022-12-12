@@ -3,6 +3,15 @@
 {% block meta %}
 <meta name="description" content="{{post.summary}}">
 <meta name="keywords" content="{{post.tag}}">
+<meta property="og:title" content="{{post.title}}" />
+<meta property="og:type" content="blog" />
+<meta property="og:url" content="{{params['app_url']}}/b/{{user.username}}/{{post.slug}}" />
+{% if post.writer.username == 'admin' %}
+<meta property="og:image" content="/static/images/welcome.gif" />
+{% endif %}
+<meta property="og:site_name" content="{{params['app_name']}}" />
+<meta property="og:description"
+  content="{{post.summary}}" />
 {% endblock meta %}
 {% block title %}
 <!-- !Share This Plugin -->
