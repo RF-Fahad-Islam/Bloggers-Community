@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+xmlns:og="http://ogp.me/ns#"
+xmlns:fb="https://www.facebook.com/2008/fbml">
 
 <head>
   <script async="async" data-cfasync="false"
@@ -34,29 +36,28 @@
     gtag('config', 'G-SDSRGLT5SF');
   </script>
 
-  <!-- Hotjar Tracking Code for Blogsphere -->
-  <script>
-    (function (h, o, t, j, a, r) {
-      h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
-      h._hjSettings = { hjid: 3259594, hjsv: 6 };
-      a = o.getElementsByTagName('head')[0];
-      r = o.createElement('script'); r.async = 1;
-      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+<!-- Hotjar Tracking Code for Blogsphere app -->
+<script>
+  (function(h,o,t,j,a,r){
+      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+      h._hjSettings={hjid:3284509,hjsv:6};
+      a=o.getElementsByTagName('head')[0];
+      r=o.createElement('script');r.async=1;
+      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
       a.appendChild(r);
-    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
-  </script>
+  })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
   <!-- !Instant Page Load CDN -->
   <script src="//instant.page/5.1.1" type="module"
     integrity="sha384-MWfCL6g1OTGsbSwfuMHc8+8J2u71/LA8dzlIN3ycajckxuZZmF+DNjdm7O6H3PSq" defer></script>
-
-  <script defer data-domain="blogsphere.onrender.com" src="https://plausible.io/js/script.js"></script>
-  <!-- Required meta tags -->
+    <!-- plausible analytics -->
+    <script defer data-domain="blogsphere.top" src="https://plausible.io/js/script.js"></script>
+    <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Blogsphere is a free platform where anyone can create an account and start blogging. This ensures that all bloggers are equal, allowing them to publish their thoughts on any topic. Anyone can follow other blogs and read updates from across the world with just a few clicks.
-  ">
+
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <meta name="keywords" content="{{params['app_name']}} blog blogging articles rf-fahad-islam fahad">
+  
   {% block meta %}{% endblock meta %}
 
   <!-- Bootstrap CSS -->

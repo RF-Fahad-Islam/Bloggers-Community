@@ -528,7 +528,7 @@ def authorize():
     if not getUser:
         userid = generateId(30)
         firstname = user.get('given_name')
-        lastname = user.get('family_name')
+        lastname = user.get('family_name') or ""
         email = user.get('email')
         username = user.get('given_name')
         picture = user.get('picture')
