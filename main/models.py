@@ -2,7 +2,7 @@
 from . import db, admin, MyModelView, app
 from datetime import datetime
 from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 
 #MANY to MANY Relationship
 user_blog_channel = db.Table('user_blog_channel',
@@ -57,14 +57,13 @@ class Users(db.Model, UserMixin):
     def get_id(self):
         return (self.sno)
 
-    @property
-    def password(self):
-        return self.password
+    # @property
+    # def password(self):
+    #     return self.password
 
-    @password.setter
-    def password(self, attemted_password):
-        self.password_hash = generate_password_hash(
-            attemted_password, method="sha1")
+    # @password.setter
+    # def password(self, attemted_password):
+    #     self.password_hash = generate_password_hash(attemted_password)
 
 
 class Blogprofile(db.Model):

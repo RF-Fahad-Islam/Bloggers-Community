@@ -10,6 +10,7 @@ from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
 import random
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 params = {
     "page_title": APP_TITLE,
     "app_name": APP_NAME,
@@ -27,13 +28,13 @@ with app.app_context():
     blogprofiles = Blogprofile.query.all()
     
 
-@app.route('/sitemap.xml')
-def static_from_root():
-    return send_from_directory(app.static_folder, 'sitemap.xml')
+# @app.route('/sitemap.xml')
+# def static_from_root():
+#     return send_from_directory(app.static_folder, 'sitemap.xml')
 
-@app.route('/manifest.json')
-def send_manifest_json():
-    return send_from_directory(app.static_folder, 'manifest.json')
+# @app.route('/manifest.json')
+# def send_manifest_json():
+#     return send_from_directory(app.static_folder, 'manifest.json')
 
 # Set Login Manager and get user credentials as current_user
 @login_manager.user_loader
@@ -147,29 +148,30 @@ def userProfile(username):
 #     return render_template("signup.html",  form=form)
 
 
-atm = 0
+# !Login System
+# atm = 0
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    global atm
-    form = LoginForm()
-    if atm > 3:
-        return redirect('/')
-    if form.validate_on_submit() and atm > 3:
-        user = Users.query.filter_by(email=form.email.data).first()
-        if user != None and user.check_password(form.password.data):
-            atm = 0
-            login_user(user)
-            return redirect(url_for("home"))
-        else:
-            atm += 1
-            flash_form_error_messages(form)
-            if atm > 3:
-                return redirect('/')
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     global atm
+#     form = LoginForm()
+#     if atm > 3:
+#         return redirect('/')
+#     if form.validate_on_submit() and atm > 3:
+#         user = Users.query.filter_by(email=form.email.data).first()
+#         if user != None and user.check_password(form.password.data):
+#             atm = 0
+#             login_user(user)
+#             return redirect(url_for("home"))
+#         else:
+#             atm += 1
+#             flash_form_error_messages(form)
+#             if atm > 3:
+#                 return redirect('/')
 
-    flash_form_error_messages(form)
-    return render_template("login.html", form=form)
+#     flash_form_error_messages(form)
+#     return render_template("login.html", form=form)
 
 
 @app.route('/logout')
@@ -543,7 +545,7 @@ def authorize():
             username = username+generator(2)
             user = Users.query.filter_by(username=username).first()
         newUser = Users(firstname=firstname, picture=picture, lastname=lastname, userid=userid,
-                        email=email, username=string_to_slug(username), is_admin=is_admin, password=generator(20))
+                        email=email, username=string_to_slug(username), is_admin=is_admin, password_hash=generate_password_hash(generator(20)))
         db.session.add(newUser)
         db.session.commit()
 
@@ -553,7 +555,6 @@ def authorize():
         db.session.add(readinglist)
         db.session.commit()
     else:
-        getUser.picture = user.get('picture')
         blogprofile = Blogprofile.query.filter_by(usersno=getUser.sno).first()
         readinglist = Readinglists.query.filter_by(user=getUser).first()
         if not blogprofile:

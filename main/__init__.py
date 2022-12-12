@@ -33,9 +33,9 @@ csrf = CSRFProtect(app)
 # else:
 #     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_DEV
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
 app.config["SESSION_TYPE"] = SESSION_TYPE
 app.config["UPLOAD_PHOTOS_DEST"] = 'static/images'
+app.config['SESSION_COOKIE_SECURE'] = True
 # configure_uploads(app,photos)
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
