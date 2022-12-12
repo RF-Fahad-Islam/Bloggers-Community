@@ -6,17 +6,12 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
 <head>
   <script async="async" data-cfasync="false"
     src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js"></script>
-  <link rel="manifest" href="manifest.json" />
   <!-- HTMX -->
   <script src="{{url_for('static',filename='js/htmx.min.js')}}"></script>
   <!-- ios support -->
   <link rel="apple-touch-icon" href="{{url_for('static', filename='images/webIcon.png')}}" />
   <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
   <meta name="theme-color" content="#db4938" />
-  <!-- CSP XSS Protection -->
-  <!-- <meta
-  http-equiv="Content-Security-Policy"
-  content="default-src 'self'; img-src https://*; child-src 'none';" /> -->
   <!-- Adsterra -->
   <!-- <script async="async" data-cfasync="false"
     src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js" defer></script> -->
@@ -69,41 +64,6 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
   <link rel="shortcut icon" href="{{url_for('static', filename='images/webIcon.png')}}" type="image/x-icon" />
   {% block title %} {% endblock title %}
   {% block css %} {% endblock css %}
-  <!-- <style>
-    .darkmode-layer, .darkmode-toggle {
-      z-index: 99999999;
-    }
-    .darkmode--activated img{
-      mix-blend-mode: difference;
-    }
-    .darkmode--activated button{
-      mix-blend-mode: inherit;
-      color: rgb(0, 0, 0);
-    }
-    
-  </style> -->
-  <!-- Dark Mode JS Plugin -->
-  <!-- <script  src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script> -->
-  <!-- <script >
-    const options = {
-      //bottom: '64px', // default: '32px'
-      //right: 'unset', // default: '32px'
-      //left: '32px', // default: 'unset'
-      //time: '0.5s', // default: '0.3s'
-      mixColor: '#fff', // default: '#fff'
-      //backgroundColor: 'white',  // default: '#fff'
-      //buttonColorDark: '#000',  // default: '#100f2c'
-      //buttonColorLight: '#fff', // default: '#fff'
-      //saveInCookies: false, // default: true,
-      label: '🌓', // default: ''
-      autoMatchOsTheme: true // default: true
-    }
-  
-    function addDarkmodeWidget() {
-      new Darkmode(options).showWidget();
-    }
-    window.addEventListener('load', addDarkmodeWidget);
-  </script> -->
   <style>
     @media only screen and (min-width: 990px) {
       .floating-container {
@@ -193,7 +153,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
     </div>
     {% else %}
     <!-- <a class="btn btn-outline-primary mx-3 float-end" href="/signup"><i class="fa fa-user-plus"></i> SignUp</a> -->
-    <a class="btn btn-outline-success float-end" href="/login"><i class="fa fa-sign-in"></i> Login</a>
+    <a class="btn btn-outline-success float-end" href="{{url_for('googleLogin')}}"><i class="fa fa-sign-in"></i> Login</a>
     {% endif %}
   </nav>
 
@@ -251,11 +211,10 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
     </div>
   </div>
   {% block body %} {% endblock body %}
-  <!-- <footer class="container bg-white d-block text-center" style="margin-top: 10px; position:absolute; bottom:0;">
+  <!-- <footer class="container bg-white d-fixed bottom-0 text-center" style="margin-top: 10px; position:absolute; bottom:0;">
     <p><i class="fa fa-thumb-tack"></i> © 2020-2021 | Owned By <b class="text-muted font-weight-bolder">RF Fahad
             Islam<b> | <a href="https://github.com/RF-Fahad-Islam/" style="text-decoration: none; color: black;">My Github</a> <i class="fa fa-git-square"></i>
 </b></b></p></footer> -->
-  <!-- <script src="{{url_for('static',filename='js/searcher.js')}}"></script> -->
   <!-- Option 1: Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
@@ -281,8 +240,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
 
   <!-- <script src="{{url_for('static', filename='js/sw.js')}}"></script>
   <script src="{{url_for('static', filename='js/app.js')}}"></script> -->
-  <script
-    type="text/javascript">window.setTimeout("document.getElementById('msg').style.display='none';", 5000); </script>
+  <script>window.setTimeout("document.getElementById('msg').style.display='none';", 5000); </script>
   {% block script %} {% endblock script %}
   <!-- <script type="text/javascript">
     atOptions = {
