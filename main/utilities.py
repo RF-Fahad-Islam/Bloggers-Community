@@ -11,6 +11,14 @@ def string_to_slug(string):
     string = string.replace(" ", "-")
     return string
 
+def generator(length):
+    id_=""
+    charset = "AlmnopqrstuvHIRSTUwxyzEFGVWX@#JKLMNOPQ$DYZabcdeBCijkfgh&"
+    for i in range(length):
+        r = random.randint(0, length-1)
+        id_+= charset[r]
+    return id_
+
 def generateId(length):
     """Generate a unique ID for each user id
 
