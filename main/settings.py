@@ -6,7 +6,7 @@ SESSION_TYPE = 'sqlalchemy'
 #APP CONFS
 APP_TITLE = "Blogsphere | Made By Fahad"
 APP_NAME = "Blogsphere"
-APP_URL = "https://blogsphere.onrender.com"
+APP_URL = "https://blogsphere.top"
 POSTS_PER_PAGE = 10
 
 #ADMIN CONFS
