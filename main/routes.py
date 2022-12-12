@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 import json
 from sqlalchemy.sql.expression import func
 from .settings import *
@@ -273,8 +274,13 @@ def handleUsersPosts(username, postSlug):
     #     db.session.add(urlshort)
     #     db.session.commit()
     shorturl = f'{params["url"]}/l?p={urlshort.pointer}'
+    soup = BeautifulSoup(post.body, 'html.parser')
+    if soup.find('img'): thumbnail = soup.find('img').get('src') or ""
+    else: thumbnail = ""
+    summary = post.summary
+    if not summary or summary == "": soup.find('p').getText()[:144]
     return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds
-                           , blogProfile=blogProfile, shorturl=shorturl)
+                           , blogProfile=blogProfile, shorturl=shorturl, thumbnail=thumbnail, summary=summary)
 
 
 
@@ -378,6 +384,7 @@ def handleDeletes(keyword, sno):
             db.session.commit()
             flash(f"Deleted post : {title}")
             return redirect(url_for("userDashboard"))
+        return abort(404)
 
     elif keyword == "p":
         if current_user.is_admin:
@@ -402,7 +409,7 @@ def handleDeletes(keyword, sno):
 
             return redirect(url_for("adminDashboard"))
         else:
-            return redirect("/")
+            return abort(404)
 
     elif keyword == "n":
         if current_user.is_admin:
@@ -410,6 +417,8 @@ def handleDeletes(keyword, sno):
             db.session.delete(notice)
             db.session.commit()
             return redirect(url_for("adminDashboard"))
+        return abort(404)
+    
     elif keyword == "r":
         if sno == "all":
             blogs = current_user.readinglist.blogs
@@ -424,7 +433,7 @@ def handleDeletes(keyword, sno):
             return redirect('particles/bookmark.html', posts=posts)
         return redirect(url_for('readinglist'))
     else:
-        abort(404)
+        return abort(404)
 
 
 @app.route("/admin/dashboard")
@@ -500,16 +509,7 @@ def handleNotices():
         db.session.add(notice)
         db.session.commit()
         return redirect(url_for("adminDashboard"))
-    return redirect("/")
-
-
-@app.route("/usedUsernames")
-def apiUsernames():
-    users = Users.query.all()
-    usedUsernames = {"usernames": []}
-    for user in users:
-        usedUsernames["usernames"].append(user.username)
-    return jsonify(usedUsernames)
+    return abort(404)
 
 
 @app.route('/google-login')
@@ -526,7 +526,7 @@ def authorize():
     user = token['userinfo']
     getUser = Users.query.filter_by(email=user.get('email')).first()
     if not getUser:
-        userid = generateId(30)
+        userid = generateId(15)
         firstname = user.get('given_name')
         lastname = user.get('family_name') or ""
         email = user.get('email')
@@ -540,10 +540,10 @@ def authorize():
         # If finds the username exists, it will generate username until it's unique
         user = Users.query.filter_by(username=username).first()
         while user:
-            username = username+generateId(2)
+            username = username+generator(2)
             user = Users.query.filter_by(username=username).first()
         newUser = Users(firstname=firstname, picture=picture, lastname=lastname, userid=userid,
-                        email=email, username=string_to_slug(username), is_admin=is_admin, password=generateId(20))
+                        email=email, username=string_to_slug(username), is_admin=is_admin, password=generator(20))
         db.session.add(newUser)
         db.session.commit()
 

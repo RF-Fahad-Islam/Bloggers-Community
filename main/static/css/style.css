@@ -47,6 +47,9 @@ a.link{
     color: black;
     text-decoration: none;
 }
+iframe{
+    aspect-ratio: 16 / 9!important;
+}
 
 a.link:hover{
     color: rgb(49, 121, 204)!important;

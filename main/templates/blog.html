@@ -1,17 +1,17 @@
 {% extends 'layout.html' %}
 {% from 'includes/macros.html' import render_user_profile %}
 {% block meta %}
-<meta name="description" content="{{post.summary}}">
+<meta name="description" content="{{summary}}">
 <meta name="keywords" content="{{post.tag}}">
 <meta property="og:title" content="{{post.title}}" />
 <meta property="og:type" content="blog" />
 <meta property="og:url" content="{{params['app_url']}}/b/{{user.username}}/{{post.slug}}" />
-{% if post.writer.username == 'admin' %}
-<meta property="og:image" content="/static/images/welcome.gif" />
+{% if thumbnail or thumbnail != "" %}
+<meta property="og:image" content="{{thumbnail}}" />
 {% endif %}
 <meta property="og:site_name" content="{{params['app_name']}}" />
 <meta property="og:description"
-  content="{{post.summary}}" />
+  content="{{summary}}" />
 {% endblock meta %}
 {% block title %}
 <!-- !Share This Plugin -->
@@ -19,7 +19,7 @@
   src="https://platform-api.sharethis.com/js/sharethis.js#property=637860466fa502001965e9b3&product=inline-reaction-buttons&source=platform"
   async="async"></script>
 <!-- !Prisma CSS & JS-->
-<link rel="stylesheet" href="{{url_for('static',filename='prism/prism.css')}}">
+<link rel="stylesheet" href="{{url_for( 'static',filename='prism/prism.css')}}">
 <title>{{post.title}} @{{post.writer.username}}</title>
 {% endblock title %}
 {% block body %}
