@@ -240,7 +240,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
 
   <!-- <script src="{{url_for('static', filename='js/sw.js')}}"></script>
   <script src="{{url_for('static', filename='js/app.js')}}"></script> -->
-  <script>window.setTimeout("document.getElementById('msg').style.display='none';", 5000); </script>
+  <script>if(document.getElementById('msg')){window.setTimeout("document.getElementById('msg').style.display='none';", 5000);} </script>
   {% block script %} {% endblock script %}
   <!-- <script type="text/javascript">
     atOptions = {

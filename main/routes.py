@@ -3,7 +3,7 @@ import json
 from sqlalchemy.sql.expression import func
 from .settings import *
 from . import db, app, login_manager, search, oauth,mail
-from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
+from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory,make_response,Response
 from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
@@ -11,6 +11,8 @@ from flask_login import login_required, login_user, logout_user, current_user
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
+import os
+from werkzeug.utils import secure_filename
 params = {
     "page_title": APP_TITLE,
     "app_name": APP_NAME,
@@ -20,7 +22,7 @@ params = {
     "admin_password": ADMIN_PASSWORD,
     "admin_userid": ADMIN_USERID
 }
-ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'json','csv'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -57,6 +59,15 @@ def home():
     notices = Notices.query.all()
     notices.reverse()
     return render_template('index.html', notices=notices,  posts=posts, tags=all_tags())
+
+@app.route('/privacy-policy')
+def privacy_policy():
+    return render_template('privacypolicy.html')
+
+@app.route('/terms-and-conditions')
+def termsandconditions():
+    term = Posts.query.filter(Posts.tag == "terms conditons").first()
+    return render_template('termsandconditions.html',term=term)
 
 @app.route('/draft', methods=['POST'])
 def draftpost():
@@ -674,3 +685,85 @@ def shorturl():
     urlshort = Urlshortner.query.filter_by(pointer=pointer).first()
     if urlshort is None or not pointer: return abort(404)
     return redirect(urlshort.point_to)
+
+@app.route('/export-data', methods=["GET"])
+@login_required
+def exportdata():
+    format = request.args.get('format')
+    data = []
+    posts = current_user.posts.all()
+    for post in posts:
+        data.append({
+            "title":post.title,
+            "tags": post.tag,
+            "summary":post.summary,
+            "body":post.body,
+            "public":post.public,
+            "dateAdded":str(post.pub_date)
+            
+        })
+    if format == "json":
+        data = json.dumps(data)
+        response = Response(
+        data,
+        mimetype='text/json',
+        headers={'Content-disposition': 'attachment; filename=data.json'})
+        return response
+        
+    else:
+        fields = ['title','tags','summary','body','public']
+        csvfile = newcsv(data, fields, fields)
+        response = Response(
+        csvfile.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-disposition': 'attachment; filename=data.csv'})
+        return response
+    
+@app.route('/import', methods=['POST'])
+@login_required
+def importdata():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            if allowed_file(filename): 
+                filestream = file.stream.read()
+                posts = json.loads(filestream)
+                user_posts = current_user.posts.all()
+                err_posts = []
+                #HERE will upload all posts
+                for post in posts:
+                    title = post['title']
+                    summary = post['summary']
+                    body =  post['body']
+                    tag =  post['tags']
+                    draft = not bool(post['public'])
+                    slug = string_to_slug(title)
+                    newpost = Posts(title=title, summary=summary,
+                            body=body, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
+                    if not draft:
+                        urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}", pointer=generate_pointer(3))
+                        db.session.add(urlshort)
+                        db.session.commit()
+                    # If the user doesn't have any post then create blogprofile while saving first post
+                    if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
+                        getUser = current_user
+                        blog_profile = Blogprofile(usersno=getUser.sno)
+                        db.session.add(blog_profile)
+                        db.session.commit()
+                    try:
+                        db.session.add(newpost)
+                        db.session.commit()
+                    except:
+                        err_posts.append(post['title'] or "Error")
+                if err_posts:
+                    flash("Failed to upload some posts. As they conflict with your existed posts.", category="success")
+                else:
+                    flash("Successfully Uploaded!", category="success")
+                return redirect('/')
+            else:
+                flash('File Type not supported', category='danger')
+                return redirect('/')
+        else:
+            flash("No file selected", category='danger')
+            return redirect('/')
