@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" encoding="utf-8">
+<channel>
+<title>Blogsphere</title>
+<link>https://blogsphere.top</link>
+<description>Blogsphere is a platform for bloggers where anyone can create,publish and share their blogs.</description>
+{% for post in posts %}
+<item>
+<title>{{post.title}}</title>
+<author>{{post.writer.username}}</author>
+<link>https://{{params['url']}}/{{post.writer.username}}/{{post.slug}}</link>
+<description>{{post.summary}} </description>
+<pubDate>{{post.pub_date}}</pubDate>
+</item>
+{% endfor %}
+</channel>
+</rss>
