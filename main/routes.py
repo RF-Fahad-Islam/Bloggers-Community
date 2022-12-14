@@ -751,6 +751,9 @@ def importdata():
                         return render_template('particles/alert.html', msg="The file is not validated. We are unable to validate the file that it really belongs to you", category="danger")
 
                     posts = data['posts']
+                    if len(posts) == 0: 
+                        return render_template('particles/alert.html', msg="File containes no posts. Noting to upload.", category="warning")
+
                 except:
                     return render_template('particles/alert.html', msg="<b>We are unable to verify the file</b>.File is not in a right format or might be changed! try with another file", category="warning")
                 titles = []
