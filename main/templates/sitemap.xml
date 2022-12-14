@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+		<!--	created with www.mysitemapgenerator.com	-->
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        <url>
+	<loc>{{params['url']}}</loc>
+	<lastmod>2022-12-14T17:02:20+01:00</lastmod>
+	<priority>2.0</priority>
+</url>
+        <url>
+	<loc>{{params['url']}}/privacy-policy</loc>
+	<lastmod>2022-12-14T17:02:20+01:00</lastmod>
+	<priority>2.0</priority>
+</url>
+        <url>
+	<loc>{{params['url']}}/google-login</loc>
+	<lastmod>2022-12-14T17:02:20+01:00</lastmod>
+	<priority>2.0</priority>
+</url>
+{% for post in posts %}
+<url>
+	<loc>{{params['url']}}/{{post.writer.username}}/{{post.slug}}</loc>
+	<lastmod>{{post.pub_date}}</lastmod>
+	<priority>1.0</priority>
+</url>
+{% endfor %}
+</urlset>

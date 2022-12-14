@@ -42,6 +42,18 @@ def rssgenerator():
         )
         return response
 
+@app.route('/sitemap.xml')
+def sitemapgenerator():
+    posts = Posts.query.all()
+    with app.app_context():
+        data = render_template('sitemap.xml', posts=posts)
+        response = Response(
+            data,
+            mimetype='application/xml',
+    #     headers={'Content-disposition': 'attachment; filename=data.pkl'})  
+        )
+        return response
+
 # @app.route('/sitemap.xml')
 # def static_from_root():
 #     return send_from_directory(app.static_folder, 'sitemap.xml')
