@@ -3,7 +3,7 @@ import json
 from sqlalchemy.sql.expression import func
 from .settings import *
 from . import db, app, login_manager, search, oauth,mail
-from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory
+from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory,make_response,Response
 from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
@@ -11,6 +11,8 @@ from flask_login import login_required, login_user, logout_user, current_user
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
+import os
+from werkzeug.utils import secure_filename
 params = {
     "page_title": APP_TITLE,
     "app_name": APP_NAME,
@@ -20,7 +22,7 @@ params = {
     "admin_password": ADMIN_PASSWORD,
     "admin_userid": ADMIN_USERID
 }
-ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'json','csv'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -57,6 +59,15 @@ def home():
     notices = Notices.query.all()
     notices.reverse()
     return render_template('index.html', notices=notices,  posts=posts, tags=all_tags())
+
+@app.route('/privacy-policy')
+def privacy_policy():
+    return render_template('privacypolicy.html')
+
+@app.route('/terms-and-conditions')
+def termsandconditions():
+    term = Posts.query.filter(Posts.tag == "terms conditons").first()
+    return render_template('termsandconditions.html',term=term)
 
 @app.route('/draft', methods=['POST'])
 def draftpost():
@@ -674,3 +685,112 @@ def shorturl():
     urlshort = Urlshortner.query.filter_by(pointer=pointer).first()
     if urlshort is None or not pointer: return abort(404)
     return redirect(urlshort.point_to)
+
+@app.route('/export-data', methods=["GET"])
+@login_required
+def exportdata():
+    format = request.args.get('format')
+    posts = []
+    user_posts = current_user.posts.all()
+    for post in user_posts:
+        posts.append({
+            "title":post.title,
+            "tags": post.tag,
+            "summary":post.summary,
+            "body":post.body,
+            "public":post.public,
+            "dateAdded":str(post.pub_date)
+            
+        })
+    data = {
+        "uid":current_user.userid,
+        'email':current_user.email,
+        "total_posts":len(posts),
+        "posts":posts,
+        }
+    if format == "json":
+        data = json.dumps(data)
+        response = Response(
+        data,
+        mimetype='text/json',
+        headers={'Content-disposition': 'attachment; filename=data.json'})
+        return response
+        
+    elif format == 'csv':
+        fields = ['title','tags','summary','body','public']
+        csvfile = newcsv(data, fields, fields)
+        response = Response(
+        csvfile.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-disposition': 'attachment; filename=data.csv'})
+        return response
+    elif format == 'pkl':
+        import pickle
+        data = pickle.dumps(data)
+        response = Response(
+        data,
+        mimetype='text/plain',
+        headers={'Content-disposition': 'attachment; filename=data.pkl'})
+        return response
+    abort(404)
+    
+@app.route('/import', methods=['POST'])
+@login_required
+def importdata():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            if allowed_file(filename):
+                try:
+                    filestream = file.stream.read()
+                    data = json.loads(filestream)
+                    uid = data.get('uid')
+                    user = Users.query.filter_by(userid=uid).first()
+                    if not current_user.userid == user.userid or not current_user.email == user.email or not user or user is None: 
+                        return render_template('particles/alert.html', msg="The file is not validated. We are unable to validate the file that it really belongs to you", category="danger")
+
+                    posts = data['posts']
+                except:
+                    return render_template('particles/alert.html', msg="<b>We are unable to verify the file</b>.File is not in a right format or might be changed! try with another file", category="warning")
+                titles = []
+                user_posts = current_user.posts.all()
+                for post in user_posts:
+                    titles.append(post.title)
+                err_posts = []
+                #HERE will upload all posts
+                for post in posts:
+                    title = post['title']
+                    if title in titles:
+                        err_posts.append(title)
+                        continue
+                    summary = post['summary']
+                    body =  post['body']
+                    tag =  post['tags']
+                    draft = not bool(post['public'])
+                    slug = string_to_slug(title)
+                    newpost = Posts(title=title, summary=summary,
+                            body=body, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
+                    if not draft:
+                        urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}", pointer=generate_pointer(3))
+                        db.session.add(urlshort)
+                        db.session.commit()
+                    # If the user doesn't have any post then create blogprofile while saving first post
+                    if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
+                        getUser = current_user
+                        blog_profile = Blogprofile(usersno=getUser.sno)
+                        db.session.add(blog_profile)
+                        db.session.commit()
+                    try:
+                        db.session.add(newpost)
+                        db.session.commit()
+                    except:
+                        err_posts.append(post['title'] or "Error")
+                if err_posts:
+                    return render_template('particles/alert.html', msg=f"<b>There are {len(posts)} posts in the file</b>. But {len(err_posts)-len(posts)} posts are uploaded becuase of some error. (Looks like the posts must be duplicated or not in a right format)", category="danger") 
+                else:
+                    return render_template('particles/alert.html', msg="Uploaded all files successfully!", category="success")
+            else:
+                return render_template('particles/alert.html', msg="File type not supported! supported files (.json)", category="danger")
+        else:
+            return render_template('particles/alert.html', msg="No file selected", category="danger")

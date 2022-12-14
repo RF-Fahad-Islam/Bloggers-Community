@@ -43,6 +43,22 @@ def generateId(length):
             id_+= charset[r]
     return id_
 
+from io import StringIO
+import csv
+
+
+def newcsv(data, csvheader, fieldnames):
+    """
+    Create a new csv file that represents generated data.
+    """
+    new_csvfile = StringIO()
+    wr = csv.writer(new_csvfile)
+    wr = csv.DictWriter(new_csvfile, fieldnames = fieldnames)
+    wr.writeheader()
+    wr.writerows(data) 
+
+    return new_csvfile
+
 def generate_pointer(length:int):
     """Generate a unique ID for each url
 

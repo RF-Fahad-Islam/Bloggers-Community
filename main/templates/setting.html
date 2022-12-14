@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-{% block title %} <title>Settings {{current_user.firstname}} {{current_user.lastname}} @{{current_user.username}}</title> {% endblock %}
+{% block title %} <title>Settings {{current_user.firstname}} {{current_user.lastname}} @{{current_user.username}}
+</title> {% endblock %}
 {% block body %}
 <div class="container">
     <ul class="nav nav-pills my-3" id="pills-tab" role="tablist">
@@ -13,7 +14,8 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact"
-                type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Dashboard</button>
+                type="button" role="tab" aria-controls="pills-contact" aria-selected="false"> <i
+                    class="fa fa-database"></i> Data</button>
         </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
@@ -22,7 +24,8 @@
                 <div class="card-header">
                     <a href="/" class="d-inline-block btn bg-transparent" style="cursor: pointer;"><i class="fa fa-home"
                             style="font-size: x-large;"></i></a>
-                    <h5 class="d-inline-block text-center">{{current_user.firstname}} {{current_user.lastname}} @{{current_user.username}}</h5>
+                    <h5 class="d-inline-block text-center">{{current_user.firstname}} {{current_user.lastname}}
+                        @{{current_user.username}}</h5>
                     <button class="btn bg-transparent float-end" id="edit">
                         <i class="fa fa-pencil-square-o float-lg-right" style="font-size: xx-large;"></i>
                     </button>
@@ -30,25 +33,19 @@
                 <div class="text-center">
                     <div class="my-3">
                         {% if current_user.picture == 'avatar' %}
-                        <img
-                          id="userImage"
-                          src="{{url_for('static', filename='images/usericon.png')}}"
-                          alt="{{current_user.username}} - The creator"
-                        />
+                        <img id="userImage" src="{{url_for('static', filename='images/usericon.png')}}"
+                            alt="{{current_user.username}} - The creator" />
                         {% else %}
-                        <img
-                          id="userImage"
-                          src="{{current_user.picture}}"
-                          alt="{{current_user.username}}"
-                        />
+                        <img id="userImage" src="{{current_user.picture}}" alt="{{current_user.username}}" />
                         {% endif %}
-                      </div>
+                    </div>
                     <b>
                         <!-- <p class="text-muted">Username : {{current_user.username}}</p> -->
                         <div class="card">
                             <div class="card-body">
                                 <p class="text-muted">Email : {{current_user.email}}</p>
-                                <p class="text-muted">Created Date : {{current_user.joined_date.strftime("%B %d, %Y")}}</p>
+                                <p class="text-muted">Created Date : {{current_user.joined_date.strftime("%B %d, %Y")}}
+                                </p>
                             </div>
                         </div>
                     </b>
@@ -58,23 +55,23 @@
                         {{form.csrf_token}}
                         <div class="mb-3">
                             <label for="firstname" class="col-form-label">First Name :</label>
-                            <input disabled type="text" class="form-control" value="{{current_user.firstname}}" name="firstname"
-                                required id="firstname">
+                            <input disabled type="text" class="form-control" value="{{current_user.firstname}}"
+                                name="firstname" required id="firstname">
                         </div>
                         <div class="mb-3">
                             <label for="lastname" class="col-form-label">Last Name :</label>
-                            <input disabled type="text" class="form-control" value="{{current_user.lastname}}" name="lastname"
-                                required id="lastname">
+                            <input disabled type="text" class="form-control" value="{{current_user.lastname}}"
+                                name="lastname" required id="lastname">
                         </div>
                         <div class="mb-3">
                             <label for="username" class="col-form-label">Username :</label>
-                            <input disabled type="text" class="form-control" value="{{current_user.username}}" name="username"
-                                required id="username">
+                            <input disabled type="text" class="form-control" value="{{current_user.username}}"
+                                name="username" required id="username">
                         </div>
                         <div class="mb-3">
                             <label for="age" class="col-form-label">Age :</label>
-                            <input disabled type="number" maxLength="2" class="form-control" value="{{current_user.age}}" name="age"
-                                required id="age">
+                            <input disabled type="number" maxLength="2" class="form-control"
+                                value="{{current_user.age}}" name="age" required id="age">
                         </div>
                         <div class="mb-3">
                             <label for="bio" class="col-form-label">Bio :</label>
@@ -88,14 +85,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="hobbies" class="col-form-label">Hobbies</label>
-                            <input disabled type="text" class="form-control" value="{{current_user.hobbies}}" name="hobbies"
-                                max-length="30" id="hobbies">
+                            <input disabled type="text" class="form-control" value="{{current_user.hobbies}}"
+                                name="hobbies" max-length="30" id="hobbies">
                         </div>
 
                         <div class="mb-3">
                             <label for="weblink" class="col-form-label">Your social account or website link :</label>
-                            <input disabled type="text" class="form-control" value="{{current_user.webLink}}" name="weblink"
-                                 id="weblink">
+                            <input disabled type="text" class="form-control" value="{{current_user.webLink}}"
+                                name="weblink" id="weblink">
                         </div>
 
 
@@ -359,7 +356,8 @@
                         <div class="mb-3">
                             <label for="oldpassword" class="col-form-label">Password (Hashed):</label>
                             <input disabled type="password" class="form-control" id="oldpassword"
-                                placeholder="Choose a password" name="oldpassword" value="{{current_user.password_hash}}" required>
+                                placeholder="Choose a password" name="oldpassword"
+                                value="{{current_user.password_hash}}" required>
                         </div>
 
                         <span class="btn btn-light" id="show">Show</span>
@@ -393,25 +391,70 @@
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
             {% if blogProfile %}
             <div class="alert alert-light my-3 fw-bold">
-                <a href="{{url_for('getFollowers', username=current_user.username)}}" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> See</a>
+                <a href="{{url_for('getFollowers', username=current_user.username)}}"
+                    class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> See</a>
                 <h5>See Your Blog Followers</h5>
-              </div>
-              {% else %}
-              <div class="alert alert-warning my-3 fw-bold">
-                  <h5 class="text-center">You don't have a blog profile. Publish a blog first.</h5>
-                </div>
-              {% endif %}
+            </div>
+            {% else %}
+            <div class="alert alert-warning my-3 fw-bold">
+                <h5 class="text-center">You don't have a blog profile. Publish a blog first.</h5>
+            </div>
+            {% endif %}
 
             <div class="alert alert-light my-3 fw-bold">
-                <a href="{{url_for('getFollowing', username=current_user.username)}}" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> See</a>
+                <a href="{{url_for('getFollowing', username=current_user.username)}}"
+                    class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> See</a>
                 <h5>See Your Following List</h5>
-              </div>
+            </div>
         </div>
         <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+
             <div class="alert alert-light my-3 fw-bold">
                 <a href="/dashboard" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> Go</a>
                 <h5> <i class="fa fa-bar-chart"></i> Open Dashboard</h5>
-              </div>
+            </div>
+            <div class="btn-group d-block" role="group">
+                <button type="button" class="btn btn-outline-warning btn-lg d-block dropdown-toggle"
+                    style="width: 100%;" data-bs-toggle="dropdown" aria-expanded="true">
+                    <i class="fa fa-file-archive-o"></i> Export Data (Posts)
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/export-data?format=pkl">as .pkl</a></li>
+                    <li><a class="dropdown-item" href="/export-data?format=json">as .json</a></li>
+                    <li><a class="dropdown-item" href="/export-data?format=csv">as .csv</a></li>
+                </ul>
+            </div>
+            <div class="alert alert-light my-3 fw-bold d-flex align-items-center justify-content-between">
+                <form method="post" hx-post="/import" style="width:100%;" hx-target="#msgfile" hx-indicator="#spinner"
+                    enctype="multipart/form-data">
+                    <h5> <i class="fa fa-bar-chart"></i> Import Data</h5>
+                    <hr>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="flex flex-row justify-content-around">
+
+                        <input type="file" name="file" accept=".json"
+                            class="btn btn-outline-primary btn-lg my-3 form-control w-75 fwpop " aria-label="import file (.json)" required>
+                            <!-- <div class="invalid-feedback">Example invalid form file feedback</div> -->
+                        <button type="submit" class="btn btn-lg btn-outline-primary"><i
+                                class="fa fa-arrow-right"></i></button>
+                    </div>
+                 
+                </form>
+            </div>
+            <!-- TODO: Loader -->
+            <div id="msgfile">
+               
+            </div>
+                <div class="card my-2 htmx-indicator" style="width: 100%;" id="spinner" s aria-hidden="true">
+                    <div class="card-body">
+                        <h3 class="text-center">Uploading.......</h3>
+                        <div class="text-center">
+                        <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}
+  <title>Terms & Conditions | Blogsphere</title>
+{% endblock title %}
+{% block body %}
+<div class="container my-3">
+    <h1 class="text-center mb-2">
+        {{term.title}}
+    </h1>
+    <hr>
+    Last Updated : {{term.pub_date.strftime("%b %d, %Y")}}
+    <hr>
+    {{term.body|safe}}
+</div>
+{% endblock body %}
