@@ -718,19 +718,19 @@ def exportdata():
         
     elif format == 'csv':
         fields = ['title','tags','summary','body','public']
-        csvfile = newcsv(data, fields, fields)
+        csvfile = newcsv(data['posts'], fields, fields)
         response = Response(
         csvfile.getvalue(),
         mimetype='text/csv',
         headers={'Content-disposition': 'attachment; filename=data.csv'})
         return response
-    elif format == 'pkl':
-        import pickle
-        data = pickle.dumps(data)
-        response = Response(
-        data,
-        mimetype='text/plain',
-        headers={'Content-disposition': 'attachment; filename=data.pkl'})
+    # elif format == 'pkl':
+    #     import pickle
+    #     data = pickle.dumps(data)
+    #     response = Response(
+    #     data,
+    #     mimetype='text/plain',
+    #     headers={'Content-disposition': 'attachment; filename=data.pkl'})
         return response
     abort(404)
     
