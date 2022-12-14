@@ -77,7 +77,7 @@
 
         <input id="tag" name="tag" min="3" class="titleInput d-block mx-auto" maxLength="50" minlength="3"
           placeholder="Tags (format : 1tag 2tag)" value="{{post.tag}}" style="font-size:20px;">
-        {% if sno=="0" or post.public == false %}
+        {% if sno=='0' or post.public == false %}
         {% set text = "Publish Blog" %}
         {% else %}
         {% set text = "Edit Blog" %}
@@ -91,7 +91,7 @@
           <input type="checkbox" class="btn-check" id="btn-check-outlined" name="draft" autocomplete="off">
           <label class="btn btn-lg btn-outline-primary" for="btn-check-outlined">📎 Draft</label>
           {% endif %}
-          <button type="submit" id="submit" class="btn btn-lg btn-outline-success float-end" value="🎉 {{text}}"></button>
+          <button type="submit" id="submit" class="btn btn-lg btn-outline-success float-end">🎉 {{text}}</button>
           <!-- <button class="btn btn-lg btn-outline-primary float-end mx-2">
                     <i class="fa fa-paperclip"></i> Save Draft
                 </button> -->

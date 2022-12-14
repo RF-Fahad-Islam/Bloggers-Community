@@ -414,26 +414,46 @@
                 <h5> <i class="fa fa-bar-chart"></i> Open Dashboard</h5>
             </div>
             <div class="btn-group d-block" role="group">
-                <button type="button" class="btn btn-outline-warning btn-lg d-block dropdown-toggle" style="width: 100%;"
-                    data-bs-toggle="dropdown" aria-expanded="true">
+                <button type="button" class="btn btn-outline-warning btn-lg d-block dropdown-toggle"
+                    style="width: 100%;" data-bs-toggle="dropdown" aria-expanded="true">
                     <i class="fa fa-file-archive-o"></i> Export Data (Posts)
                 </button>
                 <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/export-data?format=pkl">as .pkl</a></li>
                     <li><a class="dropdown-item" href="/export-data?format=json">as .json</a></li>
                     <li><a class="dropdown-item" href="/export-data?format=csv">as .csv</a></li>
                 </ul>
             </div>
             <div class="alert alert-light my-3 fw-bold d-flex align-items-center justify-content-between">
-                {% if current_user.is_admin %}
-                <form action="/import" method="post" enctype="multipart/form-data">
+                <form method="post" hx-post="/import" style="width:100%;" hx-target="#msgfile" hx-indicator="#spinner"
+                    enctype="multipart/form-data">
                     <h5> <i class="fa fa-bar-chart"></i> Import Data</h5>
                     <hr>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <input type="file" name="file" accept=".json"
-                        class="btn btn-outline-primary btn-lg my-3 fwpop" >
-                    <button type="submit" class="btn btn-lg btn-orange"><i class="fa fa-arrow-right"></i></button>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="flex flex-row justify-content-around">
+
+                        <input type="file" name="file" accept=".json"
+                            class="btn btn-outline-primary btn-lg my-3 form-control w-75 fwpop " aria-label="import file (.json)" required>
+                            <!-- <div class="invalid-feedback">Example invalid form file feedback</div> -->
+                        <button type="submit" class="btn btn-lg btn-outline-primary"><i
+                                class="fa fa-arrow-right"></i></button>
+                    </div>
+                 
                 </form>
-                {% endif %}
+            </div>
+            <!-- TODO: Loader -->
+            <div id="msgfile">
+               
+            </div>
+                <div class="card my-2 htmx-indicator" style="width: 100%;" id="spinner" s aria-hidden="true">
+                    <div class="card-body">
+                        <h3 class="text-center">Uploading.......</h3>
+                        <div class="text-center">
+                        <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

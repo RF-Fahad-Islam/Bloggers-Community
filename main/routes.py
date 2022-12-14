@@ -690,10 +690,10 @@ def shorturl():
 @login_required
 def exportdata():
     format = request.args.get('format')
-    data = []
-    posts = current_user.posts.all()
-    for post in posts:
-        data.append({
+    posts = []
+    user_posts = current_user.posts.all()
+    for post in user_posts:
+        posts.append({
             "title":post.title,
             "tags": post.tag,
             "summary":post.summary,
@@ -702,6 +702,12 @@ def exportdata():
             "dateAdded":str(post.pub_date)
             
         })
+    data = {
+        "uid":current_user.userid,
+        'email':current_user.email,
+        "total_posts":len(posts),
+        "posts":posts,
+        }
     if format == "json":
         data = json.dumps(data)
         response = Response(
@@ -710,7 +716,7 @@ def exportdata():
         headers={'Content-disposition': 'attachment; filename=data.json'})
         return response
         
-    else:
+    elif format == 'csv':
         fields = ['title','tags','summary','body','public']
         csvfile = newcsv(data, fields, fields)
         response = Response(
@@ -718,6 +724,15 @@ def exportdata():
         mimetype='text/csv',
         headers={'Content-disposition': 'attachment; filename=data.csv'})
         return response
+    elif format == 'pkl':
+        import pickle
+        data = pickle.dumps(data)
+        response = Response(
+        data,
+        mimetype='text/plain',
+        headers={'Content-disposition': 'attachment; filename=data.pkl'})
+        return response
+    abort(404)
     
 @app.route('/import', methods=['POST'])
 @login_required
@@ -726,14 +741,29 @@ def importdata():
         file = request.files['file']
         if file:
             filename = secure_filename(file.filename)
-            if allowed_file(filename): 
-                filestream = file.stream.read()
-                posts = json.loads(filestream)
+            if allowed_file(filename):
+                try:
+                    filestream = file.stream.read()
+                    data = json.loads(filestream)
+                    uid = data.get('uid')
+                    user = Users.query.filter_by(userid=uid).first()
+                    if not current_user.userid == user.userid or not current_user.email == user.email or not user or user is None: 
+                        return render_template('particles/alert.html', msg="The file is not validated. We are unable to validate the file that it really belongs to you", category="danger")
+
+                    posts = data['posts']
+                except:
+                    return render_template('particles/alert.html', msg="<b>We are unable to verify the file</b>.File is not in a right format or might be changed! try with another file", category="warning")
+                titles = []
                 user_posts = current_user.posts.all()
+                for post in user_posts:
+                    titles.append(post.title)
                 err_posts = []
                 #HERE will upload all posts
                 for post in posts:
                     title = post['title']
+                    if title in titles:
+                        err_posts.append(title)
+                        continue
                     summary = post['summary']
                     body =  post['body']
                     tag =  post['tags']
@@ -757,13 +787,10 @@ def importdata():
                     except:
                         err_posts.append(post['title'] or "Error")
                 if err_posts:
-                    flash("Failed to upload some posts. As they conflict with your existed posts.", category="success")
+                    return render_template('particles/alert.html', msg=f"<b>There are {len(posts)} posts in the file</b>. But {len(err_posts)-len(posts)} posts are uploaded becuase of some error. (Looks like the posts must be duplicated or not in a right format)", category="danger") 
                 else:
-                    flash("Successfully Uploaded!", category="success")
-                return redirect('/')
+                    return render_template('particles/alert.html', msg="Uploaded all files successfully!", category="success")
             else:
-                flash('File Type not supported', category='danger')
-                return redirect('/')
+                return render_template('particles/alert.html', msg="File type not supported! supported files (.json)", category="danger")
         else:
-            flash("No file selected", category='danger')
-            return redirect('/')
+            return render_template('particles/alert.html', msg="No file selected", category="danger")
