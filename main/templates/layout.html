@@ -114,6 +114,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
           data-bs-content='<a class="btn btn-outline-primary mx-3" href="/blog-writer/edit/0">
           <i class="fa fa-plus-circle"></i> New Post
         </a>
+       
         '><i class="fa fa-plus-circle"></i> Create Post</button>
 
         <span class="btn btn-orange mx-1" data-bs-toggle="modal" data-bs-target="#draftModal">
@@ -189,6 +190,34 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="draftModalLabel">Draft a Blog</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/draft">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Title:</label>
+              <input type="text" min="3" max="100" name="title" class="form-control" id="recipient-name">
+            </div>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Content:</label>
+              <textarea class="form-control" name="content" minlength="5" maxlength="500" id="message-text"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save Draft</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- !Import Modal -->
+  <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="importModalLabel">Draft a Blog</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">

@@ -21,7 +21,6 @@ CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
 # App and DB configuration
 app = Flask(__name__)
 # photos = UploadSet('photos', IMAGES)
-
 #Authlib
 oauth = OAuth()
 csrf = CSRFProtect(app)
@@ -115,4 +114,6 @@ login_manager.session_protection = SESSION_MANAGER_STRICT
 # app.view_functions['static'] = login_required(app.send_static_file)
 # Database Migrations Setup
 migrate = Migrate(app,db)
+
+
 from . import routes
