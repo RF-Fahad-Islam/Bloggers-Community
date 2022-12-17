@@ -19,7 +19,7 @@
 {% for post in posts %}
 <url>
 	<loc>{{params['url']}}/{{post.writer.username}}/{{post.slug}}</loc>
-	<lastmod>{{post.pub_date.strptime("2013-07-12T07:00:00Z","%Y-%m-%dT%H:%M:%SZ")}</lastmod>
+	<lastmod>2022-12-14T17:02:20+01:00</lastmod>
 	<priority>1.0</priority>
 </url>
 {% endfor %}

@@ -54,11 +54,23 @@ viewers_count=false) %}
         {% endfor %}
         {% endif %}
         {% if dashboard %}
+        <div class="dropend">
+            <button class="btn btn-outline-light text-black dropdown-toggle float-end" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i
+                class="fa fa-download"></i>
+            </button>
+            <ul class="dropdown-menu" style="z-index: 11!important;">
+              <li><a class="dropdown-item" href="{{url_for('download_blog', ftype='txt', pid=post.sno)}}">Text</a></li>
+              <li><a class="dropdown-item" href="{{url_for('download_blog', ftype='markdown', pid=post.sno)}}">Markdown</a></li>
+              <li><a class="dropdown-item" href="{{url_for('download_blog', ftype='html', pid=post.sno)}}">HTML</a></li>
+            </ul>
+          </div>
+        <a href="" class="btn btn-outline-light"></a>
         <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
-                class="fa fa-edit"></i> Edit</a>
-        <a href="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
+                class="fa fa-edit"></i></a>
+        <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
             class="btn btn-outline-danger float-end mx-2 delete">
-            <i class="fa fa-trash"></i> Delete</a>
+            <i class="fa fa-trash"></i></a>
         {% else %}
         <a href="{{url}}" class="btn btn-light float-end">Read</a>
         {% endif %}

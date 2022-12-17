@@ -1,0 +1,46 @@
+
+<div class="alert alert-light my-3 text-black">
+    <form action="/blog-writer/edit/0" method="POST">
+        {{form.csrf_token}}
+        <input required type="text" class="titleInput" id="title" name="title"
+          placeholder="Title" minLength="10" value="{{h}}" maxlength="120">
+
+        <!-- !SEO Settings -->
+
+        <div class="card mb-2">
+          <div class="card-title">
+            <button class="btn d-block btn-outline-grey font-weight-bold" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              <i class="fa fa-cogs text-primary"></i> <b>SEO Settings</b> (Optional) <i class="fa fa-chevron-down"></i>
+            </button>
+          </div>
+
+
+          <div class="collapse" id="collapseExample">
+            <div class="card-body">
+              <h5 class="text-muted">✨ Rank Your blog on Google Search Engine</h5>
+              <hr>
+              <div class="mb-3">
+                <label for="summary" class="form-label font-weight-bolder">📃 SEO description</label>
+                <p class="text-muted font-italic">Limit 200 chars. The SEO Description will be used in place of your
+                  Subtitle on search engine results pages. Good SEO descriptions utilize keywords, summarize the
+                  article and are between 140-156 characters long</p>
+                <textarea class="form-control" placeholder="Write a summary of your blog post" id="summary"
+                  name="summary" maxlength="200" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+{{content|safe}}
+<hr>
+<input type='hidden' name="sno" id="sno" value="0">
+<input type="hidden" name="body" value="{{content|safe}}">
+<input id="tag" name="tag" min="3" class="titleInput d-block mx-auto" maxLength="50" minlength="3"
+placeholder="Tags (format : 1tag 2tag)" style="font-size:20px;">
+<div class="my-2">
+    <input type="checkbox" class="btn-check" id="btn-check-outlined" name="draft" autocomplete="off">
+    <label class="btn btn-lg btn-outline-primary" for="btn-check-outlined">📎 Draft</label>
+    <button type="submit" id="submit" class="btn btn-lg btn-outline-success float-end">🎉 Publish</button>
+</div>
+</div>

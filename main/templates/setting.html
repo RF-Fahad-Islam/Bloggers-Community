@@ -17,6 +17,11 @@
                 type="button" role="tab" aria-controls="pills-contact" aria-selected="false"> <i
                     class="fa fa-database"></i> Data</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if request.args.get('tab') == 'import' %}active{% endif %}" id="pills-import-tab" data-bs-toggle="pill" data-bs-target="#pills-import"
+                type="button" role="tab" aria-controls="pills-import" aria-selected="false"> <i
+                    class="fa fa-database"></i> Import</button>
+        </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
@@ -41,12 +46,11 @@
                     </div>
                     <b>
                         <!-- <p class="text-muted">Username : {{current_user.username}}</p> -->
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="text-muted">Email : {{current_user.email}}</p>
-                                <p class="text-muted">Created Date : {{current_user.joined_date.strftime("%B %d, %Y")}}
-                                </p>
-                            </div>
+                        <div class="alert bg-light">
+                            <p class="text-muted">Email : {{current_user.email}}</p>
+                            <hr>
+                            <p class="text-muted">Created Date : {{current_user.joined_date.strftime("%B %d, %Y")}}
+                            </p>
                         </div>
                     </b>
                 </div>
@@ -407,49 +411,72 @@
                 <h5>See Your Following List</h5>
             </div>
         </div>
+
         <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
 
             <div class="alert alert-light my-3 fw-bold">
                 <a href="/dashboard" class="btn btn-warning float-end fw-bold"><i class="fa fa-bullseye"></i> Go</a>
                 <h5> <i class="fa fa-bar-chart"></i> Open Dashboard</h5>
             </div>
-            <div class="btn-group d-block" role="group">
-                <button type="button" class="btn btn-outline-warning btn-lg d-block dropdown-toggle"
-                    style="width: 100%;" data-bs-toggle="dropdown" aria-expanded="true">
-                    <i class="fa fa-file-archive-o"></i> Export Data (Posts)
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="/export-data?format=json">as .json</a></li>
-                    <li><a class="dropdown-item" href="/export-data?format=csv">as .csv</a></li>
-                </ul>
+
+            <div class="alert alert-light my-3 fw-bold">
+                <h5> <i class="fa fa-database"></i> Export Data</h5>
+                <hr>
+                <div class="row">
+
+                    <div class="btn-group d-block col-lg-6 col-sm-12" role="group">
+                        <button type="button" class="btn btn-outline-warning btn-lg mx-auto d-block dropdown-toggle"
+                        style="width: 100%;" data-bs-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-file-archive-o"></i> Export Your Data
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{url_for('user_data_export', ftype='json')}}">as .json</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('user_data_export', ftype='csv')}}">as .csv</a></li>
+                    </ul>
+                    </div>
+                    <div class="btn-group d-block col-lg-6 col-sm-12" role="group">
+                        <button type="button" class="btn btn-outline-warning btn-lg mx-auto d-block dropdown-toggle"
+                        style="width: 100%;" data-bs-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-file-archive-o"></i> Export Data (Posts)
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/export-data?format=json">as .json</a></li>
+                        <li><a class="dropdown-item" href="/export-data?format=csv">as .csv</a></li>
+                        <li><a class="dropdown-item" href="/export-data?format=txt">as .txt</a></li>
+                    </ul>
+                    </div>
             </div>
-            <div class="alert alert-light my-3 fw-bold d-flex align-items-center justify-content-between">
+            </div>
+            
+
+            <div class="alert alert-light my-3 fw-bold d-flex align-items-center justify-content-center w-100">
                 <form method="post" hx-post="/import" style="width:100%;" hx-target="#msgfile" hx-indicator="#spinner"
                     enctype="multipart/form-data">
-                    <h5> <i class="fa fa-bar-chart"></i> Import Data</h5>
+                    <h5> <i class="fa fa-bar-chart"></i> Import POST</h5>
                     <hr>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <div class="flex flex-row justify-content-around">
 
                         <input type="file" name="file" accept=".json"
-                            class="btn btn-outline-primary btn-lg my-3 form-control w-75 fwpop " aria-label="import file (.json)" required>
-                            <!-- <div class="invalid-feedback">Example invalid form file feedback</div> -->
+                            class="btn btn-outline-primary btn-lg my-3 form-control w-75 fwpop "
+                            aria-label="import file (.json)" required>
+                        <!-- <div class="invalid-feedback">Example invalid form file feedback</div> -->
                         <button type="submit" class="btn btn-lg btn-outline-primary"><i
                                 class="fa fa-arrow-right"></i></button>
                     </div>
-                 
+
                 </form>
             </div>
-            <!-- TODO: Loader -->
+
             <div id="msgfile">
-               
+
             </div>
-                <div class="card my-2 htmx-indicator" style="width: 100%;" id="spinner" s aria-hidden="true">
-                    <div class="card-body">
-                        <h3 class="text-center">Uploading</h3>
-                        <hr>
-                        <h3 class="text-center">Publishing Blog...........</h3>
-                        <div class="text-center">
+            <div class="card my-2 htmx-indicator" style="width: 100%;" id="spinner" s aria-hidden="true">
+                <div class="card-body">
+                    Uploading.....
+                    <hr>
+                    <h3 class="text-center">Publishing Blog...........</h3>
+                    <div class="text-center">
                         <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
@@ -458,6 +485,45 @@
             </div>
 
         </div>
+
+        <div class="tab-pane fade" id="pills-import" role="tabpanel" aria-labelledby="pills-import-tab">
+
+            <!-- !File Markdown Import -->
+            <div class="alert alert-light my-3 fw-bold d-flex align-items-center justify-content-center w-100">
+                <form method="post" hx-post="{{url_for('post_importer')}}" style="width:100%;" hx-target="#msgfile2" hx-indicator="#spinner2"
+                    enctype="multipart/form-data">
+                    <h5> <i class="fa fa-bar-chart"></i> Import POST</h5>
+                    <hr>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="flex flex-row justify-content-around">
+
+                        <input type="file" name="file" accept=".md"
+                            class="btn btn-outline-primary btn-lg my-3 form-control w-75 fwpop "
+                            aria-label="import file (.json)" required>
+                        <!-- <div class="invalid-feedback">Example invalid form file feedback</div> -->
+                        <button type="submit" class="btn btn-lg btn-outline-primary"><i
+                                class="fa fa-arrow-right"></i></button>
+                    </div>
+
+                </form>
+            </div>
+            <div id="msgfile2">
+
+            </div>
+            <div class="card my-2 htmx-indicator" style="width: 100%;" id="spinner2" s aria-hidden="true">
+                <div class="card-body">
+                    Uploading.....
+                    <hr>
+                    <h3 class="text-center">Publishing Blog...........</h3>
+                    <div class="text-center">
+                        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 

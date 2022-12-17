@@ -8,6 +8,7 @@ from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Ur
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
+from .serializers import *
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
@@ -22,9 +23,8 @@ params = {
     "admin_password": ADMIN_PASSWORD,
     "admin_userid": ADMIN_USERID
 }
-ALLOWED_EXTENSIONS = {'json','csv'}
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 with app.app_context():
     blogprofiles = Blogprofile.query.all()
@@ -218,7 +218,8 @@ def logout():
 @app.route('/settings', methods=["GET", "POST"])
 def settingProfile():
     form = SettingForm()
-    blogProfile = Blogprofile.query.filter_by(usersno=current_user.sno).first()
+    try: blogProfile = Blogprofile.query.filter_by(usersno=current_user.sno).first()
+    except: return redirect('googleLogin')
     if form.validate_on_submit():
         firstname = form.firstname.data
         lastname = form.lastname.data
@@ -358,8 +359,12 @@ def handleBlogWriter(sno):
         draft = bool(form.draft.data)
         body = form.body.data
         body = body.replace('<scipt ', "XSS").replace('<script/>', "XSS")
+        soup = BeautifulSoup(body, 'html.parser')
+        summary = form.summary.data
+        if not summary and soup.find('p'):
+            summary = soup.find('p').text[:144]
         if sno == "0":
-            post = Posts(title=form.title.data, summary=form.summary.data,
+            post = Posts(title=form.title.data, summary=summary,
                          body=form.body.data, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
             if not draft:
                 urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}", pointer=generate_pointer(3))
@@ -485,6 +490,78 @@ def adminDashboard():
     else:
         abort(404)
 
+@app.route('/admin/data/<string:ftype>')
+def datagenerator(ftype):
+    if not current_user.is_admin: abort(404)
+    users = Users.query.order_by(Users.sno).all()
+    data = []
+    if ftype == "json":
+        for user in users:
+            profile = Blogprofile.query.filter_by(usersno=user.sno).first()
+            if profile:
+                followers:int = len(profile.followers)
+            else: followers = 0
+            data.append({'user':{
+                'email':user.email,
+                'username':user.username,
+                'picture':user.picture,
+                'joined_date':str(user.joined_date),
+                'profile':{
+                'following':len(user.following),
+                'followers':followers
+                },
+                'posts':{
+                    'count':len(user.posts.all())
+                    },
+                'info':{
+                'userid':user.userid,
+                'firstname': user.firstname,
+                'lastname':user.lastname,
+                'bio':user.bio,
+                'age':user.age,
+                'work':user.work,
+                'country':user.country,
+                'hobbies':user.hobbies,
+                'brand_color':user.brand_color,
+                },
+                "status":{
+                    'is_admin':user.is_admin,
+                    'is_verified':user.is_verified,
+                    'is_blocked':user.is_blocked
+                }
+            }})
+        response = Response(
+            json.dumps(data),
+            mimetype='application/json',
+            headers={'Content-disposition': 'attachment; filename=usersdata.json'})
+        return response
+    else:
+        for user in users:
+            profile = Blogprofile.query.filter_by(usersno=user.sno).first()
+            if profile:
+                followers:int = len(profile.followers)
+            else: followers = 0
+            data.append({
+                'name':f"{user.firstname} {user.lastname}",
+                'username':user.username,
+                'email':user.email,
+                'followers': str(followers),
+                'posts': str(len(user.posts.all())),
+                'joined_date': user.joined_date.strftime("%m/%d/%Y, %H:%M:%S")
+            })
+        fields = ['name','username','email','followers','posts',"joined_date"]
+        csvfile = newcsv(data, fields, fields)
+        response = Response(
+        csvfile.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-disposition': 'attachment; filename=data.csv'})
+        return response
+        
+@app.route('/admin/data')
+@login_required
+def datacsv():
+    if not current_user.is_admin: abort(404)
+    
 
 @app.route("/dashboard")
 @login_required
@@ -710,6 +787,10 @@ def shorturl():
     if urlshort is None or not pointer: return abort(404)
     return redirect(urlshort.point_to)
 
+
+
+
+
 @app.route('/export-data', methods=["GET"])
 @login_required
 def exportdata():
@@ -748,6 +829,29 @@ def exportdata():
         mimetype='text/csv',
         headers={'Content-disposition': 'attachment; filename=data.csv'})
         return response
+    elif format == "txt":
+        txt = ''''''
+        posts = current_user.posts.all()
+        for post in posts:
+            soup = BeautifulSoup(post.body, 'html.parser')
+            txt += f'''
+            -----------------------------------------------------------------------------------------
+            |Title : {post.title}
+            -----------------------------------------------------------------------------------------
+            |Date : {post.pub_date.strftime("%m/%d/%Y, %H:%M:%S")}
+            |Tags : {post.tag}
+            |Summary : {post.summary}
+            -----------------------------------------------------------------------------------------
+            {soup.get_text()}
+            ---X-----------------------------------X----------------------------------------X------
+            ---X-----------------------------------X----------------------------------------X------
+            
+            '''
+        response = Response(
+        txt,
+        mimetype='text/plain',
+        headers={'Content-disposition': 'attachment; filename=posts.txt'})
+        return response
     # elif format == 'pkl':
     #     import pickle
     #     data = pickle.dumps(data)
@@ -758,6 +862,136 @@ def exportdata():
         # return response
     abort(404)
     
+@app.route('/login')
+def login():
+    return redirect(url_for('googleLogin'))
+    
+@app.route('/import/post/markdown', methods=['POST'])
+@login_required
+def post_importer():
+    from markdown import markdown
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            if allowed_file(filename, {'md'}):
+                filestream = file.stream.read()
+                data = markdown(filestream.decode('utf-8'))
+                soup = BeautifulSoup(data, 'html.parser')
+                headings = ('h1','h2','h3','h4')
+                h = None
+                for heading in headings:
+                    if not soup.find(heading): continue
+                    if not h or h == "":
+                        h = soup.find(heading).text.strip()
+                form = BlogWriter()
+                return render_template('particles/postuploader.html', content=data, form=form,h=h)
+            else:
+                return render_template('particles/alert.html', msg="File type is not supported for markdown" ,category="danger")
+                
+
+@app.route('/download/b/<string:ftype>/<string:pid>')
+@login_required
+def download_blog(ftype,pid):
+    from markdownify import markdownify
+    try:post = Posts.query.filter_by(sno=int(pid)).first()
+    except: abort(404)
+    if not post.writer_id == current_user.sno: abort(404)
+    if ftype == "markdown":
+        try:
+            md = markdownify(post.body)
+        except: abort(500)
+        if not post.writer.sno == current_user.sno: abort(404)
+        response = Response(
+            md,
+            mimetype='text/plain',
+            headers={'Content-disposition': 'attachment; filename=post.md'}
+        )
+        return response
+    elif ftype == "txt":
+        soup = BeautifulSoup(post.body, 'html.parser')
+        txt = soup.get_text(strip=False)
+        response = Response(
+            txt,
+            mimetype='text/plain',
+            headers={'Content-disposition': 'attachment; filename=post.txt'}
+        )
+        return response
+    elif ftype == "html":
+        with app.app_context():
+            try:
+                body = post.body
+                data = render_template('output.html', post=post, body=body)
+                response = Response(
+                    data,
+                    mimetype='application/html',
+                headers={'Content-disposition': f'attachment; filename={post.title}.html'})
+                return response
+            except:
+                abort(500)
+
+@app.route('/export/user/data/<string:ftype>')
+@login_required
+def user_data_export(ftype):
+    user = current_user
+    data = []
+    if ftype == "json":
+        profile = Blogprofile.query.filter_by(usersno=user.sno).first()
+        if profile:
+            followers:int = len(profile.followers)
+        else: followers = 0
+        data.append({'Data':{
+            'email':user.email,
+            'username':user.username,
+            'picture':user.picture,
+            'joined_date':str(user.joined_date),
+            'profile':{
+            'following':len(user.following),
+            'followers':followers
+            },
+            'posts':{
+                'count':len(user.posts.all())
+                },
+            'info':{
+            'firstname': user.firstname,
+            'lastname':user.lastname,
+            'bio':user.bio,
+            'age':user.age,
+            'work':user.work,
+            'country':user.country,
+            'hobbies':user.hobbies,
+            'brand_color':user.brand_color,
+            },
+            "status":{
+                'is_verified':user.is_verified,
+            }
+        }})
+        response = Response(
+            json.dumps(data),
+            mimetype='application/json',
+            headers={'Content-disposition': 'attachment; filename=usersdata.json'})
+        return response
+    else:
+        profile = Blogprofile.query.filter_by(usersno=user.sno).first()
+        if profile:
+            followers:int = len(profile.followers)
+        else: followers = 0
+        data.append({
+            'name':f"{user.firstname} {user.lastname}",
+            'username':user.username,
+            'email':user.email,
+            'followers': str(followers),
+            'posts': str(len(user.posts.all())),
+            'joined_date': user.joined_date.strftime("%m/%d/%Y, %H:%M:%S")
+        })
+        fields = ['name','username','email','followers','posts',"joined_date"]
+        csvfile = newcsv(data, fields, fields)
+        response = Response(
+        csvfile.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-disposition': f'attachment; filename={user.username}.csv'})
+        return response
+
 @app.route('/import', methods=['POST'])
 @login_required
 def importdata():
@@ -765,7 +999,7 @@ def importdata():
         file = request.files['file']
         if file:
             filename = secure_filename(file.filename)
-            if allowed_file(filename):
+            if allowed_file(filename,{'json','csv'}):
                 try:
                     filestream = file.stream.read()
                     data = json.loads(filestream)
