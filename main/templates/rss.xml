@@ -1,16 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" encoding="utf-8">
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
 <channel>
-<title>Blogsphere</title>
-<link>https://blogsphere.top</link>
-<description>Blogsphere is a platform for bloggers where anyone can create,publish and share their blogs.</description>
+<title>
+<![CDATA[ {{params['app_name']}} ]]>
+</title>
+<description>
+<![CDATA[ Blogsphere is a free platform where anyone can create an account and start blogging. This ensures that all bloggers are equal, allowing them to publish their thoughts on any topic. Anyone can follow other blogs and read updates from across the world with just a few clicks. ]]>
+</description>
+<link>https://me.blogsphere.top</link>
+<generator>RSS for Node</generator>
+<lastBuildDate>Sun, 18 Dec 2022 13:56:02 GMT</lastBuildDate>
+<atom:link href="{{params['url']}}/rss.xml" rel="self" type="application/rss+xml"/>
+<language>
+<![CDATA[ en ]]>
+</language>
+<ttl>60</ttl>
 {% for post in posts %}
 <item>
-<title>{{post.title}}</title>
-<author>{{post.writer.username}}</author>
-<link>https://{{params['url']}}/{{post.writer.username}}/{{post.slug}}</link>
-<description>{{post.summary}} </description>
-<pubDate>{{post.pub_date}}</pubDate>
+<title>
+<![CDATA[ {{post.title}} ]]>
+</title>
+<description>
+<![CDATA[ {{post.summary}} ]]>
+</description>
+<link>{{params['url']}}/b/{{post.writer.username}}/{{post.slug}}</link>
+<guid isPermaLink="true">{{params['url']}}/b/{{post.writer.username}}/{{post.slug}}</guid>
+<dc:creator>
+<![CDATA[ {{post.writer.username}} ]]>
+</dc:creator>
+<pubDate>Sun, 18 Dec 2022 06:11:40 GMT</pubDate>
 </item>
 {% endfor %}
 </channel>
