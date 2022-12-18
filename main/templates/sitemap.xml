@@ -18,7 +18,7 @@
 </url>
 {% for post in posts %}
 <url>
-	<loc>{{params['url']}}/{{post.writer.username}}/{{post.slug}}</loc>
+	<loc>{{params['url']}}/b/{{post.writer.username}}/{{post.slug}}</loc>
 	<lastmod>2022-12-14T17:02:20+01:00</lastmod>
 	<priority>1.0</priority>
 </url>
