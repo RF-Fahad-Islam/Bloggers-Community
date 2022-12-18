@@ -577,6 +577,7 @@ def search():
     type = request.args.get('t')
     q = request.args.get("q")
     users = False
+    posts = []
     try:
         page = int(request.args.get("p"))
     except:
@@ -585,11 +586,11 @@ def search():
     #If it is a dynamic search page
     if q == "" and not request.headers.get('HX-Request'):
         return redirect('/search?t=dynamic&q=any')
+    searchType = request.args.get("type")
     
     if q.startswith("@"):
         users = Users.query.filter(Users.username.startswith(q[1:])).paginate(page=page, per_page=8)
     else:
-        searchType = request.args.get("type")
         
         if searchType == "tag":
             #If search for tags

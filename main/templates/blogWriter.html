@@ -68,39 +68,6 @@
           </div>
         </div>
 
-        <div class="card mb-2">
-          <div class="card-title">
-            <button class="btn d-block btn-outline-grey font-weight-bold" type="button" data-bs-toggle="collapse"
-              data-bs-target="#importcollapse" aria-expanded="false" aria-controls="importcollapse">
-              <i class="fa fa-cogs text-primary"></i> <b>Import Writings</b><i class="fa fa-chevron-down"></i>
-            </button>
-          </div>
-
-
-          <div class="collapse" id="importcollapse">
-            <div class="card-body">
-              <h5 class="text-muted">✨ Import from Markdown</h5>
-              <hr>
-              <form method="post" hx-post="/import" style="width:100%;" hx-target="#msgfile" hx-indicator="#spinner"
-              enctype="multipart/form-data">
-              <h5> <i class="fa fa-bar-chart"></i> Import POST</h5>
-              <hr>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-              <div class="flex flex-row justify-content-around">
-
-                  <input type="file" name="file" accept=".json"
-                      class="btn btn-outline-primary btn-lg my-3 form-control w-75 fwpop "
-                      aria-label="import file (.json)" required>
-                  <!-- <div class="invalid-feedback">Example invalid form file feedback</div> -->
-                  <button type="submit" class="btn btn-lg btn-outline-primary"><i
-                          class="fa fa-arrow-right"></i></button>
-              </div>
-
-          </form>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <textarea required class="my-3"
           placeholder="Make sure to write at least 100 Characters. In the tags field multiple tags must be separated with space. (Don't enter a tag twice). i.e: First and Second tag will be shown as recommendations. So make sure to provide the first two tags appropriate to rank your post."

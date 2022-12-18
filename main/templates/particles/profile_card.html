@@ -4,9 +4,9 @@
     {% if loop.last and userList.has_next %}
     <div class="card my-3 box-shadow" style="z-index: 10!important;" hx-get="/{{url}}{{page+1}}" hx-trigger="revealed"
         hx-swap="afterend" hx-indicator="#spinner">
-        {% else %}
+    {% else %}
         <div class="card my-3 box-shadow">
-            {% endif %}
+    {% endif %}
             <div class="card-body">
                 <p class="card-text text-muted fw-bold badge badge-pill rounded-pill float-end">
                     {{blogUser.joined_date.strftime('%B %d, %Y')}}
