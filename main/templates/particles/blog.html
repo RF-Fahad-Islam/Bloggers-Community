@@ -51,7 +51,7 @@
             </a>
             <p class="text-black fwpop"><i class="fa fa-book text-primary"></i> {{post.read_time}}</p>
             {% if post.summary %}
-            <p>{{post.summary}}... <a href="{{url}}" class="btn badge bg-light text-black fwpop hover-btn">Read</a> </p>
+            <p>{{post.summary}}... <a href="{{url}}" class="btn badge text-black fwpop hover-btn">Read</a> </p>
             {% endif %}
             {% for tag in post.tags_list[:3] %}
             <a class="card-subtitle fw-bold text-primary btn hover-btn p-0 text-decoration-none"
