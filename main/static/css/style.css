@@ -252,3 +252,7 @@ border: 1px solid rgba( 255, 255, 255, 0.18 )!important;
       100% {background-position:    0% 100%,100% 100%,200% 100%}
   }
   
+  .hover-btn:hover{
+    background-color: #1e95f013;
+    border-radius: 20px!important;
+  }

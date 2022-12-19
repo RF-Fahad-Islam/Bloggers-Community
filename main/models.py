@@ -1,4 +1,5 @@
 # !Database Models Here+-
+import timeago
 from . import db, admin, MyModelView, app
 from datetime import datetime
 from flask_login import UserMixin
@@ -125,6 +126,34 @@ class Posts(db.Model):
     def tags_list(self):
         return self.tag.split(" ")
 
+    @property
+    def time_ago(self):
+        now= datetime.now()
+        # codiga-disable
+        return timeago.format(self.pub_date, now)
+    
+    @property
+    def read_time(self):
+        import readtime
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(self.body, 'html.parser')
+        text = soup.get_text(strip=True)
+        result = readtime.of_text(text)
+        return result.text
+    
+    @property
+    def cover(self):
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(self.body, 'html.parser')
+        return soup.find('img')
+    
+    @property
+    def cover_src(self):
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(self.body, 'html.parser')
+        return soup.find('img').get('src')
+    
+    @property
     def __repr__(self):
         return f"<Post {self.title}>"
 

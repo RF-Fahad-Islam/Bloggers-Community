@@ -125,7 +125,7 @@ def blogs():
         page = int(request.args.get('p'))
     except:
         page = 1
-    posts = Posts.query.filter_by(public=True).order_by(func.random()).paginate(page=page,per_page=POSTS_PER_PAGE)
+    posts = Posts.query.filter_by(public=True).order_by(Posts.pub_date.desc()).paginate(page=page,per_page=POSTS_PER_PAGE)
     return render_template('particles/blog.html', posts=posts, page=page, url="get-blogs?p=", showend=True)
 
 @app.route('/get-recommendations', methods=["GET"])

@@ -240,6 +240,14 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
     </div>
   </div>
   {% block body %} {% endblock body %}
+    <footer class="py-3 my-4 bg-light" style="background-color: white!important;">
+      <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+        <li class="nav-item"><a href="/" class="nav-link px-2 text-muted btn hover-btn">Home</a></li>
+        <li class="nav-item"><a href="{{url_for('termsandconditions')}}" class="nav-link px-2 text-muted btn hover-btn">Terms and Conditions</a></li>
+        <li class="nav-item"><a href="{{url_for('privacy_policy')}}" class="nav-link px-2 btn text-muted hover-btn">Privacy Policy</a></li>
+      </ul>
+      <p class="text-center text-muted">© 2022 Blogsphere, Inc | Made by Fahad <br> support@blogsphere.top</p>
+    </footer>
   <!-- <footer class="container bg-white d-fixed bottom-0 text-center" style="margin-top: 10px; position:absolute; bottom:0;">
     <p><i class="fa fa-thumb-tack"></i> © 2020-2021 | Owned By <b class="text-muted font-weight-bolder">RF Fahad
             Islam<b> | <a href="https://github.com/RF-Fahad-Islam/" style="text-decoration: none; color: black;">My Github</a> <i class="fa fa-git-square"></i>
@@ -271,16 +279,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
   <script src="{{url_for('static', filename='js/app.js')}}"></script> -->
   <script>if(document.getElementById('msg')){window.setTimeout("document.getElementById('msg').style.display='none';", 5000);} </script>
   {% block script %} {% endblock script %}
-  <!-- <script type="text/javascript">
-    atOptions = {
-      'key': '429494a5122044482cb83ede049b2e47',
-      'format': 'iframe',
-      'height': 60,
-      'width': 800,
-      'params': {}
-    };
-    document.write('<scr' + 'ipt type="text/javascript" src="http' + (location.protocol === 'https:' ? 's' : '') + '://materialisticconstitution.com/429494a5122044482cb83ede049b2e47/invoke.js"></scr' + 'ipt>');
-  </script> -->
+
 </body>
 
 </html>
