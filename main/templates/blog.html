@@ -10,8 +10,7 @@
 <meta property="og:image" content="{{thumbnail}}" />
 {% endif %}
 <meta property="og:site_name" content="{{params['app_name']}}" />
-<meta property="og:description"
-  content="{{summary}}" />
+<meta property="og:description" content="{{summary}}" />
 {% endblock meta %}
 {% block title %}
 <!-- !Share This Plugin -->
@@ -115,10 +114,10 @@
               </a>
               <div class="d-inline-block mt-1">
                 <h6 class="text-dark text-muted fw-bolder">
-                  <span class="badge p-2   mr-2 bg-light text-black">
+                  <span class="badge p-2 rounded-pill mr-2 bg-light text-black">
                     {{post.pub_date.strftime("%b %d, %Y")}}
                   </span>
-                  <span class="badge p-2  bg-light text-black">
+                  <span class="badge p-2 rounded-pill bg-light text-black">
                     <i class="fa fa-eye"></i> {{post.views}} views
                   </span>
                 </h6>
@@ -126,6 +125,7 @@
             </div>
             {{post.body | safe}}
             <div class="sharethis-inline-reaction-buttons"></div>
+            <br>
           </article>
 
           <nav class="blog-pagination my-3" aria-label="Pagination">
@@ -144,16 +144,73 @@
 
       </div>
       <!-- !Comment Section -->
-      <div class="card my-3 text-center">
-        <h4 class="card-header text-center">Comments / Discussion</h4>
-        <div class="card-body">
-          <div class="fb-comments" data-href="{{params['url']}}/b/{{user.username}}/{{post.slug}}" data-width=""
-            data-numposts="5"></div>
-        </div>
-      </div>
 
       <!-- !Community Post -->
       <!-- ../particles/comment/html -->
+      <hr>
+      <section class="card text-center">
+        <h3 class="fwpop bg-light card-header text-center"><i class="fa fa-comments-o"></i> All Comments
+          ({{comments|length}})</h3>
+        <div class="card-body">
+
+          {% if current_user.is_authenticated %}
+          <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-indicator="#spinner" hx-target="#comments">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment"
+              style="cursor: auto;">
+              <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
+              <div class="card bg-grey text-start" style="
+                width: 80%;
+                margin: 2px 15px;
+            padding: 13px 8px;
+                ">
+                <div class="form-floating">
+                  <textarea class="form-control " minlength="3" maxlength="300" name="body" id="body" placeholder="Leave a comment here"
+                    id="floatingTextarea"></textarea>
+                  <label for="floatingTextarea">Comments</label>
+                </div>
+                <div class="d-flex justify-content-end align-content-center">
+                  <button type="submit" class="btn btn-outline-primary mt-2" hx-indicator="#spinner"><i class="fa fa-commenting-o"></i> Send</button>
+                </div>
+              </div>
+              <br>
+            </div>
+
+            <input type="hidden" name="to" value="/b/{{user.sno}}/{{post.sno}}">
+            <input type="hidden" name="url" value="/b/{{user.username}}/{{post.slug}}">
+            <input type="hidden" name="uid" value="{{current_user.userid}}">
+        </div>
+        <div>
+          </form>
+          {% else %}
+          <div class="d-flex justify-content-center align-content-center text-center">
+            <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3"
+              style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn">
+              Continue with Google
+            </a>
+          </div>
+          {% endif %}
+          <div id="spinner" class="htmx-indicator spinner-border text-center" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          
+        </div>
+        <div id="comments">
+          {% for comment in comments %}
+          <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment"
+            style="cursor: auto;">
+            <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+            <div class="card bg-grey text-start border-1 comment">
+              <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+                class="text-muted btn-link text-decoration-none text-sm-start "
+                style=" margin:0;">@{{comment.commentor.username}} | {{comment.time_ago}}</a>
+              {{comment.body|safe}}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
     </div>
 
     <div class="col-lg-3">
@@ -234,15 +291,6 @@
   })
 
 </script>
-<script>
-  tinymce.init({
-    selector: 'textarea',
-    width: '100%',
-    height: '200px',
-    menubar: false,
-    plugins: 'anchor autolink charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-  });
-</script>
+
 
 {% endblock script %}

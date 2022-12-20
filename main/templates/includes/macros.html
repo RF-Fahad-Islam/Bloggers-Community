@@ -158,7 +158,7 @@ viewers_count=false) %}
 {% if not current_user.is_anonymous %}
 {% set cnt = current_user.following.count(blogProfile) %}
 {% endif %}
-<div class="position-sticky" style="top: 4rem; height:auto;">
+<div class="position-sticky" style="top: 4.4rem; height:auto;">
     <div class="p-4 mb-3 alert bg-white rounded">
         <div class="text-center d-block">
             {% if not user.picture %}

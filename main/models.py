@@ -35,7 +35,7 @@ class Users(db.Model, UserMixin):
     brand_color = db.Column(db.String(30), nullable=True, default="#009EFF")
     joined_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
-    comments = db.relationship('Comment', backref='commentor', lazy='dynamic')
+    comments = db.relationship('Comments', backref='commentor', lazy='dynamic')
     # Returns List of posts that the user created
     posts = db.relationship('Posts', backref="writer", lazy="dynamic")
     readinglist = db.relationship('Readinglists', backref="user",uselist=False)
@@ -167,7 +167,7 @@ class Notices(db.Model):
 
 
 
-class Comment(db.Model):
+class Comments(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
     body = db.Column(db.String(500), nullable=False)
@@ -175,6 +175,13 @@ class Comment(db.Model):
     create_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
     # replies = db.relationship('SubComment', backref="thread", lazy="dynamic")
+    @property
+    def time_ago(self):
+        now= datetime.now()
+        # codiga-disable
+        return timeago.format(self.create_date, now)
+    
+    
     def __repr__(self):
         return f"{self.body}"
 # class SubComment(db.Model):
@@ -195,7 +202,7 @@ with app.app_context():
 admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))
-admin.add_view(MyModelView(Comment, db.session))
+admin.add_view(MyModelView(Comments, db.session))
 admin.add_view(MyModelView(Blogprofile, db.session))
 admin.add_view(MyModelView(Readinglists, db.session))
 admin.add_view(MyModelView(Urlshortner, db.session))
