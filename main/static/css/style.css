@@ -255,4 +255,20 @@ border: 1px solid rgba( 255, 255, 255, 0.18 )!important;
   .hover-btn:hover{
     background-color: #1e95f013;
     border-radius: 20px!important;
+}
+
+  #footer{
+    position: relative!important;
+    width: 100%;
+    bottom: 0;
+    background-color: white!important;
+    margin: 0!important;
+  }
+
+  .comment{
+    width: 80%;
+    margin: 2px 15px;
+padding: 13px 8px;
+box-shadow: none!important;
+border: 1px solid grey!important;
   }

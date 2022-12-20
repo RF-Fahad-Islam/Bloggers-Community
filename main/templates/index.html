@@ -94,18 +94,25 @@
           <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
             <div hx-get="{{url_for('blogs')}}" hx-trigger="load" hx-indicator="#spinner" hx-swap="innerHTML">
               <!-- *Initial Loader -->
-              {% for i in range(5) %}
+              {% for i in range(3) %}
 
               <div class="card my-3" style="width: 100%;" aria-hidden="true">
-                <div class="card-body" style="padding: 1.5rem!important;">
+                <div class="card-body" style="padding:2rem 1.5rem!important;">
                   <h5 class="card-title placeholder-glow">
                     <span class="placeholder col-6"></span>
                   </h5>
                   <p class="card-text placeholder-glow">
+                    <span class="placeholder col-3"></span>
+                  </p>
+                  <p class="card-text placeholder-glow">
                     <span class="placeholder col-7"></span>
                     <span class="placeholder col-4"></span>
-                    <span class="placeholder col-8"></span>
                     <span class="placeholder col-4"></span>
+                    <br>
+                    <span class="placeholder col-8"></span>
+                    <br>
+                    <a href="#" tabindex="-1" class="btn mt-2 disabled placeholder col-2"></a>
+
                   </p>
                 </div>
               </div>
@@ -141,3 +148,45 @@
   </div>
 </div>
 {% endblock body %}
+{% block script %}
+<script>
+    $('.bookmark').click(() => {
+  
+      if ($('.bookmark').html() == '<i class="fa fa-bookmark"></i>') {
+        $('.bookmark').html(`<i class="fa fa-bookmark-o"></i>`)
+  
+      } else {
+        $('.bookmark').html(`<i class="fa fa-bookmark"></i>`)
+  
+      }
+      let sno = $('.bookmark').attr('id')
+      bookmarkReq(sno)
+    }
+    )
+  
+    const bookmarkReq = async (sno) => {
+      var myHeaders = new Headers();
+      myHeaders.append("Cookie", "Cookie_1=value; Cookie_2=value; session=5a67b465-54b3-4ceb-aff3-496d75f28602");
+  
+  
+      var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        credentials: 'include',
+        redirect: 'follow'
+      };
+      
+      await fetch("/bookmark?blogsno={{sno}}", requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          let cnt = result["bookmarkCount"]
+          $('#bookmarkCount').text(String(cnt))
+          console.log(result)
+        }
+        )
+        .catch(error => console.log('error', error));
+    }
+
+  
+  </script>
+{% endblock script %}

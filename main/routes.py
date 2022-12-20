@@ -4,7 +4,7 @@ from sqlalchemy.sql.expression import func
 from .settings import *
 from . import db, app, login_manager, search, oauth,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory,make_response,Response
-from .models import Users, Posts, Notices, Comment,Blogprofile, Readinglists, Urlshortner             
+from .models import Users, Posts, Notices, Comments,Blogprofile, Readinglists, Urlshortner             
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
@@ -262,7 +262,7 @@ def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     post = Posts.query.filter_by(slug=postSlug).first()
     if post is None: return abort(404)
-    # comments = Comment.query.filter_by(to=f"/b/{user.sno}/{post.sno}").all()
+    comments = Comments.query.filter_by(to=f"/b/{user.sno}/{post.sno}").order_by(Comments.create_date.desc()).all()
     # form = CommentForm()
     # if form.validate_on_submit():
     #     body = form.body.data
@@ -278,7 +278,9 @@ def handleUsersPosts(username, postSlug):
         if current_user.sno == user.sno:
             pass
     except:
-        post.viewers_count += 1
+        if session.get('viewed') is None:
+            post.viewers_count += 1
+            session['viewed'] = True
     
     #TODO: Retrive the next blog and previous blog
     posts = user.posts.all()
@@ -318,7 +320,7 @@ def handleUsersPosts(username, postSlug):
     summary = post.summary
     if not summary or summary == "": soup.find('p').getText()[:144]
     return render_template("blog.html",  post=post, user=user, next_post=next_post, prev_post=prev_post, recommendeds=recommendeds
-                           , blogProfile=blogProfile, shorturl=shorturl, thumbnail=thumbnail, summary=summary)
+                           , blogProfile=blogProfile, shorturl=shorturl, thumbnail=thumbnail, summary=summary, comments=comments)
 
 
 
@@ -329,16 +331,26 @@ def comment():
         form = request.form
         body = form.get("body")
         to = form.get("to")
-        uid = form.get('uid')
-        user = Users.query.filter_by(userid=uid).first()
-        if(len(body))>300: return "Too Long comment"
-        comment = Comment(body=body, to=to, usersno=user.sno)
+        user = current_user
+        comments = Comments.query.filter_by(to=to).filter_by(commentor=current_user).all()
+        if len(comments)>10: return render_template('particles/alert.html', msg="You have reached max comment limit for the post", category='danger')
+        for comment in comments:
+            if comment.create_date.strftime('%H %M,%d %y') == datetime.now().strftime('%H %M,%d %y'):
+                return render_template('particles/alert.html', msg="Try after a minute. Can't submit many comments at a time.", category="warning")
+            if body.strip() == comment.body.strip():
+                return render_template('particles/alert.html', msg="Duplicate Comment", category="warning")
+        if(len(body))>300: return render_template('particles/alert.html', msg="Too long comment", category="warning")
+        if(len(body))<3: return render_template('particles/alert.html', msg="Too short comment", category="warning")
+        comment = Comments(body=body, to=to, usersno=user.sno)
         db.session.add(comment)
         db.session.commit()
-        comments = Comment.query.filter_by(to=to).all()
-        return render_template('particles/comment.html', comments=comments)
+        return render_template('particles/comment.html', comment=comment)
     else:
         to = request.args.get('to')
+    if request.method == "GET":
+        sno = request.args.get('sno')
+        comments = Comments.query.filter_by('/b/{{current_user.sno}}/{{sno}}')
+        return redirect('particles/comment.html', comments=comments)
     abort(404)
 
 
@@ -788,22 +800,20 @@ def shorturl():
     if urlshort is None or not pointer: return abort(404)
     return redirect(urlshort.point_to)
 
-
-
-
-
 @app.route('/export-data', methods=["GET"])
 @login_required
 def exportdata():
     format = request.args.get('format')
     posts = []
     user_posts = current_user.posts.all()
+    from markdownify import markdownify
     for post in user_posts:
         posts.append({
             "title":post.title,
             "tags": post.tag,
             "summary":post.summary,
-            "body":post.body,
+            "content":post.body,
+            "contentMarkdown":markdownify(post.body),
             "public":post.public,
             "dateAdded":str(post.pub_date)
             
@@ -823,7 +833,7 @@ def exportdata():
         return response
         
     elif format == 'csv':
-        fields = ['title','tags','summary','body','public',"dateAdded"]
+        fields = ['title','tags','summary','content','content_markdown','public',"dateAdded"]
         csvfile = newcsv(data['posts'], fields, fields)
         response = Response(
         csvfile.getvalue(),
@@ -853,14 +863,6 @@ def exportdata():
         mimetype='text/plain',
         headers={'Content-disposition': 'attachment; filename=posts.txt'})
         return response
-    # elif format == 'pkl':
-    #     import pickle
-    #     data = pickle.dumps(data)
-    #     response = Response(
-    #     data,
-    #     mimetype='text/plain',
-    #     headers={'Content-disposition': 'attachment; filename=data.pkl'})
-        # return response
     abort(404)
     
 @app.route('/login')
@@ -996,6 +998,7 @@ def user_data_export(ftype):
 @app.route('/import', methods=['POST'])
 @login_required
 def importdata():
+    from markdown import markdown
     if request.method == 'POST':
         file = request.files['file']
         if file:
@@ -1014,44 +1017,47 @@ def importdata():
                         return render_template('particles/alert.html', msg="File containes no posts. Noting to upload.", category="warning")
 
                 except:
-                    return render_template('particles/alert.html', msg="<b>We are unable to verify the file</b>.File is not in a right format or might be changed! try with another file", category="warning")
+                    return render_template('particles/alert.html', msg="<b>We are unable to retrieve posts from the file</b>.File is not in a right format or might be changed! try with another file", category="warning")
                 titles = []
                 user_posts = current_user.posts.all()
                 for post in user_posts:
                     titles.append(post.title)
                 err_posts = []
                 #HERE will upload all posts
-                for post in posts:
-                    title = post['title']
-                    if title in titles:
-                        err_posts.append(title)
-                        continue
-                    summary = post['summary']
-                    body =  post['body']
-                    tag =  post['tags']
-                    draft = not bool(post['public'])
-                    slug = string_to_slug(title)
-                    newpost = Posts(title=title, summary=summary,
-                            body=body, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
-                    if not draft:
-                        urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}", pointer=generate_pointer(3))
-                        db.session.add(urlshort)
-                        db.session.commit()
-                    # If the user doesn't have any post then create blogprofile while saving first post
-                    if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
-                        getUser = current_user
-                        blog_profile = Blogprofile(usersno=getUser.sno)
-                        db.session.add(blog_profile)
-                        db.session.commit()
-                    try:
-                        db.session.add(newpost)
-                        db.session.commit()
-                    except:
-                        err_posts.append(post['title'] or "Error")
-                if err_posts:
-                    return render_template('particles/alert.html', msg=f"<b>There are {len(posts)} posts in the file</b>. But {len(err_posts)-len(posts)} posts are uploaded becuase of some error. (Looks like the posts must be duplicated or not in a right format)", category="danger") 
-                else:
-                    return render_template('particles/alert.html', msg="Uploaded all files successfully!", category="success")
+                try:
+                    for post in posts:
+                        title = post['title']
+                        if title in titles:
+                            err_posts.append(title)
+                            continue
+                        summary = post['summary']
+                        body =  markdown(post['contentMarkdown'])
+                        tag =  post['tags']
+                        draft = not bool(post['public'])
+                        slug = string_to_slug(title)
+                        newpost = Posts(title=title, summary=summary,
+                                body=body, tag=tag, slug=slug, writer_id=current_user.sno, public = not draft)
+                        if not draft:
+                            urlshort = Urlshortner(point_to=f"/b/{current_user.username}/{slug}", pointer=generate_pointer(3))
+                            db.session.add(urlshort)
+                            db.session.commit()
+                        # If the user doesn't have any post then create blogprofile while saving first post
+                        if not current_user.posts or Blogprofile.query.filter_by(usersno=current_user.sno).first() is None:
+                            getUser = current_user
+                            blog_profile = Blogprofile(usersno=getUser.sno)
+                            db.session.add(blog_profile)
+                            db.session.commit()
+                        try:
+                            db.session.add(newpost)
+                            db.session.commit()
+                        except:
+                            err_posts.append(post['title'] or "Error")
+                    if err_posts:
+                        return render_template('particles/alert.html', msg=f"<b>There are {len(posts)} posts in the file</b>. But {len(err_posts)-len(posts)} posts are uploaded becuase of some error. (Looks like the posts must be duplicated or not in a right format)", category="danger") 
+                    else:
+                        return render_template('particles/alert.html', msg="Uploaded all files successfully!", category="success")
+                except:
+                    return render_template('particles/alert.html', msg="Some error occured! Posts object doesn't provide all of the data for uploading posts.", category="danger")
             else:
                 return render_template('particles/alert.html', msg="File type not supported! supported files (.json)", category="danger")
         else:

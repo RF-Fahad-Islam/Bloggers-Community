@@ -11,68 +11,83 @@
             <div class="col-lg-9">
 
                 {% if not simple %}
-                
+
                 {% if user.picture == None %}
-                <img id="userImage" class="profile" src="{{url_for('static', filename='images/usericon.png')}}"
-                alt="{{user.username}}" />
+                <img id="userImage" loading="lazy" class="profile"
+                    src="{{url_for('static', filename='images/usericon.png')}}" alt="{{user.username}}" />
                 {% else %}
                 <img id="userImage" class="profile" src="{{user.picture}}" alt="{{user.username}}" />
                 {% endif %}
-                <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
+                <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block" html="true"
+                    data-bs-toggle="popover" data-bs-title="Popover title" data-bs-trigger="hover focus"
+                    data-bs-content="And here's some amazing content. It's very engaging. Right?">
                     {{user.firstname}} {{user.lastname}}
-                (@{{user.username}})</a>
-                <span class="fwpop text-decoration-none text-muted link d-inline-block"><b>-</b> {{post.time_ago}}</span>
+                    (@{{user.username}})</a>
+                <span class="fwpop text-decoration-none text-muted link d-inline-block"><b>-</b>
+                    {{post.time_ago}}</span>
                 {% if viewers_count %}
 
-            {% if post.public %}
-            <span class="badge p-2 rounded-pill  bg-light text-black">
-                <i class="fa fa-eye"></i> {{post.views}}
-            </span>
-            {% else %}
-            <span class="badge rounded-pill p-2  btn-orange text-black">📌 Draft
-            </span>
+                {% if post.public %}
+                <span class="badge p-2 rounded-pill  bg-light text-black">
+                    <i class="fa fa-eye"></i> {{post.views}}
+                </span>
+                {% else %}
+                <span class="badge rounded-pill p-2  btn-orange text-black">📌 Draft
+                </span>
 
-            {% endif %}
-            {% endif %}
-            
-            {% endif %}
-            {% if simple %}
-            <a class="btn float-end rounded-circle btn-outline-warning fw-bolder"
-                href="{{url_for('handleDeletes', sno=post.sno, keyword='r')}}"><i class="fa fa-check"
-                    style="font-size: 18px;"></i></a>
-            {% endif %}
-            {% if post.public %}
-            {% set url = url_for('handleUsersPosts', username=user.username, postSlug=post.slug) %}
-            {% else %}
-            {% set url = url_for('handleBlogWriter', sno=post.sno) %}
-            {% endif %}
-            <a href="{{url}}" class="link text-dark post-title link" style="text-decoration: none;">
-                <h3 class="card-title">{{post.title}}</h3>
-            </a>
-            <p class="text-black fwpop"><i class="fa fa-book text-primary"></i> {{post.read_time}}</p>
-            {% if post.summary %}
-            <p>{{post.summary}}... <a href="{{url}}" class="btn badge text-black fwpop hover-btn">Read</a> </p>
-            {% endif %}
-            {% for tag in post.tags_list[:3] %}
-            <a class="card-subtitle fw-bold text-primary btn hover-btn p-0 text-decoration-none"
-            href="/search?q={{tag}}&type=tag"> <i class="fa fa-hashtag"></i>{{tag}}</a>
-            {% endfor %}
-            {% if post.tags_list|length >3 %}
-            <a class="card-subtitle fw-bold text-primary btn hover-btn p-0 text-decoration-none" href="{{url}}">
-                +{{post.tags_list|length -3}}</a>
                 {% endif %}
-                
+                {% endif %}
+
+                {% endif %}
+                {% if simple %}
+                <a class="btn float-end rounded-circle btn-outline-warning fw-bolder"
+                    href="{{url_for('handleDeletes', sno=post.sno, keyword='r')}}"><i class="fa fa-check"
+                        style="font-size: 18px;"></i></a>
+                {% endif %}
+                {% if post.public %}
+                {% set url = url_for('handleUsersPosts', username=user.username, postSlug=post.slug) %}
+                {% else %}
+                {% set url = url_for('handleBlogWriter', sno=post.sno) %}
+                {% endif %}
+                <a href="{{url}}" class="link text-dark post-title link" style="text-decoration: none;">
+                    <h3 class="card-title">{{post.title}}</h3>
+                </a>
+                <p class="text-black fwpop"><i class="fa fa-book text-primary"></i> {{post.read_time}}</p>
+                {% if post.summary %}
+                <p>{{post.summary}}<a href="{{url}}" class="text-decoration-none text-black fwpop hover-btn">...</a>
+                </p>
+                {% endif %}
+                {% if not current_user.is_anonymous %}
+                {% set cnt = current_user.readinglist.blogs.count(post) %}
+                {% if cnt>0 %}
+                    <span class="fw-bold text-primary btn hover-btn p-0 text-decoration-none bookmark"
+                    title="Bookmark '{{post.title}}'" id="{{post.sno}}"><i class="fa fa-bookmark"></i> <b class="fwpop">{{post.reading_lists|length}}</b></span> 
+                {% else %}
+                <span class="fw-bold text-primary btn hover-btn p-0 text-decoration-none bookmark"
+                    title="Bookmark '{{post.title}}'" id="{{post.sno}}"><i class="fa fa-bookmark-o"></i></span>
+                {% endif %}
+                {% endif %}
+                {% for tag in post.tags_list[:3] %}
+                <a class="fw-bold text-primary btn hover-btn p-0 text-decoration-none"
+                    href="/search?q={{tag}}&type=tag"> <i class="fa fa-hashtag"></i>{{tag}}</a>
+                {% endfor %}
+                {% if post.tags_list|length >3 %}
+                <a class="fw-bold text-primary btn hover-btn p-0 text-decoration-none" href="{{url}}"
+                    title="{{post.tags_list[3:]}}">
+                    +{{post.tags_list|length -3}} </a>
+                {% endif %}
+
                 {% if dashboard %}
                 <a href="{{url_for('handleBlogWriter', sno=post.sno)}}" class="btn btn-outline-success float-end"> <i
-                    class="fa fa-edit"></i> Edit</a>
-                    <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
-                class="btn btn-outline-danger float-end mx-2 delete">
-                <i class="fa fa-trash"></i> Delete</a>
+                        class="fa fa-edit"></i> Edit</a>
+                <a id="{{url_for('handleDeletes', keyword='b', sno=post.sno)}}"
+                    class="btn btn-outline-danger float-end mx-2 delete">
+                    <i class="fa fa-trash"></i> Delete</a>
                 {% endif %}
             </div>
             <div class="col-lg-3 mt-2 d-flex justify-content-center align-items-center">
                 <a href="{{url}}"><img src="{{post.cover_src}}" alt="{{post.tag}}" width="323"
-                    style="aspect-ratio: 16/9; border-radius:18px;"></a>
+                        style="aspect-ratio: 16/9; border-radius:18px;"></a>
             </div>
         </div>
     </section>
@@ -85,10 +100,6 @@
             <a href="/blog-writer/edit/0" class="btn btn-primary-lg">Add your blog</a>
             <a href="#" class="btn btn-warning-lg">Go to Top</a>
             <hr>
-            <div class="flex flex-row justify-items-around align-content-center">
-                <a href="/terms-and-conditions" class="link mx-3">Terms and Conditions</a>
-                <a href="/privacy-policy" class="link">Privacy Policy</a>
-            </div>
         </div>
     </div>
     {% endif %}
