@@ -102,7 +102,7 @@ class Posts(db.Model):
     thumbnail = db.Column(db.String(100), nullable=True)
     # Stores the given id of user and and saves the user object in writer_user
     writer_id = db.Column(db.Integer, db.ForeignKey('users.sno'))
-    # comments = db.relationship('Comments', backref='post', lazy='dynamic')
+    comments = db.relationship('Comments', backref='post', lazy='dynamic', cascade='all,delete')
     
     @property
     def publish_date(self):
@@ -171,10 +171,11 @@ class Comments(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
     body = db.Column(db.String(500), nullable=False)
-    to = db.Column(db.String(500), nullable=True)
+    # to = db.Column(db.String(500), nullable=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.sno'))
     create_date = db.Column(db.DateTime, nullable=True,
                             default=datetime.utcnow)
-    # replies = db.relationship('SubComment', backref="thread", lazy="dynamic")
+    replies = db.relationship('Replies', backref="thread", lazy="dynamic")
     @property
     def time_ago(self):
         now= datetime.now()
@@ -183,13 +184,25 @@ class Comments(db.Model):
     
     
     def __repr__(self):
-        return f"{self.body}"
-# class SubComment(db.Model):
-#     sno = db.Column(db.Integer, primary_key=True)
-#     comsno = db.Column(db.Integer, db.ForeignKey('comment.sno'))
-#     body = db.Column(db.String(500), nullable=True)
+        return f"'{self.body}' by @{self.commentor.username}"
     
-
+class Replies(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+    comsno = db.Column(db.Integer, db.ForeignKey('comments.sno'))
+    body = db.Column(db.String(500), nullable=False)
+    usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
+    create_date = db.Column(db.DateTime, nullable=True,
+                            default=datetime.utcnow)
+    @property
+    def commentor(self):
+        user = Users.query.get(self.usersno)
+        return user
+    @property
+    def time_ago(self):
+        now= datetime.now()
+        # codiga-disable
+        return timeago.format(self.create_date, now)
+    
 # class Roles(db.Model):
 #     sno = db.Column(db.Integer(), primary_key=True)
 #     name = db.Column(db.String(30), nullable=False, unique=True)
@@ -203,6 +216,7 @@ admin.add_view(MyModelView(Users, db.session))
 admin.add_view(MyModelView(Posts, db.session))
 admin.add_view(MyModelView(Notices, db.session))
 admin.add_view(MyModelView(Comments, db.session))
+admin.add_view(MyModelView(Replies, db.session))
 admin.add_view(MyModelView(Blogprofile, db.session))
 admin.add_view(MyModelView(Readinglists, db.session))
 admin.add_view(MyModelView(Urlshortner, db.session))

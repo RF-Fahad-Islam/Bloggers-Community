@@ -4,7 +4,7 @@ from sqlalchemy.sql.expression import func
 from .settings import *
 from . import db, app, login_manager, search, oauth,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory,make_response,Response
-from .models import Users, Posts, Notices, Comments,Blogprofile, Readinglists, Urlshortner             
+from .models import Users, Posts, Notices, Comments,Blogprofile, Readinglists, Urlshortner, Replies
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
 from .utilities import *
 from flask_login import login_required, login_user, logout_user, current_user
@@ -262,7 +262,7 @@ def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     post = Posts.query.filter_by(slug=postSlug).first()
     if post is None: return abort(404)
-    comments = Comments.query.filter_by(to=f"/b/{user.sno}/{post.sno}").order_by(Comments.create_date.desc()).all()
+    comments = Comments.query.filter_by(post_id=post.sno).order_by(Comments.create_date.desc()).all()
     # form = CommentForm()
     # if form.validate_on_submit():
     #     body = form.body.data
@@ -330,9 +330,10 @@ def comment():
     if request.method == "POST":
         form = request.form
         body = form.get("body")
-        to = form.get("to")
+        post_id = form.get("post_id")
+        comsno = form.get("comsno")
         user = current_user
-        comments = Comments.query.filter_by(to=to).filter_by(commentor=current_user).all()
+        comments = Comments.query.filter_by(post_id=post_id).filter_by(commentor=current_user).all()
         if len(comments)>10: return render_template('particles/alert.html', msg="You have reached max comment limit for the post", category='danger')
         for comment in comments:
             if comment.create_date.strftime('%H %M,%d %y') == datetime.now().strftime('%H %M,%d %y'):
@@ -341,7 +342,10 @@ def comment():
                 return render_template('particles/alert.html', msg="Duplicate Comment", category="warning")
         if(len(body))>300: return render_template('particles/alert.html', msg="Too long comment", category="warning")
         if(len(body))<3: return render_template('particles/alert.html', msg="Too short comment", category="warning")
-        comment = Comments(body=body, to=to, usersno=user.sno)
+        if comsno is not None:
+            comment = Replies(body=body,comsno=comsno,usersno=current_user.sno)
+        else:
+            comment = Comments(body=body, post_id=post_id, usersno=user.sno)
         db.session.add(comment)
         db.session.commit()
         return render_template('particles/comment.html', comment=comment)
@@ -349,7 +353,7 @@ def comment():
         to = request.args.get('to')
     if request.method == "GET":
         sno = request.args.get('sno')
-        comments = Comments.query.filter_by('/b/{{current_user.sno}}/{{sno}}')
+        comments = Comments.query.filter_by(post_id=sno).all()
         return redirect('particles/comment.html', comments=comments)
     abort(404)
 
@@ -741,23 +745,23 @@ def getFollowers(username):
 def getFollowing(username):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     followings = user.following
-    followingList = []
+    following_list = []
     for following in followings:
         userblog = Users.query.get(int(following.usersno))
-        followingList.append(userblog)
-    return render_template('following.html', user=user, followingList=followingList)
+        following_list.append(userblog)
+    return render_template('following.html', user=user, following_list=following_list)
 
 
 @app.route('/notifications')
 @login_required
 def notifications():
-    followingList = []
+    following_list = []
     for following in current_user.following:
-        followingList.append(following)
+        following_list.append(following)
     posts = []
-    for userBlog in followingList:
-        posts.append(Posts.query.filter_by(
-            writer_id=userBlog.usersno).order_by(Posts.pub_date.desc()).first())
+    for userBlog in following_list:
+        user = Users.query.filter_by(sno=userBlog.usersno).first()
+        posts.append(user.posts.limit(1).first())
     return render_template('notifications.html', posts=posts)
 
 

@@ -1,4 +1,4 @@
-<div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment" style="cursor: auto;">
+<div class="d-flex mb-2 justify-content-start align-content-start align-items-start" id="comment" style="cursor: auto;">
   <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
   <div class="card bg-grey text-start" style="
       width: 80%;
@@ -7,7 +7,7 @@
   ">
     <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
       class="text-muted btn-link text-decoration-none text-sm-start"
-      style=" margin:0;">@{{comment.commentor.username}} | {{comment.time_ago}}</a>
+      style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} | {{comment.time_ago}}</b></a>
     {{comment.body|safe}}
   </div>
   <br>
