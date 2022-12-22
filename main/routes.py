@@ -328,8 +328,9 @@ def handleUsersPosts(username, postSlug):
 @login_required
 def comment():
     if request.method == "POST":
+        from markdown import markdown
         form = request.form
-        body = form.get("body")
+        body = markdown(form.get("body"))
         post_id = form.get("post_id")
         comsno = form.get("comsno")
         user = current_user
@@ -761,8 +762,12 @@ def notifications():
     posts = []
     for userBlog in following_list:
         user = Users.query.filter_by(sno=userBlog.usersno).first()
-        posts.append(user.posts.limit(1).first())
-    return render_template('notifications.html', posts=posts)
+        if user is not None and len(user.posts.all())>0:
+            posts.append(user.posts.first())
+    comments_count = 0
+    for post in current_user.posts:
+        comments_count+=post.comments.count()
+    return render_template('notifications.html', posts=posts, comments_count=comments_count)
 
 
 @app.route('/bookmark', methods=["GET"])
@@ -1066,3 +1071,9 @@ def importdata():
                 return render_template('particles/alert.html', msg="File type not supported! supported files (.json)", category="danger")
         else:
             return render_template('particles/alert.html', msg="No file selected", category="danger")
+        
+@app.route('/comments/<string:username>')
+def user_comments(username):
+    user = Users.query.filter_by(username=username).first()
+    if user is None: abort(404)
+    return render_template('comments.html', user=user)

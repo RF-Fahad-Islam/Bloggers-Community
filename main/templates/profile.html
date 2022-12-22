@@ -127,15 +127,18 @@
             </h5>
             <h5><i class="fa fa-eye"></i> Total Viewers {{total_viewers}}</h5>
             <h5>
+              <a class="link hover-btn cursor-pointer"><i class="fa fa-comments-o"></i> Comments {{user.comments.count()}}</a>
+            </h5>
+            <h5 >
               <i class="fa fa-user-o"></i>
               <a
                 href="{{url_for('getFollowing',username=user.username)}}"
-                class="link"
+                class="link hover-btn"
               >
                 Following {{user.following|length}}
               </a>
             </h5>
-            <h5>
+            <h5 class="">
               <i class="fa fa-users"></i> Followers
               {{blogProfile.followers|length}}
             </h5>

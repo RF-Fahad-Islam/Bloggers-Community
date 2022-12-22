@@ -57,6 +57,10 @@ class Users(db.Model, UserMixin):
 
     def get_id(self):
         return (self.sno)
+    
+    @property
+    def fullname(self):
+        return f"{self.firstname} {self.lastname}"
 
     # @property
     # def password(self):
@@ -152,6 +156,14 @@ class Posts(db.Model):
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(self.body, 'html.parser')
         return soup.find('img').get('src')
+    
+    @property
+    def url(self):
+        return f"/b/{self.writer.username}/{self.slug}"
+    
+    @property
+    def latest_comments(self):
+        return self.comments.query.filter(self.create_date.strftime('%d %m %y')==datetime.utcnow.strftime('%d %m %y')).all()
     
     @property
     def __repr__(self):
