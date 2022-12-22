@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block title %}
+<title>Comments | {{user.fullname}}</title>
+{% endblock title %}
+{% block body %}
+<div style="background-color: {{user.brand_color}};" id="brandBox"></div>
+
+<div class="container">
+    <div class="profileImage">
+        {% if user.picture == None %}
+        <img id="userImage" src="{{url_for('static', filename='images/usericon.png')}}"
+            alt="{{user.username}} - The creator" />
+        {% else %}
+        <img id="userImage" src="{{user.picture}}" alt="{{user.username}}" />
+        {% endif %}
+    </div>
+    <!-- user Info Card -->
+    <div class="card">
+        <div class="card-body">
+            <a href="{{url_for('getFollowers', username=user.username)}}" class="btn btn-primary float-end fw-bold"><i
+                    class="fa fa-dot-circle-o"></i> See Followers</a>
+            <div id="profileDetails" style="padding-top: 40px; padding-bottom: 18px" class="text-center">
+                <h3 class="card-title">
+                    {{user.firstname}} {{user.lastname}} (@{{user.username}})
+                </h3>
+                <hr>
+                <h3><i class="fa fa-comment"></i> Comments</h3>
+            </div>
+        </div>
+    </div>
+    <h5 class="comment text-center card w-100 my-3">All Comments ({{user.comments.count()}})</h5>
+    <div id="comments">
+        <div class="comment card my-2 w-100">
+
+            {% for comment in user.comments %}
+            <div id="comment{{comment.sno}}">
+                <div class="d-flex mb-2 justify-content-center align-content-start align-items-start"
+                    style="cursor: auto;">
+                    <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                    <div class="card bg-grey text-start border-1 comment">
+                        
+                        <div class="card-header bg-light mb-2" style="background-color: white!important;">
+
+                            <a class="card-text mt-2 hover-btn link fw-bold" href="{{comment.post.url}}#comments">
+                                🔗 {{comment.post.title}}</a>
+                        </div>
+                        <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+                            class="text-muted text-decoration-none text-sm-start mb-1"
+                            style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} </b>-
+                            {{comment.time_ago}}</a>
+                        {{comment.body|safe}}
+
+
+                        <div class="reply">
+                            <!-- <span class="float-end mx-2 d-inline-block hover-btn"><i class="fa fa-comment-o"></i></span> -->
+                            <!-- !All the replies to the comment thread -->
+                            <div id="addreply{{comment.sno}}"></div>
+                            {% if comment.replies %}
+                            {% for reply in comment.replies %}
+
+                            <div class="d-flex my-2 justify-content-center align-content-start align-items-start"
+                                style="cursor: auto;">
+                                <img src="{{reply.commentor.picture}}" width="35" height="35"
+                                    class="rounded-circle mt-2">
+                                <div class="card bg-grey text-start border-1 comment">
+                                    <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
+                                        class="text-muted btn-link text-decoration-none text-sm-start mb-1"
+                                        style=" margin:0;"><b>{{reply.commentor.firstname}} {{reply.commentor.lastname}}
+                                        </b>-
+                                        {{reply.time_ago}}</a>
+                                    {{reply.body|safe}}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% endblock body %}

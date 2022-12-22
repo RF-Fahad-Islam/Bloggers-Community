@@ -120,9 +120,10 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
         <span class="btn btn-orange mx-1" data-bs-toggle="modal" data-bs-target="#draftModal">
           <i class="fa fa-paperclip"></i> Quick Draft
         </span>
-        <a class="btn rounded-pill btn-light border-0 fw-bolder" style="font-size: 23px"
-          href="{{url_for('notifications')}}"><i class="fa fa-bell-o"></i></a>
-        <a class="btn rounded-pill btn-light border-0 ml-2 fw-bolder position-relative" href="/readinglist/u"><i
+        <a class="btn hover-btn border-0 ml-2 fw-bolder position-relative" href="{{url_for('notifications')}}"><i
+          class="fa fa-bell-o" style="font-size: 26px; "></i>
+      </a>
+        <a class="btn hover-btn border-0 ml-2 fw-bolder position-relative" href="/readinglist/u"><i
             class="fa fa-bookmark-o" style="font-size: 26px; "></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
             <b id="bookmarkCount">{{current_user.readinglist.blogs|length}}</b>

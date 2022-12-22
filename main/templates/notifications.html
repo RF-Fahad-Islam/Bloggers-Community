@@ -1,17 +1,151 @@
 {% extends "layout.html" %}
-{% from 'includes/macros.html' import render_posts%}
+{% from 'includes/macros.html' import render_posts, render_user_cards%}
 {% block title %} <title>Notifications ({{posts|length}})</title> {% endblock %}
 {% block body %}
-<div class="container">
-    <div class="card my-3">
-        <h4 class="card-body text-center"> <i class="fa fa-bell text-primary"></i> Notifications ({{posts|length}})</h4>
-        
+<div class="container my-2">
+  <div class="card my-3">
+    <h4 class="card-body text-center"> <i class="fa fa-bell text-primary"></i> Notifications ({{posts|length}})</h4>
+
+
+  </div>
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
+        type="button" role="tab" aria-controls="pills-home" aria-selected="true">Blogs <span class="text-black">{{posts|length}}</span></button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile"
+        type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Comments <span class="text-black">{{comments_count}}</span></button>
+    </li>
+    <!-- <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact"
+        type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Contact</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#pills-disabled"
+        type="button" role="tab" aria-controls="pills-disabled" aria-selected="false" disabled>Disabled</button>
+    </li> -->
+  </ul>
+  <div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+      tabindex="0">{{ render_posts(posts,show_end=False,txt="No Notifications Here.") }}</div>
+    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+      {% for post in current_user.posts %}
+      {% if post.comments.count() >0 %}
+
+
+      <div id="comments">
+        <div class="comment card">
+          <h4 class="card-header bg-light">Comments on <a href="{{post.url}}"
+              class="btn-link text-decoration-none fw-bold hover-btn">{{post.title}}</a></h4>
+          <div class="card-body">
+            {% for comment in post.comments %}
+            <div id="comment{{comment.sno}}">
+              <div class="d-flex mb-2 justify-content-center align-content-start align-items-start"
+                style="cursor: auto;">
+                <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                <div class="card bg-grey text-start border-1 comment">
+                  <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+                    class="text-muted text-decoration-none text-sm-start mb-1"
+                    style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} </b>-
+                    {{comment.time_ago}}</a>
+                  {{comment.body|safe}}
+
+                  <div class="reply">
+                    {% if current_user.is_authenticated %}
+
+                    <div class="replyinput mt-2 d-none" id="replyinput{{comment.sno}}">
+                      <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-target="#addreply{{comment.sno}}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="d-flex mb-2 justify-content-center align-content-center align-items-start"
+                          id="comment" style="cursor: auto;">
+                          <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                          <div class="bg-grey text-start comment" id="replybox{{comment.sno}}">
+                            <div class="form-floating">
+                              <textarea class="form-control rinput" minlength="3" maxlength="300" name="body"
+                                id="rinput" placeholder="Leave a comment here" id="replyarea{{comment.sno}}"></textarea>
+                              <label for="replyarea">Add a Reply ✨</label>
+                            </div>
+                            <div class="d-flex justify-content-end align-content-center">
+                              <span class="btn btn-outline-secondary mt-2 mr-2 replycancel replybtn d-none">
+                                Cancel</span>
+                              <button type="submit" class="btn btn-outline-primary d-none mt-2 replybtn"><i
+                                  class="fa fa-commenting-o"></i> Add</button>
+                            </div>
+                          </div>
+                          <br>
+                        </div>
+
+                        <input type="hidden" name="post_id" value="{{post.sno}}">
+                        <input type="hidden" name="comsno" value="{{comment.sno}}">
+                      </form>
+                    </div>
+
+                    {% endif %}
+                    <!-- <span class="float-end mx-2 d-inline-block hover-btn"><i class="fa fa-comment-o"></i></span> -->
+                    <!-- !All the replies to the comment thread -->
+                    <div id="addreply{{comment.sno}}"></div>
+                    {% if comment.replies %}
+                    {% for reply in comment.replies %}
+
+                    <div class="d-flex my-2 justify-content-center align-content-start align-items-start"
+                      style="cursor: auto;">
+                      <img src="{{reply.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                      <div class="card bg-grey text-start border-1 comment">
+                        <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
+                          class="text-muted btn-link text-decoration-none text-sm-start mb-1"
+                          style=" margin:0;"><b>{{reply.commentor.firstname}} {{reply.commentor.lastname}} </b>-
+                          {{reply.time_ago}}</a>
+                        {{reply.body|safe}}
+                      </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                  </div>
+                  {% if current_user.is_authenticated %}
+
+                  <div class="card-text">
+                    <button class="card-text  btn hover-btn reply" id="{{comment.sno}}"><i class="fa fa-comment-o"></i>
+                      Reply</button>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+
     </div>
-            {{ render_posts(posts,show_end=False,txt="No Notifications Here.") }}
+    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">...
     </div>
+    <div class="tab-pane fade" id="pills-disabled" role="tabpanel" aria-labelledby="pills-disabled-tab" tabindex="0">...
+    </div>
+  </div>
+
 </div>
 {% endblock body %}
 {% block script %}
 <script src="{{url_for('static', filename='js/searcher.js')}}"></script>
+<script>
+  $('.rinput').focusin(() => {
+    $('.replybtn').removeClass('d-none')
+    $('.replybtn').addClass('d-inline-block')
 
+  })
+
+
+  $('button.reply').click((e) => {
+    selector = `#replyinput${e.target.id}`
+    $(selector).removeClass('d-none')
+    console.log(e)
+  })
+
+  $('.replycancel').click(() => {
+    $('.replyinput').addClass('d-none')
+  })
+</script>
 {% endblock script %}
