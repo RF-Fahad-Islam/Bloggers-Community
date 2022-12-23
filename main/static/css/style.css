@@ -168,7 +168,7 @@ border: 1px solid rgba( 255, 255, 255, 0.18 )!important;
 
 
 .btn{
-    border-radius: 50px!important;
+    border-radius: 17px!important;
 }
 
 .profile{
@@ -272,7 +272,29 @@ box-shadow: none!important;
 border: 1px solid #e2e2e2!important;
   }
 
-  .btn:focus {
+  button:focus {
     outline: none!important;
     border: 0!important;
   }
+
+  .btn-purple{
+      background-color: #0000f41a;
+      color: #0000f4;
+    }
+    .btn-purple:hover{
+      background-color: #0000f448;
+      color: #0000f4;
+
+  }
+
+  .primary-btn{
+    background-color: #0087ff1a;
+    color: #1b7b96;
+}
+
+.primary-btn:hover{
+    
+    background-color: #0088ff61;
+    color: #1b7b96;
+  }
+

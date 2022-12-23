@@ -75,6 +75,10 @@ class Blogprofile(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     # Stores the given id of user and and saves the user object in writer_user
     usersno = db.Column(db.Integer, db.ForeignKey('users.sno'))
+    @property
+    def user(self):
+        return Users.query.filter_by(sno=self.usersno).first()
+    
     def __repr__(self):
         return f"<Profile {self.sno}>"
     

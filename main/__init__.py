@@ -11,6 +11,7 @@ from authlib.integrations.flask_client import OAuth
 from .settings import *
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
+from flask_socketio import SocketIO
 from dotenv import load_dotenv
 import os
 load_dotenv('.env')
@@ -24,13 +25,6 @@ app = Flask(__name__)
 #Authlib
 oauth = OAuth()
 csrf = CSRFProtect(app)
-
-# if PROD:
-#     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_PROD
-# elif TEST:
-#     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_URI
-# else:
-#     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI_DEV
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
 app.config["SESSION_TYPE"] = SESSION_TYPE
 app.config["UPLOAD_PHOTOS_DEST"] = 'static/images'
@@ -51,7 +45,7 @@ app.config["SESSION_SQLALCHEMY"] = db
 session = Session(app)
 oauth.init_app(app)
 mail = Mail(app)
-
+socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
 google = oauth.register(
     name='google',
     server_metadata_url=CONF_URL,
