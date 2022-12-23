@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-xmlns:og="http://ogp.me/ns#"
-xmlns:fb="https://www.facebook.com/2008/fbml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#"
+  xmlns:fb="https://www.facebook.com/2008/fbml">
 
 <head>
   <script async="async" data-cfasync="false"
@@ -19,6 +18,8 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
   <!-- Google Adsense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5004388589023803"
     crossorigin="anonymous"></script>
+  <!-- Google Icons -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
   <!-- Search Console -->
   <meta name="google-site-verification" content="6_BTAJC1_O_kJB06w4-NTW0dW7kEDp41QKx0sT8Hh-U" />
   <!-- Google tag (gtag.js) -->
@@ -31,28 +32,28 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
     gtag('config', 'G-SDSRGLT5SF');
   </script>
 
-<!-- Hotjar Tracking Code for Blogsphere app -->
-<script>
-  (function(h,o,t,j,a,r){
-      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-      h._hjSettings={hjid:3284509,hjsv:6};
-      a=o.getElementsByTagName('head')[0];
-      r=o.createElement('script');r.async=1;
-      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+  <!-- Hotjar Tracking Code for Blogsphere app -->
+  <script>
+    (function (h, o, t, j, a, r) {
+      h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
+      h._hjSettings = { hjid: 3284509, hjsv: 6 };
+      a = o.getElementsByTagName('head')[0];
+      r = o.createElement('script'); r.async = 1;
+      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
       a.appendChild(r);
-  })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-</script>
+    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+  </script>
   <!-- !Instant Page Load CDN -->
   <script src="//instant.page/5.1.1" type="module"
     integrity="sha384-MWfCL6g1OTGsbSwfuMHc8+8J2u71/LA8dzlIN3ycajckxuZZmF+DNjdm7O6H3PSq" defer></script>
-    <!-- plausible analytics -->
-    <script defer data-domain="blogsphere.top" src="https://plausible.io/js/script.js"></script>
-    <!-- Required meta tags -->
+  <!-- plausible analytics -->
+  <script defer data-domain="blogsphere.top" src="https://plausible.io/js/script.js"></script>
+  <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  
+
   {% block meta %}{% endblock meta %}
 
   <!-- Bootstrap CSS -->
@@ -109,7 +110,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
 
         <!-- !User profile and create post button -->
         {% if current_user.is_authenticated %}
-        <button type="button" class="btn btn-primary" data-bs-html="true" data-bs-toggle="popover"
+        <button type="button" class="btn btn-outline-primary" data-bs-html="true" data-bs-toggle="popover"
           data-bs-placement="left" data-bs-container="false" data-bs-animation="true" data-bs-trigger="click"
           data-bs-content='<a class="btn btn-outline-primary mx-3" href="/blog-writer/edit/0">
           <i class="fa fa-plus-circle"></i> New Post
@@ -117,12 +118,12 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
        
         '><i class="fa fa-plus-circle"></i> Create Post</button>
 
-        <span class="btn btn-orange mx-1" data-bs-toggle="modal" data-bs-target="#draftModal">
+        <span class="btn btn-purple mx-1" data-bs-toggle="modal" data-bs-target="#draftModal">
           <i class="fa fa-paperclip"></i> Quick Draft
         </span>
         <a class="btn hover-btn border-0 ml-2 fw-bolder position-relative" href="{{url_for('notifications')}}"><i
-          class="fa fa-bell-o" style="font-size: 26px; "></i>
-      </a>
+            class="fa fa-bell-o" style="font-size: 26px; "></i>
+        </a>
         <a class="btn hover-btn border-0 ml-2 fw-bolder position-relative" href="/readinglist/u"><i
             class="fa fa-bookmark-o" style="font-size: 26px; "></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
@@ -134,7 +135,7 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
         <span class="btn btn-light rounded-pill text-dark mx-3" style="cursor: pointer" id="profilePopover"
           data-bs-toggle="popover" data-bs-placement="left" data-bs-container="false" data-bs-animation="true"
           data-bs-trigger="click" data-bs-html="true" title="@{{current_user.username}}" data-bs-content='
-              <a href="/p/{{current_user.username}}" class="btn btn-outline-info fw-bold" aria-current="true">
+              <a href="/p/{{current_user.username}}" class="btn primary-btn fw-bold" aria-current="true">
                {{current_user.firstname}} {{current_user.lastname}} @{{current_user.username}}
               </a>
               <hr>
@@ -155,7 +156,8 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
     </div>
     {% else %}
     <!-- <a class="btn btn-outline-primary mx-3 float-end" href="/signup"><i class="fa fa-user-plus"></i> SignUp</a> -->
-    <a class="btn btn-outline-success float-end" href="{{url_for('googleLogin')}}"><i class="fa fa-sign-in"></i> Login</a>
+    <a class="btn btn-outline-success float-end" href="{{url_for('googleLogin')}}"><i class="fa fa-sign-in"></i>
+      Login</a>
     {% endif %}
   </nav>
 
@@ -241,9 +243,9 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
     </div>
   </div>
   {% block body %} {% endblock body %}
-{% block footer %}
-  
-{% endblock footer %}
+  {% block footer %}
+
+  {% endblock footer %}
   <!-- <footer class="container bg-white d-fixed bottom-0 text-center" style="margin-top: 10px; position:absolute; bottom:0;">
     <p><i class="fa fa-thumb-tack"></i> © 2020-2021 | Owned By <b class="text-muted font-weight-bolder">RF Fahad
             Islam<b> | <a href="https://github.com/RF-Fahad-Islam/" style="text-decoration: none; color: black;">My Github</a> <i class="fa fa-git-square"></i>
@@ -268,14 +270,15 @@ xmlns:fb="https://www.facebook.com/2008/fbml">
 
     /* When the user scrolls down, hide the navbar. When the user scrolls up, show the navbar */
 
-
   </script>
 
   <!-- <script src="{{url_for('static', filename='js/sw.js')}}"></script>
   <script src="{{url_for('static', filename='js/app.js')}}"></script> -->
-  <script>if(document.getElementById('msg')){window.setTimeout("document.getElementById('msg').style.display='none';", 5000);} </script>
+  <script>if (document.getElementById('msg')) { window.setTimeout("document.getElementById('msg').style.display='none';", 5000); }; </script>
   {% block script %} {% endblock script %}
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
 </body>
 
 </html>

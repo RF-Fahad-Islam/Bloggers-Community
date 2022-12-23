@@ -127,7 +127,7 @@
             </h5>
             <h5><i class="fa fa-eye"></i> Total Viewers {{total_viewers}}</h5>
             <h5>
-              <a class="link hover-btn cursor-pointer"><i class="fa fa-comments-o"></i> Comments {{user.comments.count()}}</a>
+              <a class="link hover-btn cursor-pointer" href="{{url_for('user_comments', username=user.username)}}"><i class="fa fa-comments-o"></i> Comments {{user.comments.count()}}</a>
             </h5>
             <h5 >
               <i class="fa fa-user-o"></i>
