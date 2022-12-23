@@ -30,13 +30,13 @@ def allowed_file(filename, allowed_extensions):
 with app.app_context():
     blogprofiles = Blogprofile.query.all()
 
-@socketio.on('message')
-def handle_message(data):
-    print('received message: ' + str(data))
+# @socketio.on('message')
+# def handle_message(data):
+#     print('received message: ' + str(data))
     
-@socketio.on('connect')
-def handle_connect(data):
-    print('received message: ' + str(data))
+# @socketio.on('connect')
+# def handle_connect(data):
+#     print('received message: ' + str(data))
 
 @app.route('/rss.xml')
 def rssgenerator():
