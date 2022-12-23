@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import json
 from sqlalchemy.sql.expression import func
 from .settings import *
-from . import db, app, login_manager, search, oauth,mail
+from . import db, app, login_manager, search, oauth,mail, socketio
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory,make_response,Response
 from .models import Users, Posts, Notices, Comments,Blogprofile, Readinglists, Urlshortner, Replies
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
@@ -12,6 +12,7 @@ from .serializers import *
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
+from flask_socketio import send, emit
 import os
 from werkzeug.utils import secure_filename
 params = {
@@ -28,7 +29,14 @@ def allowed_file(filename, allowed_extensions):
 
 with app.app_context():
     blogprofiles = Blogprofile.query.all()
+
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + str(data))
     
+@socketio.on('connect')
+def handle_connect(data):
+    print('received message: ' + str(data))
 
 @app.route('/rss.xml')
 def rssgenerator():
