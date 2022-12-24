@@ -317,10 +317,10 @@ def handleUsersPosts(username, postSlug):
         
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     urlshort = Urlshortner.query.filter_by(point_to=f"/b/{user.username}/{post.slug}").first()
-    # if urlshort is None or not urlshort:
-    #     urlshort = Urlshortner(point_to=f"/b/{user.username}/{post.slug}", pointer=generate_pointer(4))
-    #     db.session.add(urlshort)
-    #     db.session.commit()
+    if urlshort is None or not urlshort:
+        urlshort = Urlshortner(point_to=f"/b/{user.username}/{post.slug}", pointer=generate_pointer(4))
+        db.session.add(urlshort)
+        db.session.commit()
     shorturl = f'{params["url"]}/l?p={urlshort.pointer}'
     soup = BeautifulSoup(post.body, 'html.parser')
     if soup.find('img'): thumbnail = soup.find('img').get('src') or ""
@@ -365,6 +365,7 @@ def comment():
         comments = Comments.query.filter_by(post_id=sno).all()
         return redirect('particles/comment.html', comments=comments)
     abort(404)
+
 
 
 @app.route('/blog-writer/edit/<string:sno>', methods=["GET", "POST"])
@@ -1085,3 +1086,9 @@ def user_comments(username):
     user = Users.query.filter_by(username=username).first()
     if user is None: abort(404)
     return render_template('comments.html', user=user)
+
+@app.route('/comment/<string:username>/<int:comsno>', methods=["GET"])
+def user_comment(username,comsno):
+    comment = Comments.query.filter_by(sno=comsno).first()
+    return render_template('comment.html', comment=comment)
+    

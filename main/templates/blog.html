@@ -70,7 +70,8 @@
             </button>
             <a type="button" href="#comment"
               class="text-black text-decoration-none fwpop p-2 badge hover-btn border-0 rounded-pill text-dark float-end">
-              <i class="fa fa-comment-o" style="font-size: 15px;"> <b>{{comments|length+comments.replies|length}}</b></i>
+              <i class="fa fa-comment-o" style="font-size: 15px;">
+                <b>{{comments|length+comments.replies|length}}</b></i>
             </a>
           </div>
           <!-- Button trigger modal -->
@@ -141,9 +142,8 @@
             <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Next <i
                 class="fa fa-arrow-right"></i> </a>
             {% endif %}
-          </nav>
-
         </div>
+        </nav>
 
 
       </div>
@@ -202,10 +202,22 @@
             <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" style="cursor: auto;">
               <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
               <div class="card bg-grey text-start border-1 comment">
-                <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
-                  class="text-muted text-decoration-none text-sm-start mb-1"
-                  style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} </b>-
-                  {{comment.time_ago}}</a>
+                <div class="d-flex justify-content-between">
+
+                  <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+                    class="text-muted text-decoration-none text-sm-start mb-1"
+                    style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} </b>-
+                    {{comment.time_ago}}</a>
+                    <div class="dropdown">
+                      <span class="p-2 rounded-circle link hover-btn"  data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-ellipsis-h"></i>
+                      </span>
+                    
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{url_for('user_comment', comsno=comment.sno, username=comment.commentor.username)}}">Open Thread</a></li>
+                      </ul>
+                    </div>
+                </div>
                 {{comment.body|safe}}
 
                 <div class="reply">
@@ -214,8 +226,8 @@
                   <div class="replyinput mt-2 d-none" id="replyinput{{comment.sno}}">
                     <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-target="#addreply{{comment.sno}}">
                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                      <div class="d-flex mb-2 justify-content-center align-content-center align-items-start" id="comment"
-                        style="cursor: auto;">
+                      <div class="d-flex mb-2 justify-content-center align-content-center align-items-start"
+                        id="comment" style="cursor: auto;">
                         <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
                         <div class="bg-grey text-start comment" id="replybox{{comment.sno}}">
                           <div class="form-floating">
@@ -237,16 +249,16 @@
                       <input type="hidden" name="comsno" value="{{comment.sno}}">
                     </form>
                   </div>
-                                      
+
                   {% endif %}
                   <!-- <span class="float-end mx-2 d-inline-block hover-btn"><i class="fa fa-comment-o"></i></span> -->
                   <!-- !All the replies to the comment thread -->
                   <div id="addreply{{comment.sno}}"></div>
                   {% if comment.replies %}
                   {% for reply in comment.replies %}
-                    
+
                   <div class="d-flex my-2 justify-content-center align-content-start align-items-start"
-                  style="cursor: auto;">
+                    style="cursor: auto;">
                     <img src="{{reply.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
                     <div class="card bg-grey text-start border-1 comment">
                       <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
@@ -260,9 +272,10 @@
                   {% endif %}
                 </div>
                 {% if current_user.is_authenticated %}
-                  
+
                 <div class="card-text">
-                  <button class="card-text  btn hover-btn reply" id="{{comment.sno}}"><i class="fa fa-comment-o"></i> Reply</button>
+                  <button class="card-text  btn hover-btn reply" id="{{comment.sno}}"><i class="fa fa-comment-o"></i>
+                    Reply</button>
                 </div>
                 {% endif %}
               </div>
@@ -387,13 +400,13 @@
   })
 
 
-  $('button.reply').click((e)=> {
+  $('button.reply').click((e) => {
     selector = `#replyinput${e.target.id}`
     $(selector).removeClass('d-none')
     console.log(e)
   })
 
-  $('.replycancel').click(()=> {
+  $('.replycancel').click(() => {
     $('.replyinput').addClass('d-none')
   })
 </script>
