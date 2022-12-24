@@ -12,7 +12,7 @@ from .serializers import *
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
-from flask_socketio import send, emit
+# from flask_socketio import send, emit
 import os
 from werkzeug.utils import secure_filename
 params = {
