@@ -11,7 +11,7 @@ from authlib.integrations.flask_client import OAuth
 from .settings import *
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 from dotenv import load_dotenv
 import os
 load_dotenv('.env')
@@ -45,7 +45,8 @@ app.config["SESSION_SQLALCHEMY"] = db
 session = Session(app)
 oauth.init_app(app)
 mail = Mail(app)
-socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
+# socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
+socketio = ""
 google = oauth.register(
     name='google',
     server_metadata_url=CONF_URL,
