@@ -71,6 +71,9 @@ class Users(db.Model, UserMixin):
     #     self.password_hash = generate_password_hash(attemted_password)
 
 
+class Notifications(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+
 class Blogprofile(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     # Stores the given id of user and and saves the user object in writer_user
@@ -201,7 +204,8 @@ class Comments(db.Model):
     
     def __repr__(self):
         return f"'{self.body}' by @{self.commentor.username}"
-    
+
+
 class Replies(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     comsno = db.Column(db.Integer, db.ForeignKey('comments.sno'))

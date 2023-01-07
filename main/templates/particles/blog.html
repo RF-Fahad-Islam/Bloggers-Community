@@ -18,7 +18,7 @@
                 {% else %}
                 <img id="userImage" class="profile" src="{{user.picture}}" alt="{{user.username}}" />
                 {% endif %}
-                <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block"
+                <a href="/@{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block"
                     html="true" data-bs-toggle="popover" data-bs-title="Popover title" data-bs-trigger="hover focus"
                     data-bs-content="And here's some amazing content. It's very engaging. Right?">
                     {{user.firstname}} {{user.lastname}}

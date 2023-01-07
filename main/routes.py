@@ -12,7 +12,7 @@ from .serializers import *
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
-# from flask_socketio import send, emit
+from flask_socketio import send, emit
 import os
 from werkzeug.utils import secure_filename
 params = {
@@ -30,13 +30,13 @@ def allowed_file(filename, allowed_extensions):
 with app.app_context():
     blogprofiles = Blogprofile.query.all()
 
-# @socketio.on('message')
-# def handle_message(data):
-#     print('received message: ' + str(data))
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + str(data))
     
-# @socketio.on('connect')
-# def handle_connect(data):
-#     print('received message: ' + str(data))
+@socketio.on('connect')
+def handle_connect(data):
+    print('received message: ' + str(data))
 
 @app.route('/rss.xml')
 def rssgenerator():
@@ -94,7 +94,8 @@ def home():
 
 @app.route('/privacy-policy')
 def privacy_policy():
-    return render_template('privacypolicy.html')
+    term = Posts.query.filter(Posts.tag == "privacy policy").first()
+    return render_template('privacypolicy.html', term=term)
 
 @app.route('/terms-and-conditions')
 def termsandconditions():
@@ -154,17 +155,21 @@ def handleTags():
     return render_template('tags.html', tags=tags)
 
 
-@app.route("/p/<string:username>")
-def userProfile(username):
+@app.route("/@<string:username>")
+def user(username):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     posts = user.posts.filter_by(public=True).order_by(Posts.pub_date.desc()).all()
     blogProfile = Blogprofile.query.filter_by(usersno=user.sno).first()
     if not current_user.is_anonymous:
-        cnt = current_user.following.count(blogProfile)
+        cnt = current_user.following.count(blogProfile)      
     else:
         cnt = 0
     total_viewers_count = total_viewers(posts)
     return render_template("profile.html",  user=user, posts=posts, blogProfile=blogProfile, total_viewers=total_viewers_count, cnt=cnt)
+
+@app.route('/p/<string:username>')
+def userProfile(username):
+    return redirect('/@'+username)
 
 # @app.route("/signup", methods=["GET", "POST"])
 # def signup():
@@ -271,16 +276,6 @@ def handleUsersPosts(username, postSlug):
     post = Posts.query.filter_by(slug=postSlug).first()
     if post is None: return abort(404)
     comments = Comments.query.filter_by(post_id=post.sno).order_by(Comments.create_date.desc()).all()
-    # form = CommentForm()
-    # if form.validate_on_submit():
-    #     body = form.body.data
-    #     to = form.to.data
-    #     url = form.url.data
-    #     comment = Comment(body=body, to=to, usersno=current_user.sno)
-    #     db.session.add(comment)
-    #     db.session.commit()
-    #     return redirect(url+"#comment")
-    
     #* Add viewers count
     try:
         if current_user.sno == user.sno:
@@ -288,7 +283,7 @@ def handleUsersPosts(username, postSlug):
     except:
         if session.get('viewed') is None:
             post.viewers_count += 1
-            session['viewed'] = True
+            session['viewed'] = post.sno
     
     #TODO: Retrive the next blog and previous blog
     posts = user.posts.all()
@@ -332,15 +327,33 @@ def handleUsersPosts(username, postSlug):
 
 
 
-@app.route('/comment', methods=["POST","GET"])
+@app.route('/comment', methods=["POST","GET","DELETE","PUT"])
 @login_required
 def comment():
-    if request.method == "POST":
-        from markdown import markdown
+    if request.method == "PUT":
         form = request.form
+        comsno = form.get('comsno')
+        body = form.get('body')
+        comment = Comments.query.filter_by(sno=comsno).first()
+        comment.body = body
+        db.session.commit()
+        return comment.body
+    if request.method == "DELETE":
+        form = request.form
+        comsno = form.get('comsno')
+        comment = Comments.query.filter_by(sno=comsno).first()
+        for reply in comment.replies:
+            db.session.delete(reply)
+            db.session.commit()
+        db.session.delete(comment)
+        db.session.commit()
+        return render_template('particles/alert.html', msg='Comment has been removed', category='light bg-light')
+    if request.method == "POST":
+        form = request.form
+        comsno = form.get("comsno")          
+        from markdown import markdown
         body = markdown(form.get("body"))
         post_id = form.get("post_id")
-        comsno = form.get("comsno")
         user = current_user
         comments = Comments.query.filter_by(post_id=post_id).filter_by(commentor=current_user).all()
         if len(comments)>10: return render_template('particles/alert.html', msg="You have reached max comment limit for the post", category='danger')
@@ -649,6 +662,7 @@ def handleNotices():
         db.session.add(notice)
         db.session.add(notice)
         db.session.commit()
+        socketio.emit('notice', {'title':notice.title, 'desc':notice.desc}, broadcast=True)
         return redirect(url_for("adminDashboard"))
     return abort(404)
 
@@ -762,7 +776,7 @@ def getFollowing(username):
     return render_template('following.html', user=user, following_list=following_list)
 
 
-@app.route('/notifications')
+@app.route('/notifications', methods=['GET'])
 @login_required
 def notifications():
     following_list = []
@@ -776,6 +790,11 @@ def notifications():
     comments_count = 0
     for post in current_user.posts:
         comments_count+=post.comments.count()
+    # if request.headers.get('HX-Request'):
+    #     ncount =comments_count + len(posts)
+    #     session['notifications'] = str(comments_count + len(posts)) 
+    #     return str(ncount)
+            
     return render_template('notifications.html', posts=posts, comments_count=comments_count)
 
 
@@ -1089,6 +1108,7 @@ def user_comments(username):
 
 @app.route('/comment/<string:username>/<int:comsno>', methods=["GET"])
 def user_comment(username,comsno):
+    edit = request.args.get('edit')
     comment = Comments.query.filter_by(sno=comsno).first()
-    return render_template('comment.html', comment=comment)
+    return render_template('comment.html', comment=comment, edit=edit)
     
