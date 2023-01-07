@@ -5,8 +5,14 @@
 <head>
   <script async="async" data-cfasync="false"
     src="//pl18014730.highperformancecpmgate.com/9a2c7ef27929b21d1b46e913ecf43340/invoke.js"></script>
+  <!-- PUSH JS -->
+  <script src="{{url_for('static', filename='js/push/serviceWorker.min.js')}}"></script>
+  <script src="{{url_for('static', filename='js/push/push.min.js')}}"></script>
+
   <!-- HTMX -->
   <script src="{{url_for('static',filename='js/htmx.min.js')}}"></script>
+  <script src="{{url_for('static', filename='js/loading-states.js')}}"></script>
+
   <!-- ios support -->
   <link rel="apple-touch-icon" href="{{url_for('static', filename='images/webIcon.png')}}" />
   <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
@@ -57,9 +63,8 @@
   {% block meta %}{% endblock meta %}
 
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous" />
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
   {# Font Awesome #}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   <link rel="shortcut icon" href="{{url_for('static', filename='images/webIcon.png')}}" type="image/x-icon" />
@@ -75,7 +80,7 @@
   <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" />
 </head>
 
-<body class="bg-light" style="position: relative;">
+<body style="position: relative;" id="main-page-body" class="bg-light" data-bs-theme="light">
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -87,7 +92,7 @@
     nonce="LKrPizLV"></script>
 
 
-  <nav class="navbar  sticky-top  navbar-expand-lg navbar-light bg-white">
+  <nav class="navbar  sticky-top  navbar-expand-lg">
     <div class="container-fluid">
       <a href="/" class="navbar-barnd">
         <img src="{{url_for('static', filename='images/webIcon.png')}}" alt="" width="30" height="30" />
@@ -123,10 +128,14 @@
         </span>
         <a class="btn hover-btn border-0 ml-2 fw-bolder position-relative" href="{{url_for('notifications')}}"><i
             class="fa fa-bell-o" style="font-size: 26px; "></i>
+          <span class="position-absolute top-8 start-75 translate-middle badge rounded-pill bg-danger">
+            <b id="notificationCount">0</b>
+            <span class="visually-hidden">unread messages</span>
+          </span>
         </a>
         <a class="btn hover-btn border-0 ml-2 fw-bolder position-relative" href="/readinglist/u"><i
             class="fa fa-bookmark-o" style="font-size: 26px; "></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+          <span class="position-absolute top-8 start-75 translate-middle badge rounded-pill bg-info">
             <b id="bookmarkCount">{{current_user.readinglist.blogs|length}}</b>
             <span class="visually-hidden">unread messages</span>
           </span>
@@ -220,7 +229,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="importModalLabel">Draft a Blog</h1>
+          <h1 class="modal-title fs-5" id="importModalLabel">SSSSSS a Blog</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -242,7 +251,10 @@
       </div>
     </div>
   </div>
-  {% block body %} {% endblock body %}
+  <div id="mainpage" htmx-boost="true">
+
+    {% block body %} {% endblock body %}
+  </div>
   {% block footer %}
 
   {% endblock footer %}
@@ -251,10 +263,9 @@
             Islam<b> | <a href="https://github.com/RF-Fahad-Islam/" style="text-decoration: none; color: black;">My Github</a> <i class="fa fa-git-square"></i>
 </b></b></p></footer> -->
   <!-- Option 1: Bootstrap Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
     crossorigin="anonymous"></script>
-
   <!-- Option 2: Separate Popper and Bootstrap JS -->
   <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
@@ -279,6 +290,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
     integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
     crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function () {
+      socket.emit('my event', { data: 'I\'m connected!' });
+    });
+    socket.on('notice', (data) => {
+      Push.create(data.title, {
+        body: data.desc,
+        icon: '/static/images/favicon.png',
+        onClick: function () {
+          window.focus();
+          this.close();
+        }
+      });
+    })
+  </script>
 </body>
 
 </html>

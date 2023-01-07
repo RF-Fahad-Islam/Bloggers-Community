@@ -7,7 +7,7 @@ SESSION_TYPE = 'sqlalchemy'
 APP_TITLE = "Blogsphere | Made By Fahad"
 APP_NAME = "Blogsphere"
 APP_URL = "https://blogsphere.top"
-POSTS_PER_PAGE = 6
+POSTS_PER_PAGE = 3
 
 #ADMIN CONFS
 ADMIN_EMAIL = "riyad9949@gmail.com"

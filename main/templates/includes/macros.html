@@ -17,7 +17,7 @@ viewers_count=false) %}
         {% else %}
         <img id="userImage" class="profile" src="{{user.picture}}" alt="{{user.username}}" />
         {% endif %}
-        <a href="/p/{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
+        <a href="/@{{user.username}}" class="fw-bold text-decoration-none text-dark link d-inline-block">
             {{user.firstname}} {{user.lastname}}
             (@{{user.username}})</a>
         {% if viewers_count %}
@@ -55,7 +55,7 @@ viewers_count=false) %}
         {% endif %}
         {% if dashboard %}
         <div class="dropend">
-            <button class="btn btn-outline-light text-black dropdown-toggle float-end" type="button"
+            <button class="btn btn-outline-light text-black float-end" type="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa fa-download"></i>
             </button>
@@ -173,7 +173,7 @@ viewers_count=false) %}
         " alt="Avatar" class="rounded-circle" width="60" height="60">
             {% endif %}
             <br>
-            <a href="/p/{{user.username}}" class="text-decoration-none text-black hover-btn">
+            <a href="/@{{user.username}}" class="text-decoration-none text-black hover-btn">
 
                 <h5>{{user.firstname}} {{user.lastname}} {% if user.is_verified %}
                     <i class="fa fa-check-circle text-primary" title="Verified"></i>
@@ -186,14 +186,14 @@ viewers_count=false) %}
         </div>
         {% if user.sno != current_user.sno and not current_user.is_anonymous %}
         {% if cnt > 0 %}
-        <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="btn btn-orange d-block my-3 fw-bold"><i
+        <a href="/follow?sno={{user.sno}}&url=/@{{user.username}}" class="btn btn-orange d-block my-3 fw-bold"><i
                 class="fa fa-check"></i> Followed</a>
         {% elif blogProfile %}
-        <a href="/follow?sno={{user.sno}}&url=/p/{{user.username}}" class="d-block btn btn-primary my-3 fw-bold"><i
+        <a href="/follow?sno={{user.sno}}&url=/@{{user.username}}" class="d-block btn btn-primary my-3 fw-bold"><i
                 class="fa fa-plus-square-o"></i> Follow</a>
         {% endif %}
         {% else %}
-        <a href="{{url_for('userProfile',username=user.username)}}" class="d-block btn btn-primary my-3 fw-bold"><i
+        <a href="/@{{user.username}}" class="d-block btn btn-primary my-3 fw-bold"><i
                 class="fa fa-link"></i> Visit Profile</a>
 
         {% endif %}
@@ -268,7 +268,7 @@ viewers_count=false) %}
             {% endif %}
             <h5 class="d-inline-block">
                 <a class="fw-bold text-decoration-none ml-2 text-dark cursor-pointer link d-inline-block"
-                    style="cursor: pointer;" href="/p/{{blogUser.username}}">
+                    style="cursor: pointer;" href="/@{{blogUser.username}}">
                     {{blogUser.firstname}} {{blogUser.lastname}} (@{{blogUser.username}})</a>
         </div>
         </h5>
@@ -280,4 +280,91 @@ viewers_count=false) %}
     <h5>No Users Found (*_*).</h5>
 </div>
 {% endif %}
+{% endmacro %}
+
+{% macro render_comment(comment,user, current_user) %}
+    <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" style="cursor: auto;">
+      <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+      <div class="card bg-grey text-start border-1 comment">
+        <div class="d-flex justify-content-between">
+
+          <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+            class="text-muted text-decoration-none text-sm-start mb-1"
+            style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} {% if comment.commentor.username == user.username %}
+             <i class="fa fa-star hover-btn" title="Author"></i>{% endif %} </b>-
+            {{comment.time_ago}} </a>
+          <div class="dropdown">
+            <span class="p-2 rounded-circle link hover-btn" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-ellipsis-h"></i>
+            </span>
+
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item"
+                  href="{{url_for('user_comment', comsno=comment.sno, username=comment.commentor.username)}}">Open
+                  Thread</a></li>
+            </ul>
+          </div>
+        </div>
+        {{comment.body|safe}}
+
+        <div class="reply">
+          {% if current_user.is_authenticated %}
+
+          <div class="replyinput mt-2 d-none" id="replyinput{{comment.sno}}">
+            <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-target="#addreply{{comment.sno}}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <div class="d-flex mb-2 justify-content-center align-content-center align-items-start"
+                id="comment" style="cursor: auto;">
+                <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                <div class="bg-grey text-start comment" id="replybox{{comment.sno}}">
+                  <div class="form-floating">
+                    <textarea class="form-control rinput" minlength="3" maxlength="300" name="body" id="rinput"
+                      placeholder="Leave a comment here" id="replyarea{{comment.sno}}"></textarea>
+                    <label for="replyarea">Add a Reply ✨</label>
+                  </div>
+                  <div class="d-flex justify-content-end align-content-center">
+                    <span class="btn btn-outline-secondary mt-2 mr-2 replycancel replybtn d-none"> Cancel</span>
+                    <button type="submit" class="btn btn-outline-primary d-none mt-2 replybtn"><i
+                        class="fa fa-commenting-o"></i> Add</button>
+                  </div>
+                </div>
+                <br>
+              </div>
+
+              <input type="hidden" name="comsno" value="{{comment.sno}}">
+            </form>
+          </div>
+
+          {% endif %}
+          <!-- <span class="float-end mx-2 d-inline-block hover-btn"><i class="fa fa-comment-o"></i></span> -->
+          <!-- !All the replies to the comment thread -->
+          <div id="addreply{{comment.sno}}"></div>
+          {% if comment.replies %}
+          {% for reply in comment.replies %}
+
+          <div class="d-flex my-2 justify-content-center align-content-start align-items-start"
+            style="cursor: auto;">
+            <img src="{{reply.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+            <div class="card bg-grey text-start border-1 comment">
+              <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
+                class="text-muted btn-link text-decoration-none text-sm-start mb-1"
+                style=" margin:0;"><b>{{reply.commentor.firstname}} {{reply.commentor.lastname}} </b>-
+                {{reply.time_ago}}
+              </a>
+
+              {{reply.body|safe}}
+            </div>
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+        {% if current_user.is_authenticated %}
+
+        <div class="card-text">
+          <button class="card-text  btn hover-btn reply" id="{{comment.sno}}"><i class="fa fa-comment-o"></i>
+            Reply</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
 {% endmacro %}

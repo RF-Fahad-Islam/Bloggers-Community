@@ -60,17 +60,18 @@
           <div class='mb-2'>
             {% for tag in post.tags_list %}
             <a href="/search?q={{tag}}&type=tag"
-              class="text-black text-decoration-none fw-bolder p-2 badge bg-warning rounded-pill text-dark">#{{tag}}
+              class="text-decoration-none text-sm mt-1 fw-bolder btn primary-btn text-dark" style="font-size:14px;"><i
+                class="fa fa-hashtag"></i>{{tag}}
             </a>
             {% endfor %}
             <button type="button"
-              class="text-black text-decoration-none fw-bolder p-2 badge bg-light border-0 rounded-pill text-dark float-end"
+              class="text-black text-decoration-none fw-bolder p-2 mt-1 badge bg-light border-0 rounded-pill text-dark btn-purple float-end"
               data-bs-toggle="modal" data-bs-target="#exampleModal">
-              <i class="fa fa-link" style="font-size: 15px;"></i>
+              <b style="font-size: 17px;">🔗</b>
             </button>
             <a type="button" href="#comment"
-              class="text-black text-decoration-none fwpop p-2 badge hover-btn border-0 rounded-pill text-dark float-end">
-              <i class="fa fa-comment-o" style="font-size: 15px;">
+              class="text-black text-decoration-none fwpop p-2 mt-1 badge btn-purple border-0 rounded-pill float-end">
+              <i class="fa fa-comment-o" style="font-size: 17px;">
                 <b>{{comments|length+comments.replies|length}}</b></i>
             </a>
           </div>
@@ -114,7 +115,7 @@
               {% else %}
               <img src="{{user.picture}}" style="border-radius: 50%;" alt="avatar" width="30" height="30">
               {% endif %}
-              <a href="/p/{{user.username}}" class="link fw-bolder text-decoration-none">
+              <a href="/@{{user.username}}" class="link fw-bolder text-decoration-none">
                 @{{user.username}}
               </a>
               <div class="d-inline-block mt-1">
@@ -125,10 +126,25 @@
                   <span class="badge p-2 rounded-pill bg-light text-black">
                     <i class="fa fa-eye"></i> {{post.views}} views
                   </span>
+                  <span class="badge p-2 rounded-pill bg-light text-black">
+                    <i class="fa fa-book"></i> {{post.read_time}}
+                  </span>
+                    <!-- <button class="badge p-2 rounded-pill bg-light text-black" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                      More
+                    </button> -->
+                  
                 </h6>
               </div>
             </div>
-            {{post.body | safe}}
+            <div class="collapse my-3" id="collapseExample">
+              <div class="card card-body">
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+              </div>
+            </div>
+            <div hx-disable>
+
+              {{post.body | safe}}
+            </div>
             <div class="sharethis-inline-reaction-buttons"></div>
             <br>
           </article>
@@ -171,7 +187,7 @@
                 </div>
                 <div class="d-flex justify-content-end align-content-center">
                   <button type="submit" id="sendbtn" class="btn btn-outline-primary d-none mt-2"><i
-                      class="fa fa-commenting-o"></i> Send</button>
+                      class="fa fa-commenting-o" data-loading-disable></i> Send</button>
                 </div>
               </div>
               <br>
@@ -198,27 +214,42 @@
         </div>
         <div id="comments">
           {% for comment in comments %}
-          <div id="comment">
+          <div id="comment{{comment.sno}}">
             <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" style="cursor: auto;">
               <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
               <div class="card bg-grey text-start border-1 comment">
                 <div class="d-flex justify-content-between">
 
                   <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
-                    class="text-muted text-decoration-none text-sm-start mb-1"
-                    style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} </b>-
-                    {{comment.time_ago}}</a>
-                    <div class="dropdown">
-                      <span class="p-2 rounded-circle link hover-btn"  data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-ellipsis-h"></i>
-                      </span>
-                    
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{url_for('user_comment', comsno=comment.sno, username=comment.commentor.username)}}">Open Thread</a></li>
-                      </ul>
-                    </div>
+                    class="text-muted text-decoration-none text-sm-start mb-1 hover-btn"
+                    style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} {% if
+                      comment.commentor.username == comment.post.writer.username %}
+                      <i class="fa fa-star hover-btn" title="Author"></i>{% endif %} </b>-
+                    {{comment.time_ago}} </a>
+                  <div class="dropdown">
+                    <span class="p-2 rounded-circle link hover-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fa fa-ellipsis-h"></i>
+                    </span>
+
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item"
+                          href="{{url_for('user_comment', comsno=comment.sno, username=comment.commentor.username)}}">Open
+                          Thread</a></li>
+                      <li><a class="dropdown-item comedit" id="{{comment.sno}}">Edit</a></li>
+                      <li>
+                        <form method="POST" hx-delete="/comment" hx-target="#comment{{comment.sno}}"
+                          hx-swap="innerHTML">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                          <input type="hidden" name="comsno" value="{{comment.sno}}">
+                          <button type="submit" class="dropdown-item">Delete</button>
+                        </form>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-                {{comment.body|safe}}
+                <div id="commentbody{{comment.sno}}">
+                  {{comment.body|safe}}
+                </div>
 
                 <div class="reply">
                   {% if current_user.is_authenticated %}
@@ -244,8 +275,6 @@
                         <br>
                       </div>
 
-                      <input type="hidden" name="post_id" value="{{post.sno}}">
-                      <input type="hidden" name="url" value="/b/{{user.username}}/{{post.slug}}">
                       <input type="hidden" name="comsno" value="{{comment.sno}}">
                     </form>
                   </div>
@@ -264,7 +293,9 @@
                       <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
                         class="text-muted btn-link text-decoration-none text-sm-start mb-1"
                         style=" margin:0;"><b>{{reply.commentor.firstname}} {{reply.commentor.lastname}} </b>-
-                        {{reply.time_ago}}</a>
+                        {{reply.time_ago}}
+                      </a>
+
                       {{reply.body|safe}}
                     </div>
                   </div>
@@ -403,12 +434,26 @@
   $('button.reply').click((e) => {
     selector = `#replyinput${e.target.id}`
     $(selector).removeClass('d-none')
-    console.log(e)
+  })
+  $('.comedit').click((e) => {
+    selector = `#commentbody${e.target.id}`
+    $(selector).html(`<form method='put' hx-put="/comment" hx-target="commentbody${e.target.id}" hx-swap="innerHTML">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <textarea class="form-control " minlength="3" maxlength="300" name="body" id="tbody"
+              placeholder="Edit comment" id="floatingTextarea">${$(selector).text().trim()}</textarea>
+          <div class="d-flex justify-content-end align-content-center">
+            <button type="submit" class="btn btn-outline-primary mt-2"><i
+                class="fa fa-commenting-o"></i> Edit</button>
+          </div>
+
+      <input type="hidden" name="comsno" value="${e.target.id}">
+    </form>`)
   })
 
   $('.replycancel').click(() => {
     $('.replyinput').addClass('d-none')
   })
+  
 </script>
 
 
