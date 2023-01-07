@@ -6,7 +6,16 @@
   async="async"
 ></script>
 <title>{{user.firstname}} {{user.lastname}} @{{user.username}}</title>
-{% endblock title %} {% block body %}
+{% endblock title %} 
+{% block meta %}
+<meta property="og:title" content="{{user.firstname}} {{user.lastname}} @{{user.username}}" />
+<meta property="og:type" content="profile" />
+<meta property="og:url" content="{{params['app_url']}}/@{{user.username}}" />
+<meta property="og:image" content="{{user.picture}}" />
+<meta property="og:site_name" content="{{params['app_name']}}" />
+<meta property="og:description" content="Hi, I'm in Blogsphere.Checkout my all blogs. Bio: {{user.bio}}" />
+{% endblock meta %}
+{% block body %}
 <!-- !Brand Color -->
 <div style="background-color: {{user.brand_color}};" id="brandBox"></div>
 
@@ -28,8 +37,8 @@
   <div class="card">
     <div class="card-body">
       {% if current_user.sno == user.sno %}
-      <a href="/settings" class="btn btn-primary float-end fw-bold"
-        ><i class="fa fa-pencil"></i> Edit Profile</a
+      <a href="/settings" class="btn btn-outline-primary float-end fw-bold"
+        ><i class="fa fa-cog"></i> Settings</a
       >
       {% elif not current_user.is_anonymous %}{% if cnt > 0 %}
       <a onclick="follow()" id="follow" class="btn btn-orange float-end fw-bold"
@@ -117,7 +126,8 @@
             {% endif %}
           </div>
         </div>
-        <div class="card box-shadow bg-light my-3">
+        <div class="card box-shadow bg-light my-3" hx-boost="true" >
+          <div data-loading="block">loading</div>
           <div class="card-header bg-white">
             <h5 class="fw-bold">Blog</h5>
           </div>
@@ -148,7 +158,7 @@
     </div>
 
     <!-- !Column of Blogs -->
-    <div class="col-md-8">
+    <div class="col-md-8" htmx-boost="true">
       <div class="card text-center">
         <h5 class="card-body">All Blogs ({{posts|length}})</h5>
       </div>

@@ -24,7 +24,13 @@
               style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} </b>-
               {{comment.time_ago}}</a>
           </div>
+          {% if edit %}
+          <form action="PUT">
+            <textarea name="form-control"></textarea>
+          </form>
+            {% else %}
           {{comment.body|safe}}
+          {% endif %}
 
           <div class="reply">
             {% if current_user.is_authenticated %}
