@@ -281,9 +281,9 @@ def handleUsersPosts(username, postSlug):
         if current_user.sno == user.sno:
             pass
     except:
-        if session.get('viewed') is None:
-            post.viewers_count += 1
+        if session.get('viewed') is None or str(session.get('viewed')) != str(post.sno):
             session['viewed'] = post.sno
+            post.viewers_count += 1
     
     #TODO: Retrive the next blog and previous blog
     posts = user.posts.all()
@@ -326,6 +326,11 @@ def handleUsersPosts(username, postSlug):
                            , blogProfile=blogProfile, shorturl=shorturl, thumbnail=thumbnail, summary=summary, comments=comments)
 
 
+@app.route('/b/<string:username>/<string:postSlug>/cover')
+def handleUsersPosts(username, postSlug):
+    user = db.one_or_404(db.select(Users).filter_by(username=username))
+    post = user.posts.query.filter_by(slug=postSlug).first()
+    return f'<img src="{post.cover_src}" alt="{post.tag}" width="500" style="aspect-ratio: 16/9; border-radius:18px;">'
 
 @app.route('/comment', methods=["POST","GET","DELETE","PUT"])
 @login_required

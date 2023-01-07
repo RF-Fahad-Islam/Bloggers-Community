@@ -19,7 +19,7 @@
 <!-- !Brand Color -->
 <div style="background-color: {{user.brand_color}};" id="brandBox"></div>
 
-<div class="container">
+<div class="container" hx-ext="loading-states">
   <!-- TODO:User Profile Cards -->
   <!-- !User Profile Image -->
   <div class="profileImage">
@@ -126,7 +126,7 @@
             {% endif %}
           </div>
         </div>
-        <div class="card box-shadow bg-light my-3" hx-boost="true" >
+        <div class="card box-shadow bg-light my-3" hx-boost="true" data-loading-states>
           <div data-loading="block">loading</div>
           <div class="card-header bg-white">
             <h5 class="fw-bold">Blog</h5>
