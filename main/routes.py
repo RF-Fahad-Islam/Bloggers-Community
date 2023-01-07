@@ -12,7 +12,7 @@ from .serializers import *
 import random
 from datetime import datetime
 from werkzeug.security import generate_password_hash
-from flask_socketio import send, emit
+# from flask_socketio import send, emit
 import os
 from werkzeug.utils import secure_filename
 params = {
@@ -30,13 +30,13 @@ def allowed_file(filename, allowed_extensions):
 with app.app_context():
     blogprofiles = Blogprofile.query.all()
 
-@socketio.on('message')
-def handle_message(data):
-    print('received message: ' + str(data))
+# @socketio.on('message')
+# def handle_message(data):
+#     print('received message: ' + str(data))
     
-@socketio.on('connect')
-def handle_connect(data):
-    print('received message: ' + str(data))
+# @socketio.on('connect')
+# def handle_connect(data):
+#     print('received message: ' + str(data))
 
 @app.route('/rss.xml')
 def rssgenerator():
@@ -662,7 +662,7 @@ def handleNotices():
         db.session.add(notice)
         db.session.add(notice)
         db.session.commit()
-        socketio.emit('notice', {'title':notice.title, 'desc':notice.desc}, broadcast=True)
+        # socketio.emit('notice', {'title':notice.title, 'desc':notice.desc}, broadcast=True)
         return redirect(url_for("adminDashboard"))
     return abort(404)
 
