@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import json
 from sqlalchemy.sql.expression import func
 from .settings import *
-from . import db, app, login_manager, search, oauth,mail, socketio
+from . import db, app, login_manager, search, oauth,mail
 from flask import render_template, redirect, session, request, jsonify, url_for, flash, abort, send_from_directory,make_response,Response
 from .models import Users, Posts, Notices, Comments,Blogprofile, Readinglists, Urlshortner, Replies
 from .forms import RegisterForm, LoginForm, BlogWriter, SettingForm, NoticeForm, CommentForm
