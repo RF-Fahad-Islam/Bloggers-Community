@@ -11,7 +11,7 @@ from authlib.integrations.flask_client import OAuth
 from .settings import *
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 from dotenv import load_dotenv
 import os
 load_dotenv('.env')

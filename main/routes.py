@@ -273,7 +273,7 @@ def settingProfile():
 @app.route('/b/<string:username>/<string:postSlug>', methods=["POST", "GET"])
 def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
-    post = Posts.query.filter_by(slug=postSlug).first()
+    post = user.posts.query.filter_by(slug=postSlug).first()
     if post is None: return abort(404)
     comments = Comments.query.filter_by(post_id=post.sno).order_by(Comments.create_date.desc()).all()
     #* Add viewers count
@@ -327,7 +327,7 @@ def handleUsersPosts(username, postSlug):
 
 
 @app.route('/b/<string:username>/<string:postSlug>/cover')
-def handleUsersPosts(username, postSlug):
+def posts_covers(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
     post = user.posts.query.filter_by(slug=postSlug).first()
     return f'<img src="{post.cover_src}" alt="{post.tag}" width="500" style="aspect-ratio: 16/9; border-radius:18px;">'
