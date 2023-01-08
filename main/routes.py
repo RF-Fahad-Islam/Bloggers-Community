@@ -273,7 +273,7 @@ def settingProfile():
 @app.route('/b/<string:username>/<string:postSlug>', methods=["POST", "GET"])
 def handleUsersPosts(username, postSlug):
     user = db.one_or_404(db.select(Users).filter_by(username=username))
-    post = user.posts.query.filter_by(slug=postSlug).first()
+    post = Posts.query.filter_by(slug=postSlug).first()
     if post is None: return abort(404)
     comments = Comments.query.filter_by(post_id=post.sno).order_by(Comments.create_date.desc()).all()
     #* Add viewers count
