@@ -45,7 +45,7 @@ app.config["SESSION_SQLALCHEMY"] = db
 session = Session(app)
 oauth.init_app(app)
 mail = Mail(app)
-socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
+# socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
 # socketio = ""
 google = oauth.register(
     name='google',
