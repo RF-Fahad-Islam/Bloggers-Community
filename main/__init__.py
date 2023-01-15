@@ -1,19 +1,21 @@
+import os
+
+from authlib.integrations.flask_client import OAuth
+from dotenv import load_dotenv
 from flask import Flask, abort, render_template
-from flask_sqlalchemy import SQLAlchemy
-from flask_session import Session
-from flask_migrate import Migrate
-from flask_login import LoginManager, login_required
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_login import current_user
-from flask_msearch import Search
-from authlib.integrations.flask_client import OAuth
-from .settings import *
-from flask_wtf.csrf import CSRFProtect
+from flask_login import LoginManager, current_user, login_required
 from flask_mail import Mail
-# from flask_socketio import SocketIO
-from dotenv import load_dotenv
-import os
+from flask_migrate import Migrate
+from flask_msearch import Search
+from flask_session import Session
+from flask_socketio import SocketIO
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
+
+from .settings import *
+
 load_dotenv('.env')
 # from flask_uploads import UploadSet, configure_uploads, IMAGES
 
@@ -41,11 +43,11 @@ app.config.update(
 )
 db = SQLAlchemy(app)
 app.config["SESSION_SQLALCHEMY"] = db
-# app.config['FLASK_ADMIN_SWATCH'] = 'paper'
+app.config['FLASK_ADMIN_SWATCH'] = 'paper'
 session = Session(app)
 oauth.init_app(app)
 mail = Mail(app)
-# socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
+socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
 # socketio = ""
 google = oauth.register(
     name='google',

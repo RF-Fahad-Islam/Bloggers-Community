@@ -327,10 +327,17 @@ def handleUsersPosts(username, postSlug):
 
 
 @app.route('/b/<string:username>/<string:postSlug>/cover')
-def posts_covers(username, postSlug):
-    user = db.one_or_404(db.select(Users).filter_by(username=username))
-    post = user.posts.query.filter_by(slug=postSlug).first()
+def post_cover(username, postSlug):
+    post = Posts.query.filter_by(slug=postSlug).first() or None
     return f'<img src="{post.cover_src}" alt="{post.tag}" width="500" style="aspect-ratio: 16/9; border-radius:18px;">'
+
+# @app.route('/<int:psno>/<int:imgsno>')
+# def post_image(psno, imgsno):
+#     post = Posts.query.filter_by(sno=psno).first()
+#     return Response(
+#             post.cover_src,
+#             mimetype='img/gif',)
+
 
 @app.route('/comment', methods=["POST","GET","DELETE","PUT"])
 @login_required
@@ -633,16 +640,16 @@ def search():
     searchType = request.args.get("type")
     
     if q.startswith("@"):
-        users = Users.query.filter(Users.username.startswith(q[1:])).paginate(page=page, per_page=8)
+        users = Users.query.filter(Users.username.startswith(q[1:])).paginate(page=page, per_page=POSTS_PER_PAGE)
     else:
         
         if searchType == "tag":
             #If search for tags
-            posts = Posts.query.msearch(q, fields=["tag"]).paginate(page=page, per_page=8)
+            posts = Posts.query.msearch(q, fields=["tag"]).paginate(page=page, per_page=POSTS_PER_PAGE)
         else:
             #Else Default serach in title and tag
             posts = Posts.query.msearch(
-                q, fields=["title", "tag", "summary"]).paginate(page=page, per_page=8)
+                q, fields=["title", "tag", "summary"]).paginate(page=page, per_page=POSTS_PER_PAGE)
     if type is not None: return render_template('searchPage.html')
     # If a AJAX Request via HTMX
     if request.headers.get('HX-Request'):
