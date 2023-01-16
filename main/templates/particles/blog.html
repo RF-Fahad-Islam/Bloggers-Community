@@ -5,7 +5,7 @@
 <section class="card my-3 box-shadow" style="z-index: 10!important;" hx-get="/{{url}}{{page+1}}" hx-trigger="revealed"
     hx-swap="afterend" hx-indicator="#spinner">
     {% else %}
-    <section class="card my-3 box-shadow" style="z-index: 10!important;">
+    <div class="card my-3 box-shadow" style="z-index: 10!important;">
         {% endif %}
         <div class="card-body content row">
             <div class="col-lg-9">
@@ -97,12 +97,12 @@
                     background: #d4d4d4;"></div></span></a>
                 </div>
         </div>
-    </section>
+    </div>
     {% endfor %}
     {% if not posts.has_next and showend %}
     <div class="card" style="z-index: 10!important;">
         <div class="card-body text-center">
-            <h4 class=""><i class="fa fa-check-circle-o"></i> End of The page!</h4>
+            <h3>👋 You reach the end!</h3>
             <h5 class="text-muted">Add your post to expand the community</h5>
             <a href="/blog-writer/edit/0" class="btn btn-primary-lg">Add your blog</a>
             <a href="#" class="btn btn-warning-lg">Go to Top</a>
