@@ -23,12 +23,18 @@
 {% endblock title %}
 {% block body %}
 {% block css %}
-  <style>
-    p{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-size: medium;
-    }
-  </style>
+<style>
+  h1 {
+    font-weight: 700 !important;
+  }
+
+  p,
+  li {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 20px !important;
+    line-height: 30px;
+  }
+</style>
 {% endblock css %}
 <div id="main" class="container-fluid my-3" style="width: 90%; margin:auto;">
 
@@ -61,7 +67,7 @@
           </span>
           {% endif %}
           {% endif %}
-          <h1 class="fw-bolder border-primary text-center">
+          <h1 class="border-primary text-center">
             {{post.title}}
           </h1>
           <hr>
@@ -137,16 +143,17 @@
                   <span class="badge p-2 rounded-pill bg-light text-black">
                     <i class="fa fa-book"></i> {{post.read_time}}
                   </span>
-                    <!-- <button class="badge p-2 rounded-pill bg-light text-black" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                  <!-- <button class="badge p-2 rounded-pill bg-light text-black" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                       More
                     </button> -->
-                  
+
                 </h6>
               </div>
             </div>
             <div class="collapse my-3" id="collapseExample">
               <div class="card card-body">
-                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when
+                the user activates the relevant trigger.
               </div>
             </div>
             <div hx-disable>
@@ -154,298 +161,324 @@
               {{post.body | safe}}
             </div>
             <div class="sharethis-inline-reaction-buttons"></div>
-            <br>
           </article>
-
-          <nav class="blog-pagination my-3" aria-label="Pagination">
-            {% if prev_post %}
-            <a class="btn btn-outline-primary float-start" href="/b/{{user.username}}/{{prev_post.slug}}"> <i
-                class="fa fa-arrow-left"></i> Previous</a>
-            {% endif %}
-            {% if next_post %}
-            <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Next <i
-                class="fa fa-arrow-right"></i> </a>
-            {% endif %}
         </div>
-        </nav>
 
 
-      </div>
-      <!-- !Comment Section -->
+        <div>
+          <hr>
+          {% if prev_post or next_post %}
 
-      <!-- !Community Post -->
-      <!-- ../particles/comment/html -->
-      <hr>
-      <section class="card text-center border-0">
-        <h3 class="fwpop bg-light card-header text-center"><i class="fa fa-comments-o"></i> All Comments
-          ({{comments|length}})</h3>
-        <div class="card-body">
+          <div class="alert bg-white overflow-scroll">
+            <h3>From the Author</h3>
+            <div class="list-group">
+              {% if prev_post %}
 
-          {% if current_user.is_authenticated %}
-          <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-indicator="#spinner" hx-target="#comments">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment"
-              style="cursor: auto;">
-              <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
-              <div class="bg-grey text-start comment" id="commentbox">
-                <div class="form-floating">
-                  <textarea class="form-control " minlength="3" maxlength="300" name="body" id="tbody"
-                    placeholder="Leave a comment here" id="floatingTextarea"></textarea>
-                  <label for="floatingTextarea">Leave a comment</label>
+              <a href="{{prev_post.url}}" class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w- justify-content-between">
+                  <h5 class="mb-1">{{prev_post.title}}</h5>
                 </div>
-                <div class="d-flex justify-content-end align-content-center">
-                  <button type="submit" id="sendbtn" class="btn btn-outline-primary d-none mt-2"><i
-                      class="fa fa-commenting-o" data-loading-disable></i> Send</button>
+                <small class="badge rounded-pill bg-primary text-white">by @{{prev_post.writer.username}}</small>
+                <small class="badge rounded-pill bg-primary text-white">{{prev_post.pub_date.strftime("%b %d,
+                  %Y")}}</small>
+                <!-- <small>And some small print.</small> -->
+              </a>
+              {% endif %}
+              {% if next_post %}
+
+              <a href="{{next_post.url}}" class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w- justify-content-between">
+                  <h5 class="mb-1">{{next_post.title}}</h5>
                 </div>
+                <small class="badge rounded-pill bg-primary text-white">by @{{next_post.writer.username}}</small>
+                <small class="badge rounded-pill bg-primary text-white">{{next_post.pub_date.strftime("%b %d,
+                  %Y")}}</small>
+                <!-- <small>And some small print.</small> -->
+              </a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ! ...... -->
+        <!-- !Comment Section -->
+        <!-- ../particles/comment/html -->
+        <hr>
+        <section class="card text-center border-0">
+
+          <h3 class="fwpop bg-light card-header text-center"><i class="fa fa-comments-o"></i> All Comments
+            ({{comments|length}})</h3>
+          <div class="card-body">
+
+            {% if current_user.is_authenticated %}
+            <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-indicator="#spinner" hx-target="#comments">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" id="comment"
+                style="cursor: auto;">
+                <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                <div class="bg-grey text-start comment" id="commentbox">
+                  <div class="form-floating">
+                    <textarea class="form-control " minlength="3" maxlength="300" name="body" id="tbody"
+                      placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+                    <label for="floatingTextarea">Leave a comment</label>
+                  </div>
+                  <div class="d-flex justify-content-end align-content-center">
+                    <button type="submit" id="sendbtn" class="btn btn-outline-primary d-none mt-2"><i
+                        class="fa fa-commenting-o" data-loading-disable></i> Send</button>
+                  </div>
+                </div>
+                <br>
               </div>
-              <br>
+
+              <input type="hidden" name="post_id" value="{{post.sno}}">
+              <input type="hidden" name="url" value="/b/{{user.username}}/{{post.slug}}">
+              <input type="hidden" name="uid" value="{{current_user.userid}}">
+          </div>
+          <div>
+            </form>
+            {% else %}
+            <div class="d-flex justify-content-center align-content-center text-center">
+              <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3"
+                style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn">
+                Continue with Google
+              </a>
+            </div>
+            {% endif %}
+            <div id="spinner" class="htmx-indicator spinner-border text-center" role="status">
+              <span class="visually-hidden">Loading...</span>
             </div>
 
-            <input type="hidden" name="post_id" value="{{post.sno}}">
-            <input type="hidden" name="url" value="/b/{{user.username}}/{{post.slug}}">
-            <input type="hidden" name="uid" value="{{current_user.userid}}">
-        </div>
-        <div>
-          </form>
-          {% else %}
-          <div class="d-flex justify-content-center align-content-center text-center">
-            <a href="{{url_for('googleLogin')}}" type="btn my-3 text-decoration-none button ml-3"
-              style="border-radius: 50px;text-decoration:none;" class="login-with-google-btn">
-              Continue with Google
-            </a>
           </div>
-          {% endif %}
-          <div id="spinner" class="htmx-indicator spinner-border text-center" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+          <div id="comments">
+            {% for comment in comments %}
+            <div id="comment{{comment.sno}}">
+              <div class="d-flex mb-2 justify-content-center align-content-start align-items-start"
+                style="cursor: auto;">
+                <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                <div class="card bg-grey text-start border-1 comment">
+                  <div class="d-flex justify-content-between">
 
-        </div>
-        <div id="comments">
-          {% for comment in comments %}
-          <div id="comment{{comment.sno}}">
-            <div class="d-flex mb-2 justify-content-center align-content-start align-items-start" style="cursor: auto;">
-              <img src="{{comment.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
-              <div class="card bg-grey text-start border-1 comment">
-                <div class="d-flex justify-content-between">
+                    <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
+                      class="text-muted text-decoration-none text-sm-start mb-1 hover-btn"
+                      style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} {% if
+                        comment.commentor.username == comment.post.writer.username %}
+                        <i class="fa fa-star hover-btn" title="Author"></i>{% endif %} </b>-
+                      {{comment.time_ago}} </a>
+                    <div class="dropdown">
+                      <span class="p-2 rounded-circle link hover-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-ellipsis-h"></i>
+                      </span>
 
-                  <a href="{{url_for('userProfile', username=comment.commentor.username)}}"
-                    class="text-muted text-decoration-none text-sm-start mb-1 hover-btn"
-                    style=" margin:0;"><b>{{comment.commentor.firstname}} {{comment.commentor.lastname}} {% if
-                      comment.commentor.username == comment.post.writer.username %}
-                      <i class="fa fa-star hover-btn" title="Author"></i>{% endif %} </b>-
-                    {{comment.time_ago}} </a>
-                  <div class="dropdown">
-                    <span class="p-2 rounded-circle link hover-btn" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fa fa-ellipsis-h"></i>
-                    </span>
-
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item"
-                          href="{{url_for('user_comment', comsno=comment.sno, username=comment.commentor.username)}}">Open
-                          Thread</a></li>
-                      <li><a class="dropdown-item comedit" id="{{comment.sno}}">Edit</a></li>
-                      <li>
-                        <form method="POST" hx-delete="/comment" hx-target="#comment{{comment.sno}}"
-                          hx-swap="innerHTML">
-                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                          <input type="hidden" name="comsno" value="{{comment.sno}}">
-                          <button type="submit" class="dropdown-item">Delete</button>
-                        </form>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div id="commentbody{{comment.sno}}">
-                  {{comment.body|safe}}
-                </div>
-
-                <div class="reply">
-                  {% if current_user.is_authenticated %}
-
-                  <div class="replyinput mt-2 d-none" id="replyinput{{comment.sno}}">
-                    <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-target="#addreply{{comment.sno}}">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                      <div class="d-flex mb-2 justify-content-center align-content-center align-items-start"
-                        id="comment" style="cursor: auto;">
-                        <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
-                        <div class="bg-grey text-start comment" id="replybox{{comment.sno}}">
-                          <div class="form-floating">
-                            <textarea class="form-control rinput" minlength="3" maxlength="300" name="body" id="rinput"
-                              placeholder="Leave a comment here" id="replyarea{{comment.sno}}"></textarea>
-                            <label for="replyarea">Add a Reply ✨</label>
-                          </div>
-                          <div class="d-flex justify-content-end align-content-center">
-                            <span class="btn btn-outline-secondary mt-2 mr-2 replycancel replybtn d-none"> Cancel</span>
-                            <button type="submit" class="btn btn-outline-primary d-none mt-2 replybtn"><i
-                                class="fa fa-commenting-o"></i> Add</button>
-                          </div>
-                        </div>
-                        <br>
-                      </div>
-
-                      <input type="hidden" name="comsno" value="{{comment.sno}}">
-                    </form>
-                  </div>
-
-                  {% endif %}
-                  <!-- <span class="float-end mx-2 d-inline-block hover-btn"><i class="fa fa-comment-o"></i></span> -->
-                  <!-- !All the replies to the comment thread -->
-                  <div id="addreply{{comment.sno}}"></div>
-                  {% if comment.replies %}
-                  {% for reply in comment.replies %}
-
-                  <div class="d-flex my-2 justify-content-center align-content-start align-items-start"
-                    style="cursor: auto;">
-                    <img src="{{reply.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
-                    <div class="card bg-grey text-start border-1 comment">
-                      <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
-                        class="text-muted btn-link text-decoration-none text-sm-start mb-1"
-                        style=" margin:0;"><b>{{reply.commentor.firstname}} {{reply.commentor.lastname}} </b>-
-                        {{reply.time_ago}}
-                      </a>
-
-                      {{reply.body|safe}}
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item"
+                            href="{{url_for('user_comment', comsno=comment.sno, username=comment.commentor.username)}}">Open
+                            Thread</a></li>
+                        <li><a class="dropdown-item comedit" id="{{comment.sno}}">Edit</a></li>
+                        <li>
+                          <form method="POST" hx-delete="/comment" hx-target="#comment{{comment.sno}}"
+                            hx-swap="innerHTML">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="comsno" value="{{comment.sno}}">
+                            <button type="submit" class="dropdown-item">Delete</button>
+                          </form>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                  {% endfor %}
+                  <div id="commentbody{{comment.sno}}">
+                    {{comment.body|safe}}
+                  </div>
+
+                  <div class="reply">
+                    {% if current_user.is_authenticated %}
+
+                    <div class="replyinput mt-2 d-none" id="replyinput{{comment.sno}}">
+                      <form method="POST" hx-post="/comment" hx-swap="beforebegin" hx-target="#addreply{{comment.sno}}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div class="d-flex mb-2 justify-content-center align-content-center align-items-start"
+                          id="comment" style="cursor: auto;">
+                          <img src="{{current_user.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                          <div class="bg-grey text-start comment" id="replybox{{comment.sno}}">
+                            <div class="form-floating">
+                              <textarea class="form-control rinput" minlength="3" maxlength="300" name="body"
+                                id="rinput" placeholder="Leave a comment here" id="replyarea{{comment.sno}}"></textarea>
+                              <label for="replyarea">Add a Reply ✨</label>
+                            </div>
+                            <div class="d-flex justify-content-end align-content-center">
+                              <span class="btn btn-outline-secondary mt-2 mr-2 replycancel replybtn d-none">
+                                Cancel</span>
+                              <button type="submit" class="btn btn-outline-primary d-none mt-2 replybtn"><i
+                                  class="fa fa-commenting-o"></i> Add</button>
+                            </div>
+                          </div>
+                          <br>
+                        </div>
+
+                        <input type="hidden" name="comsno" value="{{comment.sno}}">
+                      </form>
+                    </div>
+
+                    {% endif %}
+                    <!-- <span class="float-end mx-2 d-inline-block hover-btn"><i class="fa fa-comment-o"></i></span> -->
+                    <!-- !All the replies to the comment thread -->
+                    <div id="addreply{{comment.sno}}"></div>
+                    {% if comment.replies %}
+                    {% for reply in comment.replies %}
+
+                    <div class="d-flex my-2 justify-content-center align-content-start align-items-start"
+                      style="cursor: auto;">
+                      <img src="{{reply.commentor.picture}}" width="35" height="35" class="rounded-circle mt-2">
+                      <div class="card bg-grey text-start border-1 comment">
+                        <a href="{{url_for('userProfile', username=reply.commentor.username)}}"
+                          class="text-muted btn-link text-decoration-none text-sm-start mb-1"
+                          style=" margin:0;"><b>{{reply.commentor.firstname}} {{reply.commentor.lastname}} </b>-
+                          {{reply.time_ago}}
+                        </a>
+
+                        {{reply.body|safe}}
+                      </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                  </div>
+                  {% if current_user.is_authenticated %}
+
+                  <div class="card-text">
+                    <button class="card-text  btn hover-btn reply" id="{{comment.sno}}"><i class="fa fa-comment-o"></i>
+                      Reply</button>
+                  </div>
                   {% endif %}
                 </div>
-                {% if current_user.is_authenticated %}
-
-                <div class="card-text">
-                  <button class="card-text  btn hover-btn reply" id="{{comment.sno}}"><i class="fa fa-comment-o"></i>
-                    Reply</button>
-                </div>
-                {% endif %}
               </div>
             </div>
-          </div>
-          {% endfor %}
-      </section>
+            {% endfor %}
+        </section>
+
+      </div>
+
+      <div class="col-lg-3">
+        <!-- !User Profile -->
+
+        {{render_user_profile(user, current_user, blogProfile, recommendeds=recommendeds)}}
+        <!-- <a class="d-block mx-auto" href="https://www.digitalocean.com/?refcode=14513172b5f4&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="DigitalOcean Referral Badge" /></a> -->
+
+      </div>
+
 
     </div>
-
-    <div class="col-lg-3">
-      <!-- !User Profile -->
-
-      {{render_user_profile(user, current_user, blogProfile, recommendeds=recommendeds)}}
-      <!-- <a class="d-block mx-auto" href="https://www.digitalocean.com/?refcode=14513172b5f4&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="DigitalOcean Referral Badge" /></a> -->
-
-    </div>
-
 
   </div>
+  {% endblock body %}
+  {% block footer %}
+  <footer class="py-3 bg-light" id="footer">
+    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+      <li class="nav-item"><a href="/" class="nav-link px-2 text-muted btn hover-btn">Home</a></li>
+      <li class="nav-item"><a href="{{url_for('termsandconditions')}}"
+          class="nav-link px-2 text-muted btn hover-btn">Terms and Conditions</a></li>
+      <li class="nav-item"><a href="{{url_for('privacy_policy')}}"
+          class="nav-link px-2 btn text-muted hover-btn">Privacy
+          Policy</a></li>
+    </ul>
+    <p class="text-center text-muted">© 2022 Blogsphere, Inc | Made by Fahad</p><a href="mailto:support@blogsphere.top"
+      class="nav-link px-2 btn text-muted hover-btn">support@blogsphere.top</a>
+  </footer>
+  {% endblock footer %}
+  {% block script %}
+  <script src="{{url_for('static',filename='prism/prism.js')}}"></script>
+  <script src="https://cdn.tiny.cloud/1/8s55fjh97p8z0295i3xgm93498al8v6u61o11kfmzxjk982d/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+  <script>
+    $('#bookmark').click(() => {
 
-</div>
-{% endblock body %}
-{% block footer %}
-<footer class="py-3 bg-light" id="footer">
-  <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-    <li class="nav-item"><a href="/" class="nav-link px-2 text-muted btn hover-btn">Home</a></li>
-    <li class="nav-item"><a href="{{url_for('termsandconditions')}}"
-        class="nav-link px-2 text-muted btn hover-btn">Terms and Conditions</a></li>
-    <li class="nav-item"><a href="{{url_for('privacy_policy')}}" class="nav-link px-2 btn text-muted hover-btn">Privacy
-        Policy</a></li>
-  </ul>
-  <p class="text-center text-muted">© 2022 Blogsphere, Inc | Made by Fahad</p><a href="mailto:support@blogsphere.top"
-    class="nav-link px-2 btn text-muted hover-btn">support@blogsphere.top</a>
-</footer>
-{% endblock footer %}
-{% block script %}
-<script src="{{url_for('static',filename='prism/prism.js')}}"></script>
-<script src="https://cdn.tiny.cloud/1/8s55fjh97p8z0295i3xgm93498al8v6u61o11kfmzxjk982d/tinymce/6/tinymce.min.js"
-  referrerpolicy="origin"></script>
-<script>
-  $('#bookmark').click(() => {
+      if ($('#bookmark').html() == '<i class="fa fa-bookmark"></i>') {
+        $('#bookmark').html(`<i class="fa fa-bookmark-o"></i>`)
 
-    if ($('#bookmark').html() == '<i class="fa fa-bookmark"></i>') {
-      $('#bookmark').html(`<i class="fa fa-bookmark-o"></i>`)
+      } else {
+        $('#bookmark').html(`<i class="fa fa-bookmark"></i>`)
 
-    } else {
-      $('#bookmark').html(`<i class="fa fa-bookmark"></i>`)
-
+      }
+      bookmarkReq()
     }
-    bookmarkReq()
-  }
-  )
-  function copy() {
-    // Get the text field
-    var copyText = document.getElementById("surl");
+    )
+    function copy() {
+      // Get the text field
+      var copyText = document.getElementById("surl");
 
-    // Select the text field
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); // For mobile devices
+      // Select the text field
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); // For mobile devices
 
-    // Copy the text inside the text field
-    navigator.clipboard.writeText(copyText.value);
+      // Copy the text inside the text field
+      navigator.clipboard.writeText(copyText.value);
 
-    // Alert the copied text
-    alert("Copied the text: " + copyText.value);
-  }
+      // Alert the copied text
+      alert("Copied the text: " + copyText.value);
+    }
 
-  const bookmarkReq = async () => {
-    var myHeaders = new Headers();
-    myHeaders.append("Cookie", "Cookie_1=value; Cookie_2=value; session=5a67b465-54b3-4ceb-aff3-496d75f28602");
+    const bookmarkReq = async () => {
+      var myHeaders = new Headers();
+      myHeaders.append("Cookie", "Cookie_1=value; Cookie_2=value; session=5a67b465-54b3-4ceb-aff3-496d75f28602");
 
 
-    var requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-      credentials: 'include',
-      redirect: 'follow'
-    };
+      var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        credentials: 'include',
+        redirect: 'follow'
+      };
 
-    await fetch("/bookmark?blogsno={{post.sno}}", requestOptions)
-      .then(response => response.json())
-      .then(result => {
-        let cnt = result["bookmarkCount"]
-        $('#bookmarkCount').text(String(cnt))
-        console.log(result)
-      }
-      )
-      .catch(error => console.log('error', error));
-  }
+      await fetch("/bookmark?blogsno={{post.sno}}", requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          let cnt = result["bookmarkCount"]
+          $('#bookmarkCount').text(String(cnt))
+          console.log(result)
+        }
+        )
+        .catch(error => console.log('error', error));
+    }
 
-  document.querySelectorAll("a.delete").forEach(element => {
-    element.addEventListener("click", (e) => {
-      confirm1 = confirm("Do you really want to delete this blog?")
-      if (confirm1) {
-        location.href = e.target.id
-      }
+    document.querySelectorAll("a.delete").forEach(element => {
+      element.addEventListener("click", (e) => {
+        confirm1 = confirm("Do you really want to delete this blog?")
+        if (confirm1) {
+          location.href = e.target.id
+        }
+      })
     })
-  })
 
-  $('#sendbtn').click(() => {
-    setTimeout(() => {
-      document.getElementById('tbody').value = ""
-    }, 500)
-  })
-  $('.replybtn').click(() => {
-    setTimeout(() => {
-      document.getElementById('rinput').value = ""
-    }, 500)
-  })
-
-
-  $('#tbody').focusin(() => {
-    $('#sendbtn').removeClass('d-none')
-    $('#sendbtn').addClass('d-inline-block')
-
-  })
-  $('.rinput').focusin(() => {
-    $('.replybtn').removeClass('d-none')
-    $('.replybtn').addClass('d-inline-block')
-
-  })
+    $('#sendbtn').click(() => {
+      setTimeout(() => {
+        document.getElementById('tbody').value = ""
+      }, 500)
+    })
+    $('.replybtn').click(() => {
+      setTimeout(() => {
+        document.getElementById('rinput').value = ""
+      }, 500)
+    })
 
 
-  $('button.reply').click((e) => {
-    selector = `#replyinput${e.target.id}`
-    $(selector).removeClass('d-none')
-  })
-  $('.comedit').click((e) => {
-    selector = `#commentbody${e.target.id}`
-    $(selector).html(`<form method='put' hx-put="/comment" hx-target="commentbody${e.target.id}" hx-swap="innerHTML">
+    $('#tbody').focusin(() => {
+      $('#sendbtn').removeClass('d-none')
+      $('#sendbtn').addClass('d-inline-block')
+
+    })
+    $('.rinput').focusin(() => {
+      $('.replybtn').removeClass('d-none')
+      $('.replybtn').addClass('d-inline-block')
+
+    })
+
+
+    $('button.reply').click((e) => {
+      selector = `#replyinput${e.target.id}`
+      $(selector).removeClass('d-none')
+    })
+    $('.comedit').click((e) => {
+      selector = `#commentbody${e.target.id}`
+      $(selector).html(`<form method='put' hx-put="/comment" hx-target="commentbody${e.target.id}" hx-swap="innerHTML">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <textarea class="form-control " minlength="3" maxlength="300" name="body" id="tbody"
               placeholder="Edit comment" id="floatingTextarea">${$(selector).text().trim()}</textarea>
@@ -456,13 +489,13 @@
 
       <input type="hidden" name="comsno" value="${e.target.id}">
     </form>`)
-  })
+    })
 
-  $('.replycancel').click(() => {
-    $('.replyinput').addClass('d-none')
-  })
-  
-</script>
+    $('.replycancel').click(() => {
+      $('.replyinput').addClass('d-none')
+    })
+
+  </script>
 
 
-{% endblock script %}
+  {% endblock script %}

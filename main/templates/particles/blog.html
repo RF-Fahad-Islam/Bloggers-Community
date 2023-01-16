@@ -90,7 +90,7 @@
                 {% endif %}
             </div>
             <div class="col-lg-3 mt-2 d-flex justify-content-center align-items-center">
-                <a href="{{url}}"><span hx-get="{{url_for('post_cover', username=post.writer.username,postSlug=post.slug)}}" hx-trigger="load"  hx-swap="innerHTML"><div style="    border-radius: 18px;
+                <a href="{{url}}"><span hx-get="{{url_for('post_cover', username=post.writer.username,postSlug=post.slug)}}" hx-trigger="load" hx-indicator="#imageloader"  hx-swap="innerHTML"><div style="    border-radius: 18px;
                     width: 282px;
                     /* height: 174px; */
                     aspect-ratio: 16/9;
