@@ -110,9 +110,6 @@ img{
     border-radius: 10px;
 }
 
-#blogs>div.card:hover{
-    border: 2p solid blue!important;
-}
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
@@ -156,7 +153,7 @@ section.card:hover{
     cursor: pointer;
     background: rgba(255, 255, 255, 0.675)!important;
     box-shadow: 0 8px 32px 0 rgba(200, 191, 191, 0.036)!important;
-    border: 2px solid blue!important;
+    /* border: 2px solid blue!important; */
     
 }
 
