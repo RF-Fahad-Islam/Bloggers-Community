@@ -23,12 +23,18 @@
 {% endblock title %}
 {% block body %}
 {% block css %}
-  <style>
-    p{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-size: medium;
-    }
-  </style>
+<style>
+  h1 {
+    font-weight: 700 !important;
+  }
+
+  p,
+  li {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 20px !important;
+    line-height: 30px;
+  }
+</style>
 {% endblock css %}
 <div id="main" class="container-fluid my-3" style="width: 90%; margin:auto;">
 
@@ -61,7 +67,7 @@
           </span>
           {% endif %}
           {% endif %}
-          <h1 class="fw-bolder border-primary text-center">
+          <h1 class="border-primary text-center">
             {{post.title}}
           </h1>
           <hr>
@@ -137,16 +143,17 @@
                   <span class="badge p-2 rounded-pill bg-light text-black">
                     <i class="fa fa-book"></i> {{post.read_time}}
                   </span>
-                    <!-- <button class="badge p-2 rounded-pill bg-light text-black" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                  <!-- <button class="badge p-2 rounded-pill bg-light text-black" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                       More
                     </button> -->
-                  
+
                 </h6>
               </div>
             </div>
             <div class="collapse my-3" id="collapseExample">
               <div class="card card-body">
-                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when
+                the user activates the relevant trigger.
               </div>
             </div>
             <div hx-disable>
@@ -154,29 +161,50 @@
               {{post.body | safe}}
             </div>
             <div class="sharethis-inline-reaction-buttons"></div>
-            <br>
           </article>
+        </div>
 
-          <nav class="blog-pagination my-3" aria-label="Pagination">
+        <hr>
+        {% if prev_post or next_post %}
+
+        <div class="alert bg-white overflow-scroll">
+          <h3>From the Author</h3>
+          <div class="list-group">
             {% if prev_post %}
-            <a class="btn btn-outline-primary float-start" href="/b/{{user.username}}/{{prev_post.slug}}"> <i
-                class="fa fa-arrow-left"></i> Previous</a>
+
+            <a href="{{prev_post.url}}" class="list-group-item list-group-item-action" aria-current="true">
+              <div class="d-flex w- justify-content-between">
+                <h5 class="mb-1">{{prev_post.title}}</h5>
+              </div>
+              <small class="badge rounded-pill bg-primary text-white">by @{{prev_post.writer.username}}</small>
+              <small class="badge rounded-pill bg-primary text-white">{{prev_post.pub_date.strftime("%b %d,
+                %Y")}}</small>
+              <!-- <small>And some small print.</small> -->
+            </a>
             {% endif %}
             {% if next_post %}
-            <a class="btn btn-outline-primary float-end" href="/b/{{user.username}}/{{next_post.slug}}">Next <i
-                class="fa fa-arrow-right"></i> </a>
+
+            <a href="{{next_post.url}}" class="list-group-item list-group-item-action" aria-current="true">
+              <div class="d-flex w- justify-content-between">
+                <h5 class="mb-1">{{next_post.title}}</h5>
+              </div>
+              <small class="badge rounded-pill bg-primary text-white">by @{{next_post.writer.username}}</small>
+              <small class="badge rounded-pill bg-primary text-white">{{next_post.pub_date.strftime("%b %d,
+                %Y")}}</small>
+              <!-- <small>And some small print.</small> -->
+            </a>
             {% endif %}
+          </div>
+          {% endif %}
         </div>
-        </nav>
-
-
       </div>
-      <!-- !Comment Section -->
 
-      <!-- !Community Post -->
+      <!-- ! ...... -->
+      <!-- !Comment Section -->
       <!-- ../particles/comment/html -->
       <hr>
       <section class="card text-center border-0">
+
         <h3 class="fwpop bg-light card-header text-center"><i class="fa fa-comments-o"></i> All Comments
           ({{comments|length}})</h3>
         <div class="card-body">
@@ -275,7 +303,8 @@
                             <label for="replyarea">Add a Reply ✨</label>
                           </div>
                           <div class="d-flex justify-content-end align-content-center">
-                            <span class="btn btn-outline-secondary mt-2 mr-2 replycancel replybtn d-none"> Cancel</span>
+                            <span class="btn btn-outline-secondary mt-2 mr-2 replycancel replybtn d-none">
+                              Cancel</span>
                             <button type="submit" class="btn btn-outline-primary d-none mt-2 replybtn"><i
                                 class="fa fa-commenting-o"></i> Add</button>
                           </div>
@@ -461,7 +490,7 @@
   $('.replycancel').click(() => {
     $('.replyinput').addClass('d-none')
   })
-  
+
 </script>
 
 
